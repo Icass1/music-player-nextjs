@@ -3,31 +3,88 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+    --foreground-rgb: 0, 0, 0;
+    --background-start-rgb: 214, 219, 220;
+    --background-end-rgb: 255, 255, 255;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+    :root {
+        --foreground-rgb: 255, 255, 255;
+        --background-start-rgb: 0, 0, 0;
+        --background-end-rgb: 0, 0, 0;
+    }
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+    color: rgb(var(--foreground-rgb));
+    background: linear-gradient(to bottom,
+            transparent,
+            rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
+
+    height: 100%;
+    width: 100%;
+    position: absolute;
+
+
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+    .text-balance {
+        text-wrap: balance;
+    }
+}
+
+#page {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    gap: 10px;
+
+
+    grid-template-areas:
+        "head head"
+        "song-info  main"
+        "queue  main";
+    grid-template-rows: 60px 1fr 400px;
+    grid-template-columns: 200px 1fr;
+}
+
+#page>header {
+    border-radius: 5px;
+    grid-area: head;
+    background-color: rgb(18, 18, 18);
+}
+
+#page>#song-info {
+    border-radius: 5px;
+    grid-area: song-info;
+    background-color: rgb(18, 18, 18);
+}
+
+#page>main {
+    border-radius: 5px;
+    grid-area: main;
+    background-color: rgb(18, 18, 18);
+}
+
+#page>#queue {
+    border-radius: 5px;
+    grid-area: queue;
+    background-color: rgb(18, 18, 18);
+}
+
+::-webkit-scrollbar-track {
+    background: none;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgb(100, 100, 100);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
 }

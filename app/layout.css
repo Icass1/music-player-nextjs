@@ -1,0 +1,39 @@
+#page {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    gap: 10px;
+
+
+    grid-template-areas:
+        "head head"
+        "song-info  main"
+        "queue  main";
+    grid-template-rows: 60px 1fr 400px;
+    grid-template-columns: 250px 1fr;
+}
+
+#page>header {
+    border-radius: 5px;
+    grid-area: head;
+    background-color: rgb(18, 18, 18);
+}
+
+#page>#song-info {
+    border-radius: 5px;
+    grid-area: song-info;
+    background-color: rgb(18, 18, 18);
+}
+
+#page>main {
+    border-radius: 5px;
+    grid-area: main;
+    background-color: rgb(18, 18, 18);
+}
+
+#page>#queue {
+    border-radius: 5px;
+    grid-area: queue;
+    background-color: rgb(18, 18, 18);
+}

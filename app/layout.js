@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AudioProvider } from './audioContext';
 import SongInfo from "./songInfo";
+import './layout.css';
 
 const inter = Inter({ subsets: ["latin"] });
 

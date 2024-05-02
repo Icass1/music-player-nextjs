@@ -1,6 +1,4 @@
-
-
-#current-time-slider[mouseOver]::-webkit-slider-thumb {
+#current-time-slider[mouseover]::-webkit-slider-thumb {
     /* -webkit-appearance: none; */
     /* background-color: rgb(150 150 150); */
     height: 8px;

@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { createContext, useState, useEffect } from 'react';
@@ -58,34 +57,38 @@ const AudioProvider = ({ children }) => {
     useEffect(() => {
         if (!(audio instanceof HTMLAudioElement)) { return }
 
-        audio.src = `https://music.rockhosting.org/api/song/${currentSong.id}`
-        audio.volume = 0.2
+        audio.src = `https://music.rockhosting.org/api/song/${currentSong.id}`;
+        audio.volume = 1;
         const storedCurrentTime = localStorage.getItem('currentTime');
-        console.log(storedCurrentTime)
         if (storedCurrentTime) {
-            audio.currentTime = storedCurrentTime
+            audio.currentTime = storedCurrentTime;
         }
 
         audio.addEventListener("play", function () {
-            setIsPlaying(true)
+            setIsPlaying(true);
         })
+
         audio.addEventListener("pause", function () {
-            setIsPlaying(false)
+            setIsPlaying(false);
         })
 
         audio.addEventListener("timeupdate", function () {
-            setCurrentTime(audio.currentTime)
+            setCurrentTime(audio.currentTime);
         })
 
         audio.addEventListener("canplay", function () {
-            setAudioDuration(audio.duration)
+            setAudioDuration(audio.duration);
+        })
+
+        audio.addEventListener("ended", function () {
+            console.log("audio ended")
         })
 
     }, [audio]);
 
     function getTime(seconds) {
 
-        seconds = Math.round(seconds)
+        seconds = Math.round(seconds);
 
         if (typeof seconds !== 'number' || isNaN(seconds)) {
             return "Invalid input";

@@ -3,9 +3,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import Image from 'next/image';
 // import {Image} from "@nextui-org/react";
-import './style.css'
 import { AudioContext } from '@/app/audioContext';
 import clsx from 'clsx';
+import '@/app/slider.css';
 
 export default function ListPage({ params }) {
 
@@ -153,7 +153,7 @@ function AlbumSong({ index, song, listId }) {
 
     return (
         <div className='grid ml-3 mr-3 mt-2 mb-2 items-center cursor-pointer hover:bg-neutral-800 rounded-md h-[50px]' style={{gridTemplateColumns: '50px 1fr 60px'}} onClick={handlePlayClick}>
-            <div className={clsx('text-xl text-neutral-400 text-center', {'text-yellow-600': song.id == currentSong.id})}>{index}</div>
+            <div className={clsx('text-xl text-neutral-400 text-center', {'text-yellow-600': song.id == currentSong.id})}>{index+1}</div>
             <div className={clsx('text-2xl fade-out-neutral-300 min-w-0 max-w-full', {'fade-out-yellow-600': song.id == currentSong.id})}>{song.title}</div>
             <div className={clsx('text-xl text-neutral-400', {'text-yellow-600': song.id == currentSong.id})}>{song.duration}</div>
         </div>

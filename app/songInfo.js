@@ -22,6 +22,7 @@ export default function SongInfo() {
     const [sliderValue, setSliderValue] = useState(0);
 
     useEffect(() => {
+        if (audioDuration == 0) {return}
         setSliderValue(currentTime / audioDuration)
     }, [currentTime, audioDuration]);
 
@@ -68,7 +69,7 @@ export default function SongInfo() {
                 <div className='grid gap-1 ml-2 mr-2 items-center justify-items-center' style={{ gridTemplateColumns: '50px 1fr 50px' }}>
                     <label>{getTime(currentTime)}</label>
                     <input
-                        {...mouseOver && { mouseOver: '' }}
+                        {...mouseOver && { mouseover: '' }}
                         id='current-time-slider'
                         type='range'
                         className='min-w-0 w-full h-[0.4rem] rounded-full appearance-none'

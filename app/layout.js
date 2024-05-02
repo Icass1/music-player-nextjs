@@ -17,7 +17,7 @@ export default function RootLayout({ children }) {
                 <AudioProvider>
                     <div id='page' className='grid grid-rows-2 h-full'>
                         <header className='bg-slate-100'></header>
-                        <div id='song-info' className="overflow-hidden">
+                        <div id='song-info' className="overflow-hidden relative">
                             <SongInfo></SongInfo>
                         </div>
                         <div id='queue'></div>

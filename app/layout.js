@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AudioProvider } from './audioContext';
 import SongInfo from "./songInfo";
+import Queue from "./queue";
 import './layout.css';
 
 const inter = Inter({ subsets: ["latin"] });
@@ -21,7 +22,9 @@ export default function RootLayout({ children }) {
                         <div id='song-info' className="overflow-hidden relative">
                             <SongInfo></SongInfo>
                         </div>
-                        <div id='queue'></div>
+                        <div id='queue'>
+                            <Queue></Queue>
+                        </div>
                         <main className="overflow-y-scroll overflow-x-hidden">
                             {children}
                         </main>

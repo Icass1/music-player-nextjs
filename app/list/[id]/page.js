@@ -15,6 +15,8 @@ export default function ListPage({ params }) {
         setCurrentList, 
         setCurrentSong,
         isPlaying,
+        setQueue,
+        setQueueIndex,
     } = useContext(AudioContext);
 
     const [musicData, setMusicData] = useState({
@@ -45,27 +47,30 @@ export default function ListPage({ params }) {
     }, []);
 
     const handlePauseClick = () => {
-        console.log("handlePauseClick")
-        audio.pause()
+        console.log("handlePauseClick");
+        audio.pause();
     }
 
     const handlePlayClick = () => {
-        console.log("handlePlayClick")
+        console.log("handlePlayClick");
         // Play audio when the play button is clicked
         console.log(params.id, currentList)
         if (params.id == currentList) {
             audio.play();
         } else {
-            audio.src = `https://music.rockhosting.org/api/song/${musicData.songs[0].id}`
-            audio.play()
-            setCurrentSong(musicData.songs[0])
-            setCurrentList(params.id)
+            audio.src = `https://music.rockhosting.org/api/song/${musicData.songs[0].id}`;
+            audio.play();
+
+            setQueue(musicData.songs);
+            setQueueIndex(1);
+            setCurrentSong(musicData.songs[0]);
+            setCurrentList(params.id);
         }
     };
 
     function showGradient (e) {
 
-        const image = e.target
+        const image = e.target;
 
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");

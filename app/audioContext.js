@@ -17,8 +17,11 @@ const AudioProvider = ({ children }) => {
         duration: '',
     });
     const [currentList, setCurrentList] = useState('');
-    const [currentTime, setCurrentTime] = useState('');
+    const [currentTime, setCurrentTime] = useState(null);
     const [audioDuration, setAudioDuration] = useState(0);
+
+    const [queue, setQueue] = useState([])
+    const [queueIndex, setQueueIndex] = useState(null)
 
     useEffect(() => {
         setAudio(new Audio(URL))
@@ -27,12 +30,24 @@ const AudioProvider = ({ children }) => {
     useEffect(() => {
         const storedCurrentSong = localStorage.getItem('currentSong');
         const storedCurrentList = localStorage.getItem('currentList');
+        const storedQueue = localStorage.getItem('queue');
+        const storedQueueIndex = localStorage.getItem('queueIndex');
 
         if (storedCurrentSong) {
             setCurrentSong(JSON.parse(storedCurrentSong));
         }
         if (storedCurrentList) {
             setCurrentList(JSON.parse(storedCurrentList));
+        }
+        if (storedQueue) {
+            setQueue(JSON.parse(storedQueue));
+        } else {
+            setQueue([]);
+        }
+        if (storedQueueIndex) {
+            setQueueIndex(JSON.parse(storedQueueIndex))
+        } else {
+            setQueueIndex(0)
         }
     }, []);
 
@@ -49,10 +64,24 @@ const AudioProvider = ({ children }) => {
     }, [currentList]);
 
     useEffect(() => {
-        if (currentTime !== '') {
+        if (currentTime != "null" && currentTime != null) {
             localStorage.setItem('currentTime', JSON.stringify(currentTime));
         }
     }, [currentTime]);
+
+    useEffect(() => {
+        if (queue != null && queue.length != 0) {
+            localStorage.setItem('queue', JSON.stringify(queue));
+        }
+    }, [queue]);
+
+    useEffect(() => {
+
+        if (queueIndex != null) {
+            
+            localStorage.setItem('queueIndex', JSON.stringify(queueIndex));
+        }
+    }, [queueIndex]);
 
     useEffect(() => {
         if (!(audio instanceof HTMLAudioElement)) { return }
@@ -60,7 +89,7 @@ const AudioProvider = ({ children }) => {
         audio.src = `https://music.rockhosting.org/api/song/${currentSong.id}`;
         audio.volume = 1;
         const storedCurrentTime = localStorage.getItem('currentTime');
-        if (storedCurrentTime) {
+        if (storedCurrentTime && storedCurrentTime != "null") {
             audio.currentTime = storedCurrentTime;
         }
 
@@ -81,7 +110,13 @@ const AudioProvider = ({ children }) => {
         })
 
         audio.addEventListener("ended", function () {
-            console.log("audio ended")
+            audio.src = `https://music.rockhosting.org/api/song/${queue[queueIndex + 1].id}`;
+            audio.play();
+
+            setCurrentSong(queue[queueIndex + 1]);
+            setQueueIndex(queueIndex + 1);
+
+            console.log("audio ended");
         })
 
     }, [audio]);
@@ -126,6 +161,12 @@ const AudioProvider = ({ children }) => {
 
             isPlaying,
             setIsPlaying,
+
+            queue,
+            setQueue,
+
+            queueIndex,
+            setQueueIndex,
         }}>
             {children}
         </AudioContext.Provider>

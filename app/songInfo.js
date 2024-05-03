@@ -13,8 +13,11 @@ export default function SongInfo() {
         currentSong,
         isPlaying,
         currentTime,
-        setCurrentTime,
         audioDuration,
+        queue,
+        queueIndex,
+        setCurrentSong,
+        setQueueIndex,
     } = useContext(AudioContext);
 
     // const [sliderPos, setSliderPos] = useState(0);
@@ -49,6 +52,18 @@ export default function SongInfo() {
         audio.play()
     }
 
+    const handlePrevious = () => {
+
+    }
+
+    const handleNext = () => {
+        audio.src = `https://music.rockhosting.org/api/song/${queue[queueIndex + 1].id}`;
+        audio.play();
+
+        setCurrentSong(queue[queueIndex + 1]);
+        setQueueIndex(queueIndex + 1);
+    }
+
     return (
         <>
             <label className='block text-3xl w-full ml-2 mt-2 mr-2 fade-out-neutral-400'>{currentSong.title}</label>
@@ -57,13 +72,13 @@ export default function SongInfo() {
 
             <div className='absolute bottom-1'>
                 <div className='grid items-center justify-items-center ml-auto mr-auto w-[120px]' style={{ gridTemplateColumns: '30px 60px 30px' }}>
-                    <Image alt="Previous" className='invert-[0.7] cursor-pointer' src='https://music.rockhosting.org/images/previous.svg' width={30} height={30} />
+                    <Image alt="Previous" className='invert-[0.7] cursor-pointer' src='https://music.rockhosting.org/images/previous.svg' width={30} height={30} onClick={handlePrevious}/>
                     {isPlaying ?
-                        <Image alt="Puase" className='invert-[0.7] cursor-pointer' src='https://music.rockhosting.org/images/pause.svg' width={40} height={40} onClick={handlePause} />
+                        <Image alt="Puase" className='invert-[0.7] cursor-pointer' src='https://music.rockhosting.org/images/pause.svg' width={40} height={40} onClick={handlePause}/>
                         :
-                        <Image alt="Play" className='invert-[0.7] cursor-pointer' src='https://music.rockhosting.org/images/play.svg' width={40} height={40} onClick={handlePlay} />
+                        <Image alt="Play" className='invert-[0.7] cursor-pointer' src='https://music.rockhosting.org/images/play.svg' width={40} height={40} onClick={handlePlay}/>
                     }
-                    <Image alt="Next" className='invert-[0.7] cursor-pointer' src='https://music.rockhosting.org/images/next.svg' width={30} height={30} />
+                    <Image alt="Next" className='invert-[0.7] cursor-pointer' src='https://music.rockhosting.org/images/next.svg' width={30} height={30} onClick={handleNext}/>
                 </div>
 
                 <div className='grid gap-1 ml-2 mr-2 items-center justify-items-center' style={{ gridTemplateColumns: '50px 1fr 50px' }}>

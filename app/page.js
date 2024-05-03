@@ -73,7 +73,7 @@ function ListWithName({ musicData }) {
     return (
         <div>
             {Object.keys(listsByName).map((author) => (
-                <div className='m-2 mb-4'>
+                <div key={author} className='m-2 mb-4'>
                     <label className='text-4xl font-bold'>{author}</label>
                     <div className='grid gap-2 mt-1' style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))' }}>
                         {listsByName[author].map((item) => (

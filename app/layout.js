@@ -22,7 +22,7 @@ export default function RootLayout({ children }) {
                         <div id='song-info' className="overflow-hidden relative">
                             <SongInfo></SongInfo>
                         </div>
-                        <div id='queue'>
+                        <div id='queue' className="overflow-y-scroll overflow-x-hidden">
                             <Queue></Queue>
                         </div>
                         <main className="overflow-y-scroll overflow-x-hidden">

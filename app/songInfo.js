@@ -45,15 +45,39 @@ export default function SongInfo() {
     }
 
     const handlePrevious = () => {
-
+        if (currentTime > 5) {
+            audio.currentTime = 0;
+        } else {
+            if (queueIndex <= 0) {
+                return
+            }
+            else {
+                audio.src = `https://music.rockhosting.org/api/song/${queue[queueIndex - 1].id}`;
+                audio.play();
+        
+                setCurrentSong(queue[queueIndex - 1]);
+                setQueueIndex(queueIndex - 1);
+            }
+        }
     }
 
     const handleNext = () => {
-        audio.src = `https://music.rockhosting.org/api/song/${queue[queueIndex + 1].id}`;
-        audio.play();
 
-        setCurrentSong(queue[queueIndex + 1]);
-        setQueueIndex(queueIndex + 1);
+        if (queueIndex >= queue.length -1) {
+        
+            audio.src = `https://music.rockhosting.org/api/song/${queue[0].id}`;
+            audio.play();
+    
+            setCurrentSong(queue[0]);
+            setQueueIndex(0);
+
+        } else {
+            audio.src = `https://music.rockhosting.org/api/song/${queue[queueIndex + 1].id}`;
+            audio.play();
+    
+            setCurrentSong(queue[queueIndex + 1]);
+            setQueueIndex(queueIndex + 1);
+        }
     }
 
     return (

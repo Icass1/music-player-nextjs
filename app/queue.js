@@ -9,11 +9,10 @@ export default function Queue() {
         queueIndex,
     } = useContext(AudioContext);
 
-
     return (
-        <div>
-            {queue?.slice(queueIndex+1, queue.length).map((item) => (
-                <div key={item.id}>{item.title}</div>
+        <div className='flex flex-col'>
+            {queue?.slice(queueIndex+1).map((item) => (
+                <label className='text-lg fade-out-neutral-50' key={item.id}>{item.title}</label>
             ))}
         </div>
     );

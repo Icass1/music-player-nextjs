@@ -5,7 +5,6 @@ import React, { useState, useEffect, useContext } from 'react';
 import Image from 'next/image';
 import { AudioContext } from '@/app/audioContext';
 import clsx from 'clsx';
-import './slider.css';
 
 export default function Home() {
     const [musicData, setMusicData] = useState([]);
@@ -83,7 +82,7 @@ function ListWithName({ musicData }) {
                             } style={{ gridTemplateColumns: '50px 1fr' }}>
 
                                 <Image src={`https://music.rockhosting.org/api/list/image/${item.id}_50x50`} width={50} height={50} className='rounded-lg' alt={item.name}></Image>
-                                <label className='ml-2 text-2xl pr-3 fade-out-neutral-200 font-bold cursor-pointer min-w-0 max-w-full'>{item.name}</label>
+                                <label className={clsx('ml-2 text-2xl pr-3 fade-out-neutral-200 font-bold cursor-pointer min-w-0 max-w-full', {'fade-out-yellow-600': item.id == currentList})}>{item.name}</label>
     
                             </Link>
                         ))}

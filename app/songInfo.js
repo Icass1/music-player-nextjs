@@ -3,8 +3,8 @@
 import { AudioContext } from '@/app/audioContext';
 import { useContext, useEffect, useState } from 'react';
 import Image from 'next/image';
-
 import './globals.css'
+import Slider from './components/slider';
 
 export default function SongInfo() {
     const {
@@ -20,8 +20,7 @@ export default function SongInfo() {
         setQueueIndex,
     } = useContext(AudioContext);
 
-    // const [sliderPos, setSliderPos] = useState(0);
-    const [mouseOver, setMouseOver] = useState(false);
+    const [sliderPos, setSliderPos] = useState(0);
     const [sliderValue, setSliderValue] = useState(0);
 
     useEffect(() => {
@@ -31,13 +30,6 @@ export default function SongInfo() {
 
     const sliderInput = (e) => {
         audio.currentTime = e.target.value * audioDuration;
-    }
-
-    const sliderMouseEnter = () => {
-        setMouseOver(true)
-    }
-    const sliderMouseLeave = () => {
-        setMouseOver(false)
     }
 
     const sliderChange = (event) => {
@@ -83,25 +75,7 @@ export default function SongInfo() {
 
                 <div className='grid gap-1 ml-2 mr-2 items-center justify-items-center' style={{ gridTemplateColumns: '50px 1fr 50px' }}>
                     <label>{getTime(currentTime)}</label>
-                    <input
-                        {...mouseOver && { mouseover: '' }}
-                        id='current-time-slider'
-                        type='range'
-                        className='min-w-0 w-full h-[0.4rem] rounded-full appearance-none'
-                        {...(mouseOver ? {
-                            style: { background: `linear-gradient(90deg, #ca8a04 0%, #ca8a04 calc(${sliderValue * 100}%), black calc(${sliderValue * 100}%), black 100%)` }
-                        } : {
-                            style: { background: `linear-gradient(90deg, rgb(150, 150, 150) 0%, rgb(150, 150, 150) calc(${sliderValue * 100}%), black calc(${sliderValue * 100}%), black 100%)` }
-                        })}
-                        min='0'
-                        max='1'
-                        value={sliderValue}
-                        step='0.005'
-                        onInput={sliderInput}
-                        onMouseEnter={sliderMouseEnter}
-                        onMouseLeave={sliderMouseLeave}
-                        onChange={sliderChange}
-                    />
+                    <Slider value={sliderValue} onInput={sliderInput} onChange={sliderChange}></Slider>
                     <label>{getTime(audioDuration)}</label>
                 </div>
             </div>

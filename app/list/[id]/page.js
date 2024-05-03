@@ -2,10 +2,8 @@
 
 import React, { useState, useEffect, useContext } from 'react';
 import Image from 'next/image';
-// import {Image} from "@nextui-org/react";
 import { AudioContext } from '@/app/audioContext';
 import clsx from 'clsx';
-import '@/app/slider.css';
 
 export default function ListPage({ params }) {
 

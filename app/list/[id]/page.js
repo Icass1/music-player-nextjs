@@ -27,37 +27,55 @@ export default function ListPage({ params }) {
 
     const [backgroundGradient, setBackgroundGradient] = useState('');
     const [genres, setGenres] = useState([]);
+    const [sortingBy, setSortingBy] = useState({ 'filter': 'title', 'direction': 1 });
+
+    function sort(dict, sortBy, direction) {
+
+        dict.sort(function (a, b) {
+            let titleA = a[sortBy]
+            let titleB = b[sortBy]
+            if (titleA != null) { titleA = titleA.toUpperCase(); }
+            if (titleB != null) { titleB = titleB.toUpperCase(); }
+
+            if (titleA < titleB || titleA == null) {
+                return direction * -1;
+            }
+            if (titleA > titleB || titleB == null) {
+                return direction;
+            }
+
+            return 0;
+        });
+
+        return dict
+    }
 
     useEffect(() => {
         const fetchData = async () => {
-            try {
-                const response = await fetch(`https://music.rockhosting.org/api/list/${params.id}`);
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data = await response.json();
-
-                let genres = {}
-
-                for (let song of data.songs) {
-                    if (genres[song.genre]) {
-                        genres[song.genre] += 1
-                    } else {
-                        genres[song.genre] = 1
-                    }
-                }
-
-                genres = Object.entries(genres);
-                genres.sort((a, b) => b[1] - a[1]); // Sort in descending order
-                genres = genres.map(a => a[0])
-                // genres = Object.fromEntries(genres);
-
-                setGenres(genres)
-
-                setMusicData(data);
-            } catch (error) {
-                console.error('Error fetching data:', error);
+            const response = await fetch(`https://music.rockhosting.org/api/list/${params.id}`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
             }
+            const data = await response.json();
+
+            let genres = {}
+
+            for (let song of data.songs) {
+                if (genres[song.genre]) {
+                    genres[song.genre] += 1
+                } else {
+                    genres[song.genre] = 1
+                }
+            }
+
+            genres = Object.entries(genres);
+            genres.sort((a, b) => b[1] - a[1]); // Sort in descending order
+            genres = genres.map(a => a[0])
+            // genres = Object.fromEntries(genres);
+
+            setGenres(genres)
+            sort(data.songs, sortingBy.filter, sortingBy.direction);
+            setMusicData(data);
         };
         fetchData();
     }, []);
@@ -67,7 +85,6 @@ export default function ListPage({ params }) {
     }
 
     const handlePlayClick = () => {
-        console.log(params.id, currentList)
         if (params.id == currentList) {
             audio.play();
         } else {
@@ -113,8 +130,41 @@ export default function ListPage({ params }) {
 
         let backgroundColor = `rgb(${rSum / (image.width * image.height)}, ${gSum / (image.width * image.height)}, ${bSum / (image.width * image.height)})`;
 
-
         setBackgroundGradient(backgroundColor);
+    }
+
+    const handleSort = (e) => {
+
+        let sortBy;
+        let direction;
+        if (e.target.textContent == "Title") {
+            sortBy = 'title';
+        } else if (e.target.textContent == "Artist") {
+            sortBy = 'artist';
+        } else if (e.target.textContent == "Album") {
+            sortBy = 'album';
+        } else if (e.target.textContent == "Genre") {
+            sortBy = 'genre';
+        } else if (e.target.textContent == "Time") {
+            sortBy = 'duration';
+        } else {
+            console.error(e.target.textContent);
+            return;
+        }
+
+        if (sortingBy.filter == sortBy) {
+            direction = sortingBy.direction * -1;
+        } else {
+            direction = 1;
+        }
+
+        setSortingBy({"filter": sortBy, "direction": direction});
+
+        let tempMusicData = {};
+        Object.assign(tempMusicData, musicData);
+
+        sort(tempMusicData.songs, sortBy, direction);
+        setMusicData(tempMusicData);
     }
 
     return (
@@ -135,19 +185,24 @@ export default function ListPage({ params }) {
             </div>
 
             {musicData.type == "Album" ?
+                // Album column titles
                 <div className='grid ml-3 mr-3 items-center rounded-md' style={{ gridTemplateColumns: '50px 1fr 60px' }}>
                     <div></div>
-                    <div className='font-bold text-lg text-neutral-300'>Title</div>
-                    <div className='font-bold text-lg text-neutral-300'>Time</div>
+                    <div className='font-bold text-lg text-neutral-300 cursor-pointer select-none' onClick={handleSort}>Title</div>
+                    <div className='font-bold text-lg text-neutral-300 cursor-pointer select-none' onClick={handleSort}>Time</div>
                 </div>
-
                 :
+                // Playlist column titles
                 <div className='grid gap-x-2 ml-3 mr-3' style={{ gridTemplateColumns: '50px 3fr 1fr 1fr 60px' }}>
                     <label></label>
-                    <label className='font-bold text-lg text-neutral-300'>Title/Artist</label>
-                    <label className='font-bold text-lg text-neutral-300'>Genre</label>
-                    <label className='font-bold text-lg text-neutral-300'>Album</label>
-                    <label className='font-bold text-lg text-neutral-300'>Time</label>
+                    <div className='flex gap-1 items-center'>
+                        <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none' onClick={handleSort}>Title</label>
+                        <label className='font-bold text-sm text-neutral-300 select-none'>/</label>
+                        <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none' onClick={handleSort}>Artist</label>
+                    </div>
+                    <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none' onClick={handleSort}>Genre</label>
+                    <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none' onClick={handleSort}>Album</label>
+                    <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none' onClick={handleSort}>Time</label>
                 </div>
             }
 
@@ -176,7 +231,7 @@ function Song({ type, listSongs, index, song, listId }) {
 
 function AlbumSong({ index, listSongs, song, listId }) {
 
-    const { audio, setCurrentSong, currentSong, setCurrentList, setQueue, setQueueIndex } = useContext(AudioContext);
+    const { audio, setCurrentSong, currentSong, setCurrentList, currentList, setQueue, setQueueIndex } = useContext(AudioContext);
 
     function handlePlayClick() {
         if (currentSong.id == song.id) {
@@ -199,9 +254,9 @@ function AlbumSong({ index, listSongs, song, listId }) {
 
     return (
         <div className='grid ml-3 mr-3 mt-2 mb-2 items-center cursor-pointer hover:bg-neutral-800 rounded-md h-[50px]' style={{ gridTemplateColumns: '50px 1fr 60px' }} onClick={handlePlayClick}>
-            <div className={clsx('text-xl text-neutral-400 text-center', { 'text-yellow-600': song.id == currentSong.id })}>{index + 1}</div>
-            <div className={clsx('text-2xl fade-out-neutral-300 min-w-0 max-w-full', { 'fade-out-yellow-600': song.id == currentSong.id })}>{song.title}</div>
-            <div className={clsx('text-xl text-neutral-400', { 'text-yellow-600': song.id == currentSong.id })}>{song.duration}</div>
+            <div className={clsx('text-xl text-neutral-400 text-center', { 'text-yellow-600': song.id == currentSong.id && currentList == listId })}>{index + 1}</div>
+            <div className={clsx('text-2xl fade-out-neutral-300 min-w-0 max-w-full', { 'fade-out-yellow-600': song.id == currentSong.id && currentList == listId })}>{song.title}</div>
+            <div className={clsx('text-xl text-neutral-400', { 'text-yellow-600': song.id == currentSong.id && currentList == listId })}>{song.duration}</div>
         </div>
     )
 }

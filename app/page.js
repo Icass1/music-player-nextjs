@@ -78,7 +78,7 @@ function ListWithName({ musicData }) {
                         {listsByName[author].map((item) => (
 
                             <Link href={`/list/${item.id}`} key={item.id} className={
-                                clsx('rounded-lg grid grid-cols-2 bg-neutral-800 hover:bg-neutral-700 items-center', { 'bg-yellow-700 hover:bg-yellow-600': item.id == currentList })
+                                clsx('rounded-lg grid grid-cols-2 bg-neutral-800 hover:bg-neutral-700 items-center')
                             } style={{ gridTemplateColumns: '50px 1fr' }}>
 
                                 <Image src={`https://music.rockhosting.org/api/list/image/${item.id}_50x50`} width={50} height={50} className='rounded-lg' alt={item.name}></Image>

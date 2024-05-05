@@ -4,7 +4,7 @@ const nextConfig = {
         remotePatterns: [
             {
                 protocol: 'https',
-                hostname: 'music.rockhosting.org',
+                hostname: 'api.music.rockhosting.org',
                 port: '',
                 pathname: '/**',
             },

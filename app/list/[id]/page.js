@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, useContext } from 'react';
 import Image from 'next/image';
-import { AudioContext } from '@/app/audioContext';
 import clsx from 'clsx';
+import { AudioContext } from '@/app/components/audioContext';
 
 export default function ListPage({ params }) {
 
@@ -52,7 +52,7 @@ export default function ListPage({ params }) {
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await fetch(`https://music.rockhosting.org/api/list/${params.id}`);
+            const response = await fetch(`https://api.music.rockhosting.org/api/list/${params.id}`);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
@@ -78,7 +78,7 @@ export default function ListPage({ params }) {
             setMusicData(data);
         };
         fetchData();
-    }, []);
+    }, [params, sortingBy]);
 
     const handlePauseClick = () => {
         audio.pause();
@@ -88,7 +88,7 @@ export default function ListPage({ params }) {
         if (params.id == currentList) {
             audio.play();
         } else {
-            audio.src = `https://music.rockhosting.org/api/song/${musicData.songs[0].id}`;
+            audio.src = `https://api.music.rockhosting.org/api/song/${musicData.songs[0].id}`;
             audio.play();
 
             setQueue(musicData.songs);
@@ -171,12 +171,12 @@ export default function ListPage({ params }) {
         <div className='overflow-hidden min-h-full'>
             {/* <div className='relative w-full h-96' style={{background: `linear-gradient(0deg, transparent, ${backgroundGradient})`}}></div> */}
             <div className='grid gap-2 h-[700px] mb-[-400px]' style={{ gridTemplateColumns: '300px 1fr', background: `linear-gradient(0deg, transparent, ${backgroundGradient})` }}>
-                <Image alt={musicData.name} className='p-2 rounded-2xl' src={`https://music.rockhosting.org/api/list/image/${params.id}_300x300`} width={300} height={300} onLoad={showGradient} />
+                <Image alt={musicData.name} className='p-2 rounded-2xl' src={`https://api.music.rockhosting.org/api/list/image/${params.id}_300x300`} width={300} height={300} onLoad={showGradient} />
                 <div className='grid inherit' style={{ gridTemplateRows: '160px 50px 40px 30px' }}>
                     {currentList == params.id && isPlaying ?
-                        <Image alt='A' className='mt-20 cursor-pointer bg-yellow-400 rounded-full p-2.5' src={`https://music.rockhosting.org/images/pause.svg`} width={70} height={70} onClick={handlePauseClick} />
+                        <Image alt='A' className='mt-20 cursor-pointer bg-yellow-400 rounded-full p-2.5' src={`https://api.music.rockhosting.org/images/pause.svg`} width={70} height={70} onClick={handlePauseClick} />
                         :
-                        <Image alt='A' className='mt-20 cursor-pointer bg-yellow-400 rounded-full pl-2.5 pt-2 pb-2 pr-1.5' src={`https://music.rockhosting.org/images/play.svg`} width={70} height={70} onClick={handlePlayClick} />
+                        <Image alt='A' className='mt-20 cursor-pointer bg-yellow-400 rounded-full pl-2.5 pt-2 pb-2 pr-1.5' src={`https://api.music.rockhosting.org/images/play.svg`} width={70} height={70} onClick={handlePlayClick} />
                     }
                     <label className='text-5xl fade-out-neutral-200 font-bold min-w-0 max-w-full'>{musicData.name}</label>
                     <label className='text-2xl fade-out-neutral-400 min-w-0 max-w-full'>{musicData.author}</label>
@@ -242,7 +242,7 @@ function AlbumSong({ index, listSongs, song, listId }) {
             let index = listSongs.indexOf(song)
             let list = listSongs.slice(index).concat(listSongs.slice(0, index))
 
-            audio.src = `https://music.rockhosting.org/api/song/${song.id}`;
+            audio.src = `https://api.music.rockhosting.org/api/song/${song.id}`;
             audio.play();
 
             setQueue(list);
@@ -274,7 +274,7 @@ function PlaylistSong({ index, listSongs, song, listId }) {
             let index = listSongs.indexOf(song)
             let list = listSongs.slice(index).concat(listSongs.slice(0, index))
 
-            audio.src = `https://music.rockhosting.org/api/song/${song.id}`;
+            audio.src = `https://api.music.rockhosting.org/api/song/${song.id}`;
             audio.play();
 
             setQueue(list);
@@ -286,7 +286,7 @@ function PlaylistSong({ index, listSongs, song, listId }) {
 
     return (
         <div className='grid gap-x-2 ml-3 mr-3 m-3 cursor-pointer rounded-md items-center hover:bg-neutral-800' style={{ gridTemplateColumns: '50px 3fr 1fr 1fr 60px' }} onClick={handlePlayClick}>
-            <Image className='rounded-md' alt={song.title} src={`https://music.rockhosting.org/api/song/image/${song.id}_50x50`} width={50} height={50} />
+            <Image className='rounded-md' alt={song.title} src={`https://api.music.rockhosting.org/api/song/image/${song.id}_50x50`} width={50} height={50} />
             <div className='flex flex-col cursor-pointer min-w-0 max-w-full'>
                 <label className={clsx('cursor-pointer text-xl fade-out-neutral-200 min-w-0 max-w-full', { 'fade-out-yellow-500': song.id == currentSong.id })}>{song.title}</label>
                 <label className={clsx('cursor-pointer fade-out-neutral-300 min-w-0 max-w-full', { 'fade-out-yellow-600': song.id == currentSong.id })}>{song.artist}</label>

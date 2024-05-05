@@ -2,6 +2,21 @@
 import { useState, useEffect } from 'react';
 import { createGlobalStyle } from 'styled-components';
 
+const GlobalStyles = createGlobalStyle`
+.custom-slider[mouseover]::-webkit-slider-thumb {
+    height: 8px;
+    width: 8px;
+}
+
+.custom-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    background-color: rgb(150 150 150);
+    height: 0.4rem;
+    width: 0.4rem;
+    border-radius: 100%;
+}
+`;
+
 export default function Slider({ value, onInput, onChange }) {
 
     const [mouseOver, setMouseOver] = useState(false);
@@ -13,24 +28,9 @@ export default function Slider({ value, onInput, onChange }) {
         setMouseOver(false)
     }
 
-    const GlobalStyles = createGlobalStyle`
-        .custom-slider[mouseover]::-webkit-slider-thumb {
-            height: 8px;
-            width: 8px;
-        }
-        
-        .custom-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            background-color: rgb(150 150 150);
-            height: 0.4rem;
-            width: 0.4rem;
-            border-radius: 100%;
-        }
-    `;
-
     return (
         <>
-            <GlobalStyles />
+            <GlobalStyles/>
             <input
                 {...mouseOver && { mouseover: '' }}
                 // id={id}

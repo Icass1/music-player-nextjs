@@ -19,6 +19,7 @@ const AudioProvider = ({ children }) => {
     const [currentList, setCurrentList] = useState('');
     const [currentTime, setCurrentTime] = useState(null);
     const [audioDuration, setAudioDuration] = useState(0);
+    const [audioVolume, setAudioVolume] = useState(1);
 
     const [queue, setQueue] = useState([])
     const [queueIndex, setQueueIndex] = useState(null)
@@ -55,6 +56,14 @@ const AudioProvider = ({ children }) => {
         if (currentSong.title !== '') {
             localStorage.setItem('currentSong', JSON.stringify(currentSong));
         }
+
+        if (currentSong.title != '' && currentSong.artist != '') {
+            document.title = currentSong.title + " - " + currentSong.artist
+        } else {
+            document.title = "Music Player"
+        }
+
+
     }, [currentSong]);
 
     useEffect(() => {
@@ -109,17 +118,29 @@ const AudioProvider = ({ children }) => {
             setAudioDuration(audio.duration);
         })
 
-        audio.addEventListener("ended", function () {
+    }, [audio]);
+
+    useEffect(() => {
+        if (!(audio instanceof HTMLAudioElement)) { return }
+
+        audio.onended = function () {
+            if (queueIndex + 1 >= queue.length) {
+                audio.src = `https://api.music.rockhosting.org/api/song/${queue[0].id}`;
+                audio.play();
+                
+                setCurrentSong(queue[0]);
+                setQueueIndex(0);
+                return;
+            }
+            
             audio.src = `https://api.music.rockhosting.org/api/song/${queue[queueIndex + 1].id}`;
             audio.play();
 
             setCurrentSong(queue[queueIndex + 1]);
             setQueueIndex(queueIndex + 1);
+        }
 
-            console.log("audio ended");
-        })
-
-    }, [audio]);
+    }, [audio, queue, queueIndex])
 
     function getTime(seconds) {
 
@@ -167,6 +188,9 @@ const AudioProvider = ({ children }) => {
 
             queueIndex,
             setQueueIndex,
+
+            audioVolume,
+            setAudioVolume,
         }}>
             {children}
         </AudioContext.Provider>

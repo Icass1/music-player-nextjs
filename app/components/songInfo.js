@@ -20,7 +20,6 @@ export default function SongInfo() {
         setQueueIndex,
     } = useContext(AudioContext);
 
-    const [sliderPos, setSliderPos] = useState(0);
     const [sliderValue, setSliderValue] = useState(0);
 
     useEffect(() => {
@@ -84,7 +83,7 @@ export default function SongInfo() {
         <>
             <label className='block text-3xl w-full ml-2 mt-2 mr-2 fade-out-neutral-400'>{currentSong.title}</label>
             <label className='block text-2xl text-neutral-500 truncate w-full ml-2 mr-2 mb-2'>{currentSong.artist}</label>
-            <Image priority="high" className='ml-auto mr-auto mt-auto mb-auto' alt="Current Song" src={`https://api.music.rockhosting.org/api/song/image/${currentSong.id}`} width={180} height={180} />
+            <Image priority="high" className='ml-auto mr-auto mt-auto mb-auto' alt="Current Song" src={`https://api.music.rockhosting.org/api/song/image/${currentSong.id == "" ? ("_"):(currentSong.id)}`} width={180} height={180} />
 
             <div className='absolute bottom-1'>
                 <div className='grid items-center justify-items-center ml-auto mr-auto w-[120px]' style={{ gridTemplateColumns: '30px 60px 30px' }}>

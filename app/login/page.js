@@ -1,12 +1,14 @@
 
 'use client';
 
+import { signIn } from "next-auth/react";
 import Image from "next/image";
 
 export default function Login() {
 
     const githubLogin = () => {
         console.log("github login")
+        signIn("github", {callbackUrl: '/'})
     }
 
     const googleLogin = () => {
@@ -16,6 +18,7 @@ export default function Login() {
     return (
         <div className="absolute top-0 left-0 w-full h-full bg-neutral-500">
             <Image
+                alt=""
                 src='/login-background.jpg'
                 width={0}
                 height={0}

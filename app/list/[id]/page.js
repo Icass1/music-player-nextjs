@@ -158,7 +158,7 @@ export default function ListPage({ params }) {
             direction = 1;
         }
 
-        setSortingBy({"filter": sortBy, "direction": direction});
+        setSortingBy({ "filter": sortBy, "direction": direction });
 
         let tempMusicData = {};
         Object.assign(tempMusicData, musicData);
@@ -169,7 +169,7 @@ export default function ListPage({ params }) {
 
     return (
         <div className='overflow-hidden min-h-full'>
-            {/* <div className='relative w-full h-96' style={{background: `linear-gradient(0deg, transparent, ${backgroundGradient})`}}></div> */}
+
             <div className='grid gap-2 h-[700px] mb-[-400px]' style={{ gridTemplateColumns: '300px 1fr', background: `linear-gradient(0deg, transparent, ${backgroundGradient})` }}>
                 <Image alt={musicData.name} className='p-2 rounded-2xl' src={`https://api.music.rockhosting.org/api/list/image/${params.id}_300x300`} width={300} height={300} onLoad={showGradient} />
                 <div className='grid inherit' style={{ gridTemplateRows: '160px 50px 40px 30px' }}>
@@ -188,21 +188,21 @@ export default function ListPage({ params }) {
                 // Album column titles
                 <div className='grid ml-3 mr-3 items-center rounded-md' style={{ gridTemplateColumns: '50px 1fr 60px' }}>
                     <div></div>
-                    <div className='font-bold text-lg text-neutral-300 cursor-pointer select-none' onClick={handleSort}>Title</div>
-                    <div className='font-bold text-lg text-neutral-300 cursor-pointer select-none' onClick={handleSort}>Time</div>
+                    <div className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Title</div>
+                    <div className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Time</div>
                 </div>
                 :
                 // Playlist column titles
                 <div className='grid gap-x-2 ml-3 mr-3' style={{ gridTemplateColumns: '50px 3fr 1fr 1fr 60px' }}>
                     <label></label>
                     <div className='flex gap-1 items-center'>
-                        <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none' onClick={handleSort}>Title</label>
+                        <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Title</label>
                         <label className='font-bold text-sm text-neutral-300 select-none'>/</label>
-                        <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none' onClick={handleSort}>Artist</label>
+                        <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Artist</label>
                     </div>
-                    <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none' onClick={handleSort}>Genre</label>
-                    <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none' onClick={handleSort}>Album</label>
-                    <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none' onClick={handleSort}>Time</label>
+                    <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Genre</label>
+                    <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Album</label>
+                    <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Time</label>
                 </div>
             }
 
@@ -214,6 +214,17 @@ export default function ListPage({ params }) {
 };
 
 function Song({ type, listSongs, index, song, listId }) {
+
+    return (
+        <div>
+            {type == "Album" ? (
+                <AlbumSong key={index} listSongs={listSongs} song={song} index={index} listId={listId}></AlbumSong>
+            ) : (
+                <PlaylistSong key={index} listSongs={listSongs} song={song} index={index} listId={listId}></PlaylistSong>
+            )}
+        </div>
+    )
+
     if (type == "Album") {
         return (
             <AlbumSong key={index} listSongs={listSongs} song={song} index={index} listId={listId}></AlbumSong>

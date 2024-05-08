@@ -1,6 +1,6 @@
 'use client';
 
-import { AudioContext } from './audioContext';
+import { MediaPlayerContext } from './audioContext';
 import { useContext, useEffect, useState } from 'react';
 import Image from 'next/image';
 // import './globals.css'
@@ -18,7 +18,7 @@ export default function SongInfo() {
         queueIndex,
         setCurrentSong,
         setQueueIndex,
-    } = useContext(AudioContext);
+    } = useContext(MediaPlayerContext);
 
     const [sliderValue, setSliderValue] = useState(0);
 

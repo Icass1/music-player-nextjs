@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import Image from 'next/image';
 import clsx from 'clsx';
-import { AudioContext } from '@/app/components/audioContext';
+import { MediaPlayerContext } from '@/app/components/audioContext';
+import Equalizer from '@/app/components/equalizer';
 
 export default function ListPage({ params }) {
 
@@ -15,7 +16,7 @@ export default function ListPage({ params }) {
         isPlaying,
         setQueue,
         setQueueIndex,
-    } = useContext(AudioContext);
+    } = useContext(MediaPlayerContext);
 
     const [musicData, setMusicData] = useState({
         songs: [],
@@ -186,7 +187,7 @@ export default function ListPage({ params }) {
 
             {musicData.type == "Album" ?
                 // Album column titles
-                <div className='grid ml-3 mr-3 items-center rounded-md' style={{ gridTemplateColumns: '50px 1fr 60px' }}>
+                <div className='grid ml-3 mr-3 items-center rounded-md gap-2' style={{ gridTemplateColumns: '50px 1fr 60px' }}>
                     <div></div>
                     <div className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Title</div>
                     <div className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Time</div>
@@ -242,7 +243,7 @@ function Song({ type, listSongs, index, song, listId }) {
 
 function AlbumSong({ index, listSongs, song, listId }) {
 
-    const { audio, setCurrentSong, currentSong, setCurrentList, currentList, setQueue, setQueueIndex } = useContext(AudioContext);
+    const { audio, setCurrentSong, currentSong, setCurrentList, currentList, setQueue, setQueueIndex, isPlaying} = useContext(MediaPlayerContext);
 
     function handlePlayClick() {
         if (currentSong.id == song.id) {
@@ -264,17 +265,23 @@ function AlbumSong({ index, listSongs, song, listId }) {
     };
 
     return (
-        <div className='grid ml-3 mr-3 mt-2 mb-2 items-center cursor-pointer hover:bg-neutral-800 rounded-md h-[50px]' style={{ gridTemplateColumns: '50px 1fr 60px' }} onClick={handlePlayClick}>
-            <div className={clsx('text-xl text-neutral-400 text-center', { 'text-yellow-600': song.id == currentSong.id && currentList == listId })}>{index + 1}</div>
-            <div className={clsx('text-2xl fade-out-neutral-300 min-w-0 max-w-full', { 'fade-out-yellow-600': song.id == currentSong.id && currentList == listId })}>{song.title}</div>
-            <div className={clsx('text-xl text-neutral-400', { 'text-yellow-600': song.id == currentSong.id && currentList == listId })}>{song.duration}</div>
+        <div className='grid ml-3 mr-3 mt-2 mb-2 items-center cursor-pointer hover:bg-neutral-800 rounded-md h-[50px] gap-2' style={{ gridTemplateColumns: '50px 1fr 60px', gridTemplateRows: '50px' }} onClick={handlePlayClick}>
+
+            {song.id == currentSong.id && isPlaying  ? (
+                <Equalizer className='w-full h-full top-0' bar_count={10} bar_gap={1} centered={true} toggleCenter={false}></Equalizer>
+            ) : (
+                <label className={clsx('text-xl text-neutral-400 text-center', { 'text-yellow-600': song.id == currentSong.id && currentList == listId })}>{index + 1}</label>
+            )}
+
+            <label className={clsx('relative text-2xl fade-out-neutral-300 min-w-0 max-w-full', { 'fade-out-yellow-600': song.id == currentSong.id && currentList == listId })}>{song.title}</label>
+            <label className={clsx('text-xl text-neutral-400', { 'text-yellow-600': song.id == currentSong.id && currentList == listId })}>{song.duration}</label>
         </div>
     )
 }
 
 function PlaylistSong({ index, listSongs, song, listId }) {
 
-    const { audio, setCurrentSong, currentSong, setCurrentList, setQueue, setQueueIndex } = useContext(AudioContext);
+    const { audio, setCurrentSong, currentSong, setCurrentList, setQueue, setQueueIndex, isPlaying } = useContext(MediaPlayerContext);
 
     function handlePlayClick() {
         if (currentSong.id == song.id) {
@@ -296,15 +303,21 @@ function PlaylistSong({ index, listSongs, song, listId }) {
     };
 
     return (
-        <div className='grid gap-x-2 ml-3 mr-3 m-3 cursor-pointer rounded-md items-center hover:bg-neutral-800' style={{ gridTemplateColumns: '50px 3fr 1fr 1fr 60px' }} onClick={handlePlayClick}>
-            <Image className='rounded-md' alt={song.title} src={`https://api.music.rockhosting.org/api/song/image/${song.id}_50x50`} width={50} height={50} />
+        <div className='grid gap-x-2 ml-3 mr-3 m-3 cursor-pointer rounded-md items-center hover:bg-neutral-800' style={{ gridTemplateColumns: '50px 3fr 1fr 1fr 60px', gridTemplateRows: '50px'}} onClick={handlePlayClick}>
+
+            {song.id == currentSong.id && isPlaying  ? (
+                <Equalizer className='w-full h-full top-0' bar_count={10} bar_gap={1} centered={true} toggleCenter={false}></Equalizer>
+            ) : (
+                <Image className='rounded-md' alt={song.title} src={`https://api.music.rockhosting.org/api/song/image/${song.id}_50x50`} width={50} height={50} />
+            )}
+
             <div className='flex flex-col cursor-pointer min-w-0 max-w-full'>
                 <label className={clsx('cursor-pointer text-xl fade-out-neutral-200 min-w-0 max-w-full', { 'fade-out-yellow-500': song.id == currentSong.id })}>{song.title}</label>
                 <label className={clsx('cursor-pointer fade-out-neutral-300 min-w-0 max-w-full', { 'fade-out-yellow-600': song.id == currentSong.id })}>{song.artist}</label>
             </div>
-            <label className='fade-out-neutral-200 min-w-0 max-w-full' title={song.genre}>{song.genre}</label>
-            <label className='fade-out-neutral-200 min-w-0 max-w-full' title={song.album}>{song.album}</label>
-            <label className='fade-out-neutral-100 text-xl min-w-0 max-w-full text-center' title={song.duration}>{song.duration}</label>
+            <label className={clsx('fade-out-neutral-200 min-w-0 max-w-full', { 'fade-out-yellow-500': song.id == currentSong.id })} title={song.genre}>{song.genre}</label>
+            <label className={clsx('fade-out-neutral-200 min-w-0 max-w-full', { 'fade-out-yellow-500': song.id == currentSong.id })} title={song.album}>{song.album}</label>
+            <label className={clsx('fade-out-neutral-100 text-xl min-w-0 max-w-full text-center', { 'fade-out-yellow-500': song.id == currentSong.id })} title={song.duration}>{song.duration}</label>
         </div>
     )
 }

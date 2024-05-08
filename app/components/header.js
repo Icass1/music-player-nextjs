@@ -4,10 +4,11 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 
 import Slider from "./slider";
-import { AudioContext } from './audioContext';
+import { MediaPlayerContext } from './audioContext';
+import Equalizer from "./equalizer";
 
 export default function Header() {
 
@@ -15,29 +16,105 @@ export default function Header() {
         audio,
         audioVolume,
         setAudioVolume,
-    } = useContext(AudioContext);
+    } = useContext(MediaPlayerContext);
+
+    // const muted = false;
+
+    const [audioMuted, setAudioMuted] = useState(false);
+    const [volumeAnimationValue, setVolumeAnimationValue] = useState(audioMuted ? (0) : (30));
+    const [volumeAnimationIsIncreasing, setVolumeAnimationIsIncreasing] = useState(audioMuted ? (false) : (true));
+    const firstUpdate = useRef(0);
+    const [lastVolume, setLastVolume] = useState(null);
 
     const session = useSession();
 
-    const sliderInput = (e) => {
-        audio.volume = e.target.value;
-    }
-
     const sliderChange = (event) => {
+        audio.volume = event.target.value;
         setAudioVolume(event.target.value);
+        setAudioMuted(false);
     };
 
+    useEffect(() => {
+        if (firstUpdate.current < 2) { // Number of variables [volumeAnimationIsIncreasing, volumeAnimationValue]
+            firstUpdate.current += 1;
+            return;
+        }
+
+        if (volumeAnimationIsIncreasing && volumeAnimationValue < 30) {
+            const interval = setInterval(() => {
+                setVolumeAnimationValue((prevValue) => prevValue + 1);
+            }, 3);
+            return () => clearInterval(interval);
+        } else if (!volumeAnimationIsIncreasing && volumeAnimationValue > 0) {
+            const interval = setInterval(() => {
+                setVolumeAnimationValue((prevValue) => prevValue - 1);
+            }, 3);
+            return () => clearInterval(interval);
+        }
+    }, [volumeAnimationIsIncreasing, volumeAnimationValue]);
+
+    useEffect(() => {
+
+        if (audioMuted == false) {
+            setVolumeAnimationIsIncreasing(true);
+            if (lastVolume != null) {
+                setAudioVolume(lastVolume);
+                audio.volume = lastVolume;
+                setLastVolume(null);
+            }
+        } else if (audioMuted == true) {
+            setVolumeAnimationIsIncreasing(false);
+
+            setLastVolume(audioVolume);
+            setAudioVolume(0);
+            audio.volume = 0;
+        }
+
+        console.log(audioMuted)
+
+    }, [audioMuted])
+
+    const toggleVolumeAnimation = () => {
+        setVolumeAnimationIsIncreasing((prevState) => !prevState);
+        setAudioMuted((prevState) => !prevState);
+    };
+
+
     return (
-        <div className="grid h-full items-center ml-3 mr-3 gap-4" style={{gridTemplateColumns: '1fr 30px 30px 30px 30px 150px min-content'}}>
+        <div className="grid h-full items-center ml-3 mr-3 gap-4" style={{ gridTemplateColumns: '1fr 30px 30px 30px 150px min-content', gridTemplateRows: '60px' }}>
             <label></label>
-            <Image className="rounded-full invert-[0.8] select-none" src='https://api.music.rockhosting.org/images/lyrics.png' width={30} height={30} alt=""/>
-            <Image className="rounded-full invert-[0.6] select-none" src='https://api.music.rockhosting.org/images/random.svg' width={30} height={30} alt=""/>
-            <Image className="rounded-full invert-[0.6] select-none" src='https://api.music.rockhosting.org/images/volumeMuted.png' width={30} height={30} alt=""/>
-            <Image className="rounded-full invert-[0.6] select-none" src='https://api.music.rockhosting.org/images/volume.svg' width={30} height={30} alt=""/>
-            <Slider value={audioVolume} onInput={sliderInput} onChange={sliderChange}></Slider>
+            {/* <Equalizer className='w-full max-h-full pt-1 pb-1'></Equalizer> */}
+            <Image className="rounded-full invert-[0.8] select-none" src='https://api.music.rockhosting.org/images/lyrics.png' width={30} height={30} alt="" />
+            <Image className="rounded-full invert-[0.6] select-none" src='https://api.music.rockhosting.org/images/random.svg' width={30} height={30} alt="" />
+            <div className="relative h-[30px] w-[30px]">
+                <Image
+                    className="absolute invert-[0.6] select-none cursor-pointer hover:invert-[0.7]"
+                    src='https://api.music.rockhosting.org/images/volumeMuted.png'
+                    width={30}
+                    height={30}
+                    alt=""
+                    style={{ clipPath: `inset(0px ${volumeAnimationValue}px 0px 0px)` }}
+                    onClick={toggleVolumeAnimation}
+                />
+
+                <Image
+                    className="absolute invert-[0.6] select-none cursor-pointer hover:invert-[0.7]"
+                    src='https://api.music.rockhosting.org/images/volume.svg'
+                    width={30}
+                    height={30}
+                    alt=""
+                    style={{ clipPath: `inset(0px 0px 0px ${30 - volumeAnimationValue}px)` }}
+                    onClick={toggleVolumeAnimation}
+                />
+
+                {/* <div className="absolute h-[30px] w-[10px] left-[0px]" style={{backgroundColor: 'rgb(28 28 28)'}}></div> */}
+
+                {/* <Image className="rounded-full invert-[0.6] select-none" src='https://api.music.rockhosting.org/images/volume.svg' width={30} height={30} alt=""/> */}
+            </div>
+            <Slider value={audioVolume} onChange={sliderChange}></Slider>
             {session.data ? (
                 <div className="flex flex-row gap-2 w-max items-center">
-                    <Image className="rounded-full" src={session?.data?.user?.image} width={40} height={40} alt=""/>
+                    <Image className="rounded-full" src={session?.data?.user?.image} width={40} height={40} alt="" />
                     <div>{session?.data?.user?.name}</div>
                     <button className="bg-neutral-700 pl-2 pr-2 rounded-lg hover:bg-red-600" onClick={() => signOut()}>Logout</button>
                 </div>

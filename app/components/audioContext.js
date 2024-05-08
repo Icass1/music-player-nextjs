@@ -2,7 +2,7 @@
 
 import React, { createContext, useState, useEffect } from 'react';
 
-const AudioContext = createContext();
+const MediaPlayerContext = createContext();
 
 const AudioProvider = ({ children }) => {
     const [audio, setAudio] = useState(null);
@@ -23,6 +23,7 @@ const AudioProvider = ({ children }) => {
 
     const [queue, setQueue] = useState([])
     const [queueIndex, setQueueIndex] = useState(null)
+    const [analyser, setAnalyser] = useState(null)
 
     useEffect(() => {
         setAudio(new Audio(URL))
@@ -87,7 +88,7 @@ const AudioProvider = ({ children }) => {
     useEffect(() => {
 
         if (queueIndex != null) {
-            
+
             localStorage.setItem('queueIndex', JSON.stringify(queueIndex));
         }
     }, [queueIndex]);
@@ -97,13 +98,27 @@ const AudioProvider = ({ children }) => {
 
         audio.src = `https://api.music.rockhosting.org/api/song/${currentSong.id}`;
         audio.volume = 1;
+        audio.crossOrigin = "anonymous"
+
+
         const storedCurrentTime = localStorage.getItem('currentTime');
         if (storedCurrentTime && storedCurrentTime != "null") {
             audio.currentTime = storedCurrentTime;
         }
 
+        let context;
+
         audio.addEventListener("play", function () {
             setIsPlaying(true);
+
+            if (context == undefined) {
+                context = new AudioContext();
+                const _analyser = context.createAnalyser()
+                const source = context.createMediaElementSource(audio);
+                source.connect(_analyser);
+                _analyser.connect(context.destination);
+                setAnalyser(_analyser)
+            }            
         })
 
         audio.addEventListener("pause", function () {
@@ -127,12 +142,12 @@ const AudioProvider = ({ children }) => {
             if (queueIndex + 1 >= queue.length) {
                 audio.src = `https://api.music.rockhosting.org/api/song/${queue[0].id}`;
                 audio.play();
-                
+
                 setCurrentSong(queue[0]);
                 setQueueIndex(0);
                 return;
             }
-            
+
             audio.src = `https://api.music.rockhosting.org/api/song/${queue[queueIndex + 1].id}`;
             audio.play();
 
@@ -149,24 +164,24 @@ const AudioProvider = ({ children }) => {
         if (typeof seconds !== 'number' || isNaN(seconds)) {
             return "Invalid input";
         }
-      
+
         // Calculate minutes and remaining seconds
         const minutes = Math.floor(seconds / 60);
         const remainingSeconds = Math.round(seconds % 60);
-      
+
         // Format the result with leading zeros
         const formattedMinutes = String(minutes).padStart(2, '0');
         const formattedSeconds = String(remainingSeconds).padStart(2, '0');
-      
+
         return `${formattedMinutes}:${formattedSeconds}`;
     }
 
     return (
-        <AudioContext.Provider value={{
+        <MediaPlayerContext.Provider value={{
             getTime,
 
             audio,
-            setAudio,
+            analyser,
 
             currentSong,
             setCurrentSong,
@@ -193,8 +208,8 @@ const AudioProvider = ({ children }) => {
             setAudioVolume,
         }}>
             {children}
-        </AudioContext.Provider>
+        </MediaPlayerContext.Provider>
     );
 };
 
-export { AudioContext, AudioProvider };
+export { MediaPlayerContext, AudioProvider };

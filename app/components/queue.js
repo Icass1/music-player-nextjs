@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useContext } from 'react';
-import { AudioContext } from './audioContext';
+import { MediaPlayerContext } from './audioContext';
 
 export default function Queue() {
     const {
@@ -10,7 +10,7 @@ export default function Queue() {
         audio,
         setCurrentSong,
         setQueueIndex,
-    } = useContext(AudioContext);
+    } = useContext(MediaPlayerContext);
 
     const handleClick = (e) => {
         let index = Number(e.target.getAttribute('index'));

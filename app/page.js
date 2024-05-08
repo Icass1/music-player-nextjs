@@ -4,7 +4,8 @@ import Link from 'next/link';
 import React, { useState, useEffect, useContext } from 'react';
 import Image from 'next/image';
 import clsx from 'clsx';
-import { AudioContext } from './components/audioContext';
+import { MediaPlayerContext } from './components/audioContext';
+import Equalizer from './components/equalizer';
 
 export default function Home() {
     const [musicData, setMusicData] = useState([]);
@@ -32,7 +33,7 @@ export default function Home() {
 }
 
 function Grid({ musicData }) {
-    const { currentList } = useContext(AudioContext);
+    const { currentList } = useContext(MediaPlayerContext);
     return (
         <div className='grid gap-2 p-2' style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))' }}>
             {musicData.map((item) => (
@@ -51,7 +52,7 @@ function Grid({ musicData }) {
 }
 
 function ListWithName({ musicData }) {
-    const { currentList } = useContext(AudioContext);
+    const { currentList, isPlaying } = useContext(MediaPlayerContext);
 
     let listsByName = {};
     let listsByNameTemp = {};
@@ -78,12 +79,17 @@ function ListWithName({ musicData }) {
                         {listsByName[author].map((item) => (
 
                             <Link href={`/list/${item.id}`} key={item.id} className={
-                                clsx('rounded-lg grid grid-cols-2 bg-neutral-700 hover:bg-neutral-700 items-center')
-                            } style={{ gridTemplateColumns: '50px 1fr' }}>
+                                clsx('rounded-lg grid grid-cols-2 bg-neutral-700 hover:bg-neutral-600 items-center shadow-lg')
+                            } style={{ gridTemplateColumns: '50px 1fr min-content' , gridTemplateRows: '50px'}}>
 
                                 <Image src={`https://api.music.rockhosting.org/api/list/image/${item.id}_50x50`} width={50} height={50} className='rounded-lg' alt={item.name}></Image>
                                 <label className={clsx('ml-2 text-2xl pr-3 fade-out-neutral-200 font-bold cursor-pointer min-w-0 max-w-full', {'fade-out-yellow-600': item.id == currentList})}>{item.name}</label>
     
+                                { item.id == currentList && isPlaying ? (
+                                    <Equalizer className='w-20 h-full p-1' bar_count={15} bar_gap={1} centered={true}></Equalizer>
+                                ) : (
+                                    <div></div>
+                                )}
                             </Link>
                         ))}
                     </div>

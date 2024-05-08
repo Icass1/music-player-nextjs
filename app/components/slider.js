@@ -8,6 +8,11 @@ const GlobalStyles = createGlobalStyle`
     width: 8px;
 }
 
+.custom-slider[mouseover]::-moz-range-thumb {
+    height: 8px;
+    width: 8px;
+}
+
 .custom-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     background-color: rgb(150 150 150);
@@ -15,6 +20,16 @@ const GlobalStyles = createGlobalStyle`
     width: 0.4rem;
     border-radius: 100%;
 }
+.custom-slider::-moz-range-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+
+    background: rgb(150 150 150);
+    height: 0.3rem;
+    width: 0.3rem;
+    border-radius: 100%;
+}
+
 `;
 
 export default function Slider({ value, onInput, onChange }) {
@@ -30,7 +45,7 @@ export default function Slider({ value, onInput, onChange }) {
 
     return (
         <>
-            <GlobalStyles/>
+            <GlobalStyles />
             <input
                 {...mouseOver && { mouseover: '' }}
                 // id={id}

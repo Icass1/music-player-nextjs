@@ -15,7 +15,7 @@ export default function Search({ searchResults }) {
                         {searchResults?.albums?.map((album, index) => (
 
 
-                            <Link key={index} className="flex flex-col w-[220px] h-[290px] bg-neutral-700 rounded-lg" href={album.spotify_url} target="_black">
+                            <Link key={index} className="flex flex-col w-[220px] h-[290px] bg-neutral-700 rounded-lg" href={`/s/album/${album.id}`}>
                                 <Image
                                     className='rounded-lg'
                                     src={album.image_url}
@@ -38,7 +38,7 @@ export default function Search({ searchResults }) {
                 <div className="overflow-x-scroll mt-2">
                     <div className="inline-flex flex-row gap-2">
                         {searchResults?.playlists?.map((playlist, index) => (
-                            <Link key={index} className="flex flex-col w-[220px] h-[290px] bg-neutral-700 rounded-lg" href={playlist.spotify_url} target="_black">
+                            <Link key={index} className="flex flex-col w-[220px] h-[290px] bg-neutral-700 rounded-lg" href={`/s/playlist/${playlist.id}`}>
                                 <Image
                                     className='ml-auto mr-auto mt-2 rounded-md'
                                     src={playlist.image_url}

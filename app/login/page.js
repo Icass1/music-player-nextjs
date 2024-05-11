@@ -12,7 +12,6 @@ export default function Login() {
     }
 
     const googleLogin = () => {
-        signIn("google", {callbackUrl: '/'})
         console.log("google login")
     }
 

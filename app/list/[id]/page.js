@@ -171,8 +171,8 @@ export default function ListPage({ params }) {
     return (
         <div className='overflow-hidden min-h-full'>
 
-            <div className='grid gap-2 h-[700px] mb-[-400px]' style={{ gridTemplateColumns: '300px 1fr', background: `linear-gradient(0deg, transparent, ${backgroundGradient})` }}>
-                <Image alt={musicData.name} className='p-2 rounded-2xl' src={`https://api.music.rockhosting.org/api/list/image/${params.id}_300x300`} width={300} height={300} onLoad={showGradient} />
+            <div className='grid gap-2 h-[700px] mb-[-380px]' style={{ gridTemplateColumns: 'max-content 1fr', background: `linear-gradient(0deg, transparent, ${backgroundGradient})` }}>
+                <Image alt={musicData.name} className='m-2 shadow-lg rounded-2xl' src={`https://api.music.rockhosting.org/api/list/image/${params.id}_300x300`} width={300} height={300} onLoad={showGradient} />
                 <div className='grid inherit' style={{ gridTemplateRows: '160px 50px 40px 30px' }}>
                     {currentList == params.id && isPlaying ?
                         <Image alt='A' className='mt-20 cursor-pointer bg-yellow-400 rounded-full p-2.5' src={`https://api.music.rockhosting.org/images/pause.svg`} width={70} height={70} onClick={handlePauseClick} />
@@ -226,24 +226,11 @@ function Song({ type, listSongs, index, song, listId }) {
         </div>
     )
 
-    if (type == "Album") {
-        return (
-            <AlbumSong key={index} listSongs={listSongs} song={song} index={index} listId={listId}></AlbumSong>
-        )
-    } else if (type == "Playlist") {
-        return (
-            <PlaylistSong key={index} listSongs={listSongs} song={song} index={index} listId={listId}></PlaylistSong>
-        )
-    } else {
-        return (
-            <div>Error</div>
-        )
-    }
 }
 
 function AlbumSong({ index, listSongs, song, listId }) {
 
-    const { audio, setCurrentSong, currentSong, setCurrentList, currentList, setQueue, setQueueIndex, isPlaying} = useContext(MediaPlayerContext);
+    const { audio, setCurrentSong, currentSong, setCurrentList, currentList, setQueue, setQueueIndex, isPlaying } = useContext(MediaPlayerContext);
 
     function handlePlayClick() {
         if (currentSong.id == song.id) {
@@ -267,7 +254,7 @@ function AlbumSong({ index, listSongs, song, listId }) {
     return (
         <div className='grid ml-3 mr-3 mt-2 mb-2 items-center cursor-pointer hover:bg-neutral-800 rounded-md h-[50px] gap-2' style={{ gridTemplateColumns: '50px 1fr 60px', gridTemplateRows: '50px' }} onClick={handlePlayClick}>
 
-            {song.id == currentSong.id && isPlaying  ? (
+            {song.id == currentSong.id && isPlaying ? (
                 <Equalizer className='w-full h-full top-0' bar_count={10} bar_gap={1} centered={true} toggleCenter={false}></Equalizer>
             ) : (
                 <label className={clsx('text-xl text-neutral-400 text-center', { 'text-yellow-600': song.id == currentSong.id && currentList == listId })}>{index + 1}</label>
@@ -303,13 +290,18 @@ function PlaylistSong({ index, listSongs, song, listId }) {
     };
 
     return (
-        <div className='grid gap-x-2 ml-3 mr-3 m-3 cursor-pointer rounded-md items-center hover:bg-neutral-800' style={{ gridTemplateColumns: '50px 3fr 1fr 1fr 60px', gridTemplateRows: '50px'}} onClick={handlePlayClick}>
+        <div className='grid gap-x-2 ml-3 mr-3 m-3 cursor-pointer rounded-md items-center hover:bg-neutral-800' style={{ gridTemplateColumns: '50px 3fr 1fr 1fr 60px', gridTemplateRows: '50px' }} onClick={handlePlayClick}>
 
-            {song.id == currentSong.id && isPlaying  ? (
-                <Equalizer className='w-full h-full top-0' bar_count={10} bar_gap={1} centered={true} toggleCenter={false}></Equalizer>
-            ) : (
-                <Image className='rounded-md' alt={song.title} src={`https://api.music.rockhosting.org/api/song/image/${song.id}_50x50`} width={50} height={50} />
-            )}
+            <div className='relative h-[50px]'>
+                {song.id == currentSong.id && isPlaying ? (
+                    <>
+                        <Image className='rounded-md absolute opacity-20' alt={song.title} src={`https://api.music.rockhosting.org/api/song/image/${song.id}_50x50`} width={50} height={50} />
+                        <Equalizer className='w-full h-full top-0 absolute' bar_count={10} bar_gap={1} centered={true} toggleCenter={false}></Equalizer>
+                    </>
+                ) : (
+                    <Image className='rounded-md absolute' alt={song.title} src={`https://api.music.rockhosting.org/api/song/image/${song.id}_50x50`} width={50} height={50} />
+                )}
+            </div>
 
             <div className='flex flex-col cursor-pointer min-w-0 max-w-full'>
                 <label className={clsx('cursor-pointer text-xl fade-out-neutral-200 min-w-0 max-w-full', { 'fade-out-yellow-500': song.id == currentSong.id })}>{song.title}</label>

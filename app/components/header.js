@@ -8,9 +8,9 @@ import { useContext, useEffect, useRef, useState } from "react";
 
 import Slider from "./slider";
 import { MediaPlayerContext } from './audioContext';
-import Equalizer from "./equalizer";
+import { usePathname } from "next/navigation";
 
-export default function Header() {
+export default function Header({ handleSearch }) {
 
     const {
         audio,
@@ -79,13 +79,47 @@ export default function Header() {
         setAudioMuted((prevState) => !prevState);
     };
 
+    let debounceTimer;
+
+    const handleSearchInputChange = (e) => {
+        const query = e.target.value;
+        // setSearchQuery(query);
+
+        // Clear the previous timer to avoid multiple fetches
+        clearTimeout(debounceTimer);
+
+        // Set a new timer to call onSearch after 500ms (half a second)
+        debounceTimer = setTimeout(() => {
+            handleSearch(query);
+        }, 1000);
+    };
 
     return (
-        <div className="grid h-full items-center ml-3 mr-3 gap-4" style={{ gridTemplateColumns: '1fr 30px 30px 30px 150px min-content', gridTemplateRows: '60px' }}>
-            <label></label>
+        <div className="grid h-full items-center ml-5 mr-5 gap-4" style={{ gridTemplateColumns: '30px min-content 1fr 30px 30px 30px 150px min-content', gridTemplateRows: '60px' }}>
+            <Link href="/search">
+                <Image className="invert-[0.8] hover:invert-[0.7] select-none" src='https://api.music.rockhosting.org/images/search.svg' width={30} height={30} alt="Search" />
+            </Link>
+            {usePathname() == "/search" ? (
+                // <Input
+                //     type="text"
+                //     label='Type to search...'
+                //     className="w-52 scale-75"
+                //     size="sm"
+                // />
+                <input
+                    placeholder="Type to search..."
+                    className="border-solid border-neutral-300 bg-transparent border-b-1 focus:outline-none"
+                    onInput={handleSearchInputChange}
+                />
+            ) : (
+                <label>{/* Empty label to fill min-content */}</label>
+            )
+
+            }
+            <label></label> {/* Empty label to fill 1fr */}
             {/* <Equalizer className='w-full max-h-full pt-1 pb-1'></Equalizer> */}
-            <Image className="rounded-full invert-[0.8] select-none" src='https://api.music.rockhosting.org/images/lyrics.png' width={30} height={30} alt="" />
-            <Image className="rounded-full invert-[0.6] select-none" src='https://api.music.rockhosting.org/images/random.svg' width={30} height={30} alt="" />
+            <Image className="invert-[0.8] select-none hover:invert-[0.9]" src='https://api.music.rockhosting.org/images/lyrics.png' width={30} height={30} alt="Toggle lyrics" />
+            <Image className="invert-[0.6] select-none hover:invert-[0.7]" src='https://api.music.rockhosting.org/images/random.svg' width={30} height={30} alt="Toggle random queue" />
             <div className="relative h-[30px] w-[30px]">
                 <Image
                     className="absolute invert-[0.6] select-none cursor-pointer hover:invert-[0.7]"

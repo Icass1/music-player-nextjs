@@ -18,12 +18,14 @@ const AudioProvider = ({ children }) => {
     });
     const [currentList, setCurrentList] = useState('');
     const [currentTime, setCurrentTime] = useState(null);
+
     const [audioDuration, setAudioDuration] = useState(0);
     const [audioVolume, setAudioVolume] = useState(1);
+    const [analyser, setAnalyser] = useState(null)
 
     const [queue, setQueue] = useState([])
     const [queueIndex, setQueueIndex] = useState(null)
-    const [analyser, setAnalyser] = useState(null)
+    const [randomQueue, setRandomQueue] = useState(null)
 
     useEffect(() => {
         setAudio(new Audio(URL))
@@ -157,6 +159,19 @@ const AudioProvider = ({ children }) => {
 
     }, [audio, queue, queueIndex])
 
+
+    useEffect(() => {
+
+        if (randomQueue == null) {return}
+
+        if (randomQueue) {
+            let newQueue = queue.slice(queueIndex + 1)
+            newQueue.sort(() => Math.random() - 0.5)
+            setQueue(queue.slice(0, queueIndex + 1).concat(newQueue))
+        }
+
+    }, [randomQueue])
+
     function getTime(seconds) {
 
         seconds = Math.round(seconds);
@@ -203,6 +218,9 @@ const AudioProvider = ({ children }) => {
 
             queueIndex,
             setQueueIndex,
+
+            randomQueue,
+            setRandomQueue,
 
             audioVolume,
             setAudioVolume,

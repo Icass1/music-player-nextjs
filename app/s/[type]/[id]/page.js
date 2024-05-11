@@ -6,7 +6,7 @@ import clsx from 'clsx';
 import { MediaPlayerContext } from '@/app/components/audioContext';
 import Equalizer from '@/app/components/equalizer';
 
-export default function ListPage({ params }) {
+export default function SearchListPage({ params }) {
 
     const {
         audio,
@@ -239,7 +239,7 @@ function Song({ type, listSongs, index, song, listId }) {
 
 function AlbumSong({ index, listSongs, song, listId }) {
 
-    const { audio, setCurrentSong, currentSong, setCurrentList, currentList, setQueue, setQueueIndex, isPlaying } = useContext(MediaPlayerContext);
+    const { audio, setCurrentSong, currentSong, setCurrentList, randomQueue, currentList, setQueue, setQueueIndex, isPlaying } = useContext(MediaPlayerContext);
 
     function handlePlayClick() {
 
@@ -255,12 +255,16 @@ function AlbumSong({ index, listSongs, song, listId }) {
             let _listSongs = listSongs.filter(song => song.in_database)
 
             let index = _listSongs.indexOf(song)
-            let list = _listSongs.slice(index).concat(_listSongs.slice(0, index))
+            let list = _listSongs.slice(index + 1).concat(_listSongs.slice(0, index))
+
+            if (randomQueue) {
+                list.sort(() => Math.random() - 0.5)
+            }
 
             audio.src = `https://api.music.rockhosting.org/api/song/${song.id}`;
             audio.play();
 
-            setQueue(list);
+            setQueue([song].concat(list));
             setQueueIndex(0);
             setCurrentSong(song);
             setCurrentList(listId);
@@ -277,7 +281,13 @@ function AlbumSong({ index, listSongs, song, listId }) {
             )}
 
             <label className={clsx('relative text-2xl fade-out-neutral-300 min-w-0 max-w-full cursor-pointer', { 'fade-out-yellow-600': song.id == currentSong.id && currentList == listId })}>{song.title}</label>
-            <Image src={song.in_database ? ("https://api.music.rockhosting.org/images/database2.webp") : ("https://api.music.rockhosting.org/images/download.svg")} style={{ filter: 'brightness(0) saturate(100%) invert(32%) sepia(57%) saturate(3843%) hue-rotate(39deg) brightness(86%) contrast(98%)' }} width={30} height={30} alt="" />
+            <Image
+                src={song.in_database ? ("https://api.music.rockhosting.org/images/database2.webp") : ("https://api.music.rockhosting.org/images/download.svg")}
+                style={{ filter: 'brightness(0) saturate(100%) invert(32%) sepia(57%) saturate(3843%) hue-rotate(39deg) brightness(86%) contrast(98%)' }}
+                width={30}
+                height={30}
+                alt=""
+            />
 
             <label className={clsx('text-xl text-neutral-400', { 'text-yellow-600': song.id == currentSong.id && currentList == listId })}>{song.duration}</label>
         </div>
@@ -286,7 +296,7 @@ function AlbumSong({ index, listSongs, song, listId }) {
 
 function PlaylistSong({ index, listSongs, song, listId }) {
 
-    const { audio, setCurrentSong, currentSong, setCurrentList, setQueue, setQueueIndex, isPlaying } = useContext(MediaPlayerContext);
+    const { audio, setCurrentSong, randomQueue, currentSong, setCurrentList, setQueue, setQueueIndex, isPlaying } = useContext(MediaPlayerContext);
 
     function handlePlayClick() {
 
@@ -294,7 +304,7 @@ function PlaylistSong({ index, listSongs, song, listId }) {
             return;
         }
 
-        if (currentSong.id == song.id) {
+        if (currentSong.id == song.id && currentList == listId) {
             audio.currentTime = 0;
             audio.play()
         } else {
@@ -302,12 +312,15 @@ function PlaylistSong({ index, listSongs, song, listId }) {
             let _listSongs = listSongs.filter(song => song.in_database)
 
             let index = _listSongs.indexOf(song)
-            let list = _listSongs.slice(index).concat(_listSongs.slice(0, index))
+            let list = _listSongs.slice(index + 1).concat(_listSongs.slice(0, index))
 
+            if (randomQueue) {
+                list.sort(() => Math.random() - 0.5)
+            }
             audio.src = `https://api.music.rockhosting.org/api/song/${song.id}`;
             audio.play();
 
-            setQueue(list);
+            setQueue([song].concat(list));
             setQueueIndex(0);
             setCurrentSong(song);
             setCurrentList(listId);

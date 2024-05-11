@@ -16,6 +16,8 @@ export default function Header({ handleSearch }) {
         audio,
         audioVolume,
         setAudioVolume,
+        randomQueue,
+        setRandomQueue,
     } = useContext(MediaPlayerContext);
 
     // const muted = false;
@@ -70,8 +72,6 @@ export default function Header({ handleSearch }) {
             audio.volume = 0;
         }
 
-        console.log(audioMuted)
-
     }, [audioMuted])
 
     const toggleVolumeAnimation = () => {
@@ -119,7 +119,16 @@ export default function Header({ handleSearch }) {
             <label></label> {/* Empty label to fill 1fr */}
             {/* <Equalizer className='w-full max-h-full pt-1 pb-1'></Equalizer> */}
             <Image className="invert-[0.8] select-none hover:invert-[0.9]" src='https://api.music.rockhosting.org/images/lyrics.png' width={30} height={30} alt="Toggle lyrics" />
-            <Image className="invert-[0.6] select-none hover:invert-[0.7]" src='https://api.music.rockhosting.org/images/random.svg' width={30} height={30} alt="Toggle random queue" />
+            <Image
+                className="invert-[0.6] select-none hover:invert-[0.7] cursor-pointer"
+                style={{ filter: randomQueue ? ('brightness(0) saturate(100%) invert(44%) sepia(91%) saturate(474%) hue-rotate(3deg) brightness(105%) contrast(97%)') : ('') }}
+                src='https://api.music.rockhosting.org/images/random.svg'
+                width={30}
+                height={30}
+                alt="Toggle random queue"
+                onClick={() => {setRandomQueue((prevState) => !prevState)}}
+            />
+
             <div className="relative h-[30px] w-[30px]">
                 <Image
                     className="absolute invert-[0.6] select-none cursor-pointer hover:invert-[0.7]"

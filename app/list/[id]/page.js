@@ -230,21 +230,25 @@ function Song({ type, listSongs, index, song, listId }) {
 
 function AlbumSong({ index, listSongs, song, listId }) {
 
-    const { audio, setCurrentSong, currentSong, setCurrentList, currentList, setQueue, setQueueIndex, isPlaying } = useContext(MediaPlayerContext);
+    const { audio, setCurrentSong, currentSong, setCurrentList, currentList, setQueue, randomQueue, setQueueIndex, isPlaying } = useContext(MediaPlayerContext);
 
     function handlePlayClick() {
-        if (currentSong.id == song.id) {
+        if (currentSong.id == song.id && currentList == listId) {
             audio.currentTime = 0;
             audio.play()
         } else {
 
             let index = listSongs.indexOf(song)
-            let list = listSongs.slice(index).concat(listSongs.slice(0, index))
+            let list = listSongs.slice(index + 1).concat(listSongs.slice(0, index))
+
+            if (randomQueue) {
+                list.sort(() => Math.random() - 0.5)
+            }
 
             audio.src = `https://api.music.rockhosting.org/api/song/${song.id}`;
             audio.play();
 
-            setQueue(list);
+            setQueue([song].concat(list));
             setQueueIndex(0);
             setCurrentSong(song);
             setCurrentList(listId);
@@ -268,21 +272,25 @@ function AlbumSong({ index, listSongs, song, listId }) {
 
 function PlaylistSong({ index, listSongs, song, listId }) {
 
-    const { audio, setCurrentSong, currentSong, setCurrentList, setQueue, setQueueIndex, isPlaying } = useContext(MediaPlayerContext);
+    const { audio, setCurrentSong, currentSong, randomQueue, setCurrentList, setQueue, setQueueIndex, isPlaying } = useContext(MediaPlayerContext);
 
     function handlePlayClick() {
-        if (currentSong.id == song.id) {
+        if (currentSong.id == song.id && currentList == listId) {
             audio.currentTime = 0;
             audio.play()
         } else {
 
             let index = listSongs.indexOf(song)
-            let list = listSongs.slice(index).concat(listSongs.slice(0, index))
+            let list = listSongs.slice(index + 1).concat(listSongs.slice(0, index))
+
+            if (randomQueue) {
+                list.sort(() => Math.random() - 0.5)
+            }
 
             audio.src = `https://api.music.rockhosting.org/api/song/${song.id}`;
             audio.play();
 
-            setQueue(list);
+            setQueue([song].concat(list));
             setQueueIndex(0);
             setCurrentSong(song);
             setCurrentList(listId);

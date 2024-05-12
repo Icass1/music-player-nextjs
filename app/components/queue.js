@@ -25,8 +25,8 @@ export default function Queue() {
     return (
         <div className='flex flex-col'>
             {queue?.slice(queueIndex+1).map((item, index) => (
-                <div className='rounded-lg w-full relative hover:bg-neutral-700'>
-                    <label className='ml-1 mr-1 text-lg fade-out-neutral-50 cursor-pointer block' key={item.id} index={index+queueIndex+1} onClick={handleClick}>{item.title}</label>
+                <div key={item.id} className='rounded-lg w-full relative hover:bg-neutral-700'>
+                    <label className='ml-1 mr-1 text-lg fade-out-neutral-50 cursor-pointer block' index={index+queueIndex+1} onClick={handleClick}>{item.title}</label>
                 </div>
             ))}
         </div>

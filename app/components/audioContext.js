@@ -36,6 +36,7 @@ const AudioProvider = ({ children }) => {
         const storedCurrentList = localStorage.getItem('currentList');
         const storedQueue = localStorage.getItem('queue');
         const storedQueueIndex = localStorage.getItem('queueIndex');
+        const storedRandomQueue = localStorage.getItem('randomQueue');
 
         if (storedCurrentSong) {
             setCurrentSong(JSON.parse(storedCurrentSong));
@@ -47,6 +48,11 @@ const AudioProvider = ({ children }) => {
             setQueue(JSON.parse(storedQueue));
         } else {
             setQueue([]);
+        }
+        if (storedRandomQueue) {
+            setRandomQueue(JSON.parse(storedRandomQueue));
+        } else {
+            setRandomQueue(false);
         }
         if (storedQueueIndex) {
             setQueueIndex(JSON.parse(storedQueueIndex))
@@ -164,11 +170,7 @@ const AudioProvider = ({ children }) => {
 
         if (randomQueue == null) {return}
 
-        if (randomQueue) {
-            let newQueue = queue.slice(queueIndex + 1)
-            newQueue.sort(() => Math.random() - 0.5)
-            setQueue(queue.slice(0, queueIndex + 1).concat(newQueue))
-        }
+        localStorage.setItem('randomQueue', JSON.stringify(randomQueue))
 
     }, [randomQueue])
 

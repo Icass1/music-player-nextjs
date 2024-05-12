@@ -1,13 +1,15 @@
 'use client'
 
 import Link from 'next/link';
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import Image from 'next/image';
 import clsx from 'clsx';
 import { MediaPlayerContext } from './components/audioContext';
 import Equalizer from './components/equalizer';
+import { ScrollContext } from './components/scrollContext';
 
 export default function Home() {
+
     const [musicData, setMusicData] = useState([]);
 
     useEffect(() => {
@@ -52,6 +54,14 @@ function Grid({ musicData }) {
 }
 
 function ListWithName({ musicData }) {
+
+    const { scrollValue, setScrollValue } = useContext(ScrollContext)
+
+    const mainRef = useRef();
+    if (mainRef.current) {
+        mainRef.current.scrollTop = scrollValue
+    }
+
     const { currentList, isPlaying } = useContext(MediaPlayerContext);
 
     let listsByName = {};
@@ -71,7 +81,13 @@ function ListWithName({ musicData }) {
     listsByName = listsByNameTemp;
 
     return (
-        <div>
+        <div
+            ref={mainRef}
+            className="overflow-y-scroll overflow-x-hidden h-full"
+            onScroll={(e) => { window.location.pathname == "/" ? (setScrollValue(e.target.scrollTop)) : (null) }}
+        // onScroll={(e) => { console.log(window.location.pathname, e.target.scrollTop); window.location.pathname == "/" ? (setScrollValue(e.target.scrollTop)) : (null) }}
+        // onScroll={(e) => { console.log(window.location.pathname, e.target.scrollTop) }}
+        >
             {Object.keys(listsByName).map((author) => (
                 <div key={author} className='m-2 mb-4'>
                     <label className='text-4xl font-bold'>{author}</label>
@@ -80,12 +96,12 @@ function ListWithName({ musicData }) {
 
                             <Link href={`/list/${item.id}`} key={item.id} className={
                                 clsx('rounded-lg grid grid-cols-2 bg-neutral-700 hover:bg-neutral-600 items-center shadow-lg')
-                            } style={{ gridTemplateColumns: '50px 1fr min-content' , gridTemplateRows: '50px'}}>
+                            } style={{ gridTemplateColumns: '50px 1fr min-content', gridTemplateRows: '50px' }}>
 
                                 <Image src={`https://api.music.rockhosting.org/api/list/image/${item.id}_50x50`} width={50} height={50} className='rounded-lg' alt={item.name}></Image>
-                                <label className={clsx('ml-2 text-2xl pr-3 fade-out-neutral-200 font-bold cursor-pointer min-w-0 max-w-full', {'fade-out-yellow-600': item.id == currentList})}>{item.name}</label>
-    
-                                { item.id == currentList && isPlaying ? (
+                                <label className={clsx('ml-2 text-2xl pr-3 fade-out-neutral-200 font-bold cursor-pointer min-w-0 max-w-full', { 'fade-out-yellow-600': item.id == currentList })}>{item.name}</label>
+
+                                {item.id == currentList && isPlaying ? (
                                     <Equalizer className='w-20 h-full p-1' bar_count={15} bar_gap={1} centered={true}></Equalizer>
                                 ) : (
                                     <div></div>

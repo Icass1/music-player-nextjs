@@ -171,8 +171,7 @@ export default function SearchListPage({ params }) {
     }
 
     return (
-        <div className='overflow-hidden min-h-full'>
-
+        <div className='overflow-hidden h-full overflow-y-scroll'>
             <div className='grid gap-2 h-[700px] mb-[-380px]' style={{ gridTemplateColumns: 'max-content 1fr', background: `linear-gradient(0deg, transparent, ${backgroundGradient})` }}>
                 <Image
                     alt={musicData.name}

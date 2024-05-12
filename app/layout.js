@@ -9,36 +9,34 @@ import Header from "./components/header";
 import './layout.css';
 
 import SessionWrapper from "./components/sessionWrapper";
-import { useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 
-import { metadata } from "./components/metadata";
-import { Children } from "react";
-import { cloneElement } from "react";
 import { usePathname } from "next/navigation";
 import Search from "./search/page";
+import Home from "./page";
+import { ScrollProvider } from "./components/scrollContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
 
 export default function RootLayout({ children }) {
 
-    const [searchResults, setSearchResults] = useState('asdfg');
+    const [searchResults, setSearchResults] = useState(null);
+    const [scrollValue, setScrollValue] = useState(0);
+
+    const mainRef = useRef();
 
     const handleSearch = async (query) => {
-
-        console.log(query)
 
         // Perform fetch request here with the search query
         try {
             const response = await fetch(`https://api.music.rockhosting.org/api/search?q=${query}`);
             const data = await response.json();
-            console.log(data)
             setSearchResults(data); // Assuming your API returns results
         } catch (error) {
             console.error('Error fetching search results:', error);
         }
     };
-
 
     // const childrenWithProps = Children.map(children, (child) => {
     //     return cloneElement(child, {
@@ -52,26 +50,31 @@ export default function RootLayout({ children }) {
             <html lang="en">
                 <body className={inter.className}>
                     <AudioProvider>
-                        <div id='page' className='grid grid-rows-2 h-full'>
-                            <header className='bg-slate-100'>
-                                <Header handleSearch={handleSearch}></Header>
-                            </header>
-                            <div id='song-info' className="overflow-hidden relative">
-                                <SongInfo></SongInfo>
-                            </div>
-                            <div id='queue' className="overflow-y-scroll overflow-x-hidden">
-                                <Queue></Queue>
-                            </div>
-                            {usePathname() == "/search" ? (
-                                <main className="overflow-y-scroll overflow-x-hidden">
-                                    <Search searchResults={searchResults}></Search>
+                        <ScrollProvider>
+                            <div id='page' className='grid grid-rows-2 h-full'>
+                                <header className='bg-slate-100'>
+                                    <Header handleSearch={handleSearch}></Header>
+                                </header>
+                                <div id='song-info' className="overflow-hidden relative">
+                                    <SongInfo></SongInfo>
+                                </div>
+                                <div id='queue' className="overflow-y-scroll overflow-x-hidden">
+                                    <Queue></Queue>
+                                </div>
+                                <main
+                                // className="overflow-y-scroll overflow-x-hidden"
+                                // ref={mainRef}
+                                // onScroll={(e) => { console.log(window.location.pathname, e.target.scrollTop); window.location.pathname == "/" ? (setScrollValue(e.target.scrollTop)) : (null) }}
+                                >
+                                    {usePathname() == "/search" ? (
+                                        <Search searchResults={searchResults}></Search>
+                                    ) : (
+                                        children
+                                    )}
                                 </main>
-                            ) : (
-                                <main className="overflow-y-scroll overflow-x-hidden">
-                                    {children}
-                                </main>
-                            )}
-                        </div>
+
+                            </div>
+                        </ScrollProvider>
                     </AudioProvider>
                 </body>
             </html>

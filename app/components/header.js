@@ -18,9 +18,10 @@ export default function Header({ handleSearch }) {
         setAudioVolume,
         randomQueue,
         setRandomQueue,
+        queueIndex,
+        queue,
+        setQueue,
     } = useContext(MediaPlayerContext);
-
-    // const muted = false;
 
     const [audioMuted, setAudioMuted] = useState(false);
     const [volumeAnimationValue, setVolumeAnimationValue] = useState(audioMuted ? (0) : (30));
@@ -94,6 +95,18 @@ export default function Header({ handleSearch }) {
         }, 1000);
     };
 
+    const toggleRandomQueue = () => {
+
+        if (randomQueue) {
+            setRandomQueue(false)
+        } else {
+            setRandomQueue(true)
+            let newQueue = queue.slice(queueIndex + 1)
+            newQueue.sort(() => Math.random() - 0.5)
+            setQueue(queue.slice(0, queueIndex + 1).concat(newQueue))
+        }
+    }
+
     return (
         <div className="grid h-full items-center ml-5 mr-5 gap-4" style={{ gridTemplateColumns: '30px min-content 1fr 30px 30px 30px 150px min-content', gridTemplateRows: '60px' }}>
             <Link href="/search">
@@ -126,7 +139,7 @@ export default function Header({ handleSearch }) {
                 width={30}
                 height={30}
                 alt="Toggle random queue"
-                onClick={() => {setRandomQueue((prevState) => !prevState)}}
+                onClick={toggleRandomQueue}
             />
 
             <div className="relative h-[30px] w-[30px]">
@@ -135,6 +148,7 @@ export default function Header({ handleSearch }) {
                     src='https://api.music.rockhosting.org/images/volumeMuted.png'
                     width={30}
                     height={30}
+                    priority={true}
                     alt=""
                     style={{ clipPath: `inset(0px ${volumeAnimationValue}px 0px 0px)` }}
                     onClick={toggleVolumeAnimation}
@@ -146,6 +160,7 @@ export default function Header({ handleSearch }) {
                     width={30}
                     height={30}
                     alt=""
+                    priority={true}
                     style={{ clipPath: `inset(0px 0px 0px ${30 - volumeAnimationValue}px)` }}
                     onClick={toggleVolumeAnimation}
                 />

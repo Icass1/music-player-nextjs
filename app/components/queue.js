@@ -15,8 +15,6 @@ export default function Queue() {
     const handleClick = (e) => {
         let index = Number(e.target.getAttribute('index'));
 
-        console.log(index, queue[index], typeof(index))
-
         audio.src = `https://api.music.rockhosting.org/api/song/${queue[index].id}`;
         audio.play()
 
@@ -27,7 +25,9 @@ export default function Queue() {
     return (
         <div className='flex flex-col'>
             {queue?.slice(queueIndex+1).map((item, index) => (
-                <label className='ml-1 text-lg fade-out-neutral-50' key={item.id} index={index+queueIndex+1} onClick={handleClick}>{item.title}</label>
+                <div className='rounded-lg w-full relative hover:bg-neutral-700'>
+                    <label className='ml-1 mr-1 text-lg fade-out-neutral-50 cursor-pointer block' key={item.id} index={index+queueIndex+1} onClick={handleClick}>{item.title}</label>
+                </div>
             ))}
         </div>
     );

@@ -2,9 +2,7 @@
 
 import React, { useState, useEffect, useContext } from 'react';
 import Image from 'next/image';
-import clsx from 'clsx';
 import { MediaPlayerContext } from '@/app/components/audioContext';
-import Equalizer from '@/app/components/equalizer';
 import { Song } from '@/app/components/songContainer';
 
 export default function ListPage({ params }) {
@@ -186,14 +184,14 @@ export default function ListPage({ params }) {
                 </div>
             </div>
 
-            {musicData.type == "Album" ?
+            {musicData.type == "Album" ? (
                 // Album column titles
                 <div className='grid ml-3 mr-3 items-center rounded-md gap-2' style={{ gridTemplateColumns: '50px 1fr 60px' }}>
                     <div></div>
                     <div className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Title</div>
                     <div className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Time</div>
                 </div>
-                :
+            ) : (
                 // Playlist column titles
                 <div className='grid gap-x-2 ml-3 mr-3' style={{ gridTemplateColumns: '50px 3fr 1fr 1fr 60px' }}>
                     <label></label>
@@ -206,10 +204,10 @@ export default function ListPage({ params }) {
                     <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Album</label>
                     <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Time</label>
                 </div>
-            }
+            )}
 
             {musicData.songs.map((item, index) => (
-                <Song key={index} type={musicData.type} listSongs={musicData.songs} listId={params.id} song={item} index={index}/>
+                <Song key={index} type={musicData.type} listSongs={musicData.songs} listId={params.id} song={item} index={index} />
             ))}
         </div>
     );

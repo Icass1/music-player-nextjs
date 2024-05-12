@@ -38,7 +38,7 @@ export function Song({ type, listSongs, index, song, listId }) {
     };
 
     return (
-        <div onClick={handlePlayClick}>
+        <div onClick={handlePlayClick} className="relative">
             {type == "Album" ? (
                 <AlbumSong key={index} listSongs={listSongs} song={song} index={index} listId={listId}></AlbumSong>
             ) : (
@@ -73,7 +73,6 @@ function AlbumSong({ index, listSongs, song, listId }) {
                     alt=""
                 />
             )}
-
             <label className={clsx('text-xl text-neutral-400', { 'text-yellow-600': song.id == currentSong.id && currentList == listId })}>{song.duration}</label>
         </div>
     )
@@ -84,7 +83,9 @@ function PlaylistSong({ index, listSongs, song, listId }) {
     const { currentSong, isPlaying, currentList } = useContext(MediaPlayerContext);
 
     return (
-        <div className='grid gap-x-2 ml-3 mr-3 m-3 cursor-pointer rounded-md items-center hover:bg-neutral-800' style={{ gridTemplateColumns: '50px 3fr 1fr 1fr max-content 60px', gridTemplateRows: '50px' }}>
+        <div className='grid gap-x-2 ml-3 mr-3 m-3 cursor-pointer rounded-md items-center hover:bg-neutral-800' style={{ gridTemplateColumns: '50px 3fr 1fr 1fr max-content 60px', gridTemplateRows: '50px'}}>
+
+            {/* <div className="relative w-4 h-4" style={{}}></div> */}
 
             <div className='relative h-[50px]'>
                 {song.id == currentSong.id && isPlaying && listId == currentList ? (

@@ -66,7 +66,7 @@ export default function Equalizer({ className, bar_count = 20, bar_gap = 1, cent
         const g = 129;
         const b = 4;
 
-        fbc_array = fbc_array.slice(0, 700)
+        fbc_array = fbc_array.slice(0, 675)
 
         const groupedFrequencies = groupFrequencies(fbc_array, bar_count);
         for (let i = 0; i < bar_count; i++) {

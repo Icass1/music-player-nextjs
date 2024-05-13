@@ -34,9 +34,7 @@ export default function DefaultListPage({ listId, musicData }) {
     const [genres, setGenres] = useState([]);
     const [sortingBy, setSortingBy] = useState({ 'filter': 'artist', 'direction': 1 });
 
-    // const [animationValue, setAnimationValue] = useState(56);
-
-    const [animationValue, toggleAnimation] = Animation(56, 56, 200)
+    const [animationValue, toggleAnimation] = Animation(56, 56, 200, 10)
 
     useEffect(() => {
 

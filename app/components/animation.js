@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export default function Animation(initialValue, min, max) {
+export default function Animation(initialValue, min, max, step, delay=1) {
 
     const [animationValue, setAnimationValue] = useState(initialValue)
     const [animationInterval, setAnimationInterval] = useState(undefined)
@@ -8,18 +8,18 @@ export default function Animation(initialValue, min, max) {
 
     const toggleAnimation = () => {
 
+        if (animationInterval) {
+            console.error("Animation already in progress")
+            return
+        }
+
         if (animationValue <= min) {
-            // setAnimationValue(max)
 
             let interval = setInterval(() => {
                 setAnimationValue((prevValue) => {
-                    // if (prevValue + 10 > max) {
-                    //     return max
-                    // }
-                    return Math.min(prevValue + 10, max)
-                    // return 
+                    return Math.min(prevValue + step, max)
                 });
-            }, 0.01);
+            }, delay);
 
             setAnimationInterval(interval)
             setAnimationIsIncreasing(true)
@@ -28,14 +28,9 @@ export default function Animation(initialValue, min, max) {
 
             let interval = setInterval(() => {
                 setAnimationValue((prevValue) => {
-                    // if (prevValue - 10 < min) {
-                    //     return min
-                    // }
-                    // return prevValue - 10
-                    return Math.max(prevValue - 10, min)
-
+                    return Math.max(prevValue - step, min)
                 });
-            }, 0.01);
+            }, delay);
             setAnimationInterval(interval)
             setAnimationIsIncreasing(false)
 
@@ -48,10 +43,12 @@ export default function Animation(initialValue, min, max) {
         
         if (animationIsIncreasing != null && animationValue > max - 1 && animationIsIncreasing) {
             clearInterval(animationInterval)
+            setAnimationInterval(undefined)
             setAnimationIsIncreasing(null)
             setAnimationValue(max)
         } else if (animationIsIncreasing != null && animationValue < min + 1 && !animationIsIncreasing) {
             clearInterval(animationInterval)
+            setAnimationInterval(undefined)
             setAnimationIsIncreasing(null)
             setAnimationValue(min)
         }

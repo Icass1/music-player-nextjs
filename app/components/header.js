@@ -9,6 +9,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import Slider from "./slider";
 import { MediaPlayerContext } from './audioContext';
 import { usePathname } from "next/navigation";
+import Animation from "./animation";
 
 export default function Header({ handleSearch }) {
 
@@ -23,65 +24,41 @@ export default function Header({ handleSearch }) {
         setQueue,
     } = useContext(MediaPlayerContext);
 
-    const [audioMuted, setAudioMuted] = useState(false);
-    const [volumeAnimationValue, setVolumeAnimationValue] = useState(audioMuted ? (0) : (30));
-    const [volumeAnimationIsIncreasing, setVolumeAnimationIsIncreasing] = useState(audioMuted ? (false) : (true));
-    const firstUpdate = useRef(0);
-    const [lastVolume, setLastVolume] = useState(null);
+    const [muteAnimationValue, toggleMuteAnimation] = Animation(30, 0, 30, 1, 1);
+    const [lastAudioVolume, setLastAudioVolume] = useState(null);
+    const [muted, setMuted] = useState(false);
+
 
     const session = useSession();
 
     const sliderChange = (event) => {
         audio.volume = event.target.value;
         setAudioVolume(event.target.value);
-        setAudioMuted(false);
+
+        if (muted) {
+            setMuted(false);
+            toggleMuteAnimation();
+        }
     };
 
     useEffect(() => {
-        if (firstUpdate.current < 2) { // Number of variables [volumeAnimationIsIncreasing, volumeAnimationValue]
-            firstUpdate.current += 1;
-            return;
-        }
-
-        if (volumeAnimationIsIncreasing && volumeAnimationValue < 30) {
-            const interval = setInterval(() => {
-                setVolumeAnimationValue((prevValue) => prevValue + 1);
-            }, 3);
-            return () => clearInterval(interval);
-        } else if (!volumeAnimationIsIncreasing && volumeAnimationValue > 0) {
-            const interval = setInterval(() => {
-                setVolumeAnimationValue((prevValue) => prevValue - 1);
-            }, 3);
-            return () => clearInterval(interval);
-        }
-    }, [volumeAnimationIsIncreasing, volumeAnimationValue]);
-
-    useEffect(() => {
-
-        if (audioMuted == false) {
-            setVolumeAnimationIsIncreasing(true);
-            if (lastVolume != null) {
-                setAudioVolume(lastVolume);
-                audio.volume = lastVolume;
-                setLastVolume(null);
+        if (muteAnimationValue == 0) {
+            if (!muted) {
+                setLastAudioVolume(audio.volume);
+                setMuted(true);
+                audio.volume = 0;
             }
-        } else if (audioMuted == true) {
-            setVolumeAnimationIsIncreasing(false);
-
-            setLastVolume(audioVolume);
-            setAudioVolume(0);
-            audio.volume = 0;
+        } else if (muteAnimationValue == 30) {
+            if (muted) {
+                setMuted(false)
+                if (lastAudioVolume) {
+                    audio.volume = lastAudioVolume;
+                }
+            }
         }
-
-    }, [audioMuted])
-
-    const toggleVolumeAnimation = () => {
-        setVolumeAnimationIsIncreasing((prevState) => !prevState);
-        setAudioMuted((prevState) => !prevState);
-    };
+    }, [muteAnimationValue, lastAudioVolume, muted])
 
     let debounceTimer;
-
     const handleSearchInputChange = (e) => {
         const query = e.target.value;
         // setSearchQuery(query);
@@ -150,8 +127,8 @@ export default function Header({ handleSearch }) {
                     height={30}
                     priority={true}
                     alt=""
-                    style={{ clipPath: `inset(0px ${volumeAnimationValue}px 0px 0px)` }}
-                    onClick={toggleVolumeAnimation}
+                    style={{ clipPath: `inset(0px ${muteAnimationValue}px 0px 0px)` }}
+                    onClick={toggleMuteAnimation}
                 />
 
                 <Image
@@ -161,8 +138,8 @@ export default function Header({ handleSearch }) {
                     height={30}
                     alt=""
                     priority={true}
-                    style={{ clipPath: `inset(0px 0px 0px ${30 - volumeAnimationValue}px)` }}
-                    onClick={toggleVolumeAnimation}
+                    style={{ clipPath: `inset(0px 0px 0px ${30 - muteAnimationValue}px)` }}
+                    onClick={toggleMuteAnimation}
                 />
 
                 {/* <div className="absolute h-[30px] w-[10px] left-[0px]" style={{backgroundColor: 'rgb(28 28 28)'}}></div> */}

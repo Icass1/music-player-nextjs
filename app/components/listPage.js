@@ -5,7 +5,9 @@ import Image from 'next/image';
 import { MediaPlayerContext } from '@/app/components/audioContext';
 import { Song } from '@/app/components/songContainer';
 import clsx from 'clsx';
-import { usePathname } from 'next/navigation';
+import Animation from './animation';
+
+
 
 export default function DefaultListPage({ listId, musicData }) {
 
@@ -32,6 +34,10 @@ export default function DefaultListPage({ listId, musicData }) {
     const [genres, setGenres] = useState([]);
     const [sortingBy, setSortingBy] = useState({ 'filter': 'artist', 'direction': 1 });
 
+    // const [animationValue, setAnimationValue] = useState(56);
+
+    const [animationValue, toggleAnimation] = Animation(56, 56, 200)
+
     useEffect(() => {
 
         let tempMusicData = {};
@@ -48,7 +54,6 @@ export default function DefaultListPage({ listId, musicData }) {
         }
 
         genres = Object.entries(genres).filter(genre => !(genre[0] == "" || genre[0] == 'null'));
-        console.log(genres)
         genres.sort((a, b) => b[1] - a[1]); // Sort in descending order
         genres = genres.map(a => a[0])
         // genres = Object.fromEntries(genres);
@@ -56,12 +61,10 @@ export default function DefaultListPage({ listId, musicData }) {
         setGenres(genres)
         sort(tempMusicData.songs, sortingBy.filter, sortingBy.direction);
 
-        console.log("useState musicData", musicData)
 
         setShowingMusicData(tempMusicData);
 
     }, [musicData])
-
 
     function sort(dict, sortBy, direction) {
 
@@ -174,6 +177,31 @@ export default function DefaultListPage({ listId, musicData }) {
         setShowingMusicData(tempMusicData);
     }
 
+    // const toggleAnimation = () => {
+
+    //     const interval = setInterval(() => {
+    //         setAnimationValue((prevValue) => prevValue + 10);
+    //         if (animationValue > 200) {
+    //             clearInterval(interval)
+    //         }
+
+    //     }, 0);
+
+    //     // if (animationValue == 56) {
+    //     //     setAnimationValue(200)
+    //     // } else {
+    //     //     setAnimationValue(56)
+    //     // }
+    // }
+
+    // document in undefined on server so using document.location.pathname directly gives an annoying error. 
+    let pathName;
+    if (typeof (window) === "undefined") {
+        pathName = ""
+    } else {
+        pathName = document.location.pathname
+    }
+
     return (
         <>
             <div className='overflow-hidden h-full overflow-y-scroll'>
@@ -209,7 +237,7 @@ export default function DefaultListPage({ listId, musicData }) {
                         </div>
                         <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Genre</label>
                         <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Album</label>
-                        <label className={clsx({ 'w-[30px]': document?.location.pathname.includes("/s/") })}></label>
+                        <label className={clsx({ 'w-[30px]': pathName.includes("/s/") })}></label>
                         <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Time</label>
                     </div>
                 )}
@@ -219,13 +247,16 @@ export default function DefaultListPage({ listId, musicData }) {
                 ))}
             </div>
 
-            <div className='absolute w-14 h-14 bg-yellow-600 rounded-full bottom-10 right-10 '>
+            <div className='flex flex-row absolute h-14 bg-yellow-600 rounded-full bottom-10 right-10' style={{ width: animationValue }}>
                 <Image
                     src="https://api.music.rockhosting.org/images/search.svg"
                     width={35}
                     height={35}
-                    className='relative top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2'
+                    className='relative top-1/2 -translate-y-1/2 left-[28px] -translate-x-1/2'
+                    onClick={toggleAnimation}
                 />
+                {/* <input className='realtive mt-auto mb-auto h-[50px] left-14 right-1' style={{width: '-webkit-fill-available'}}/> */}
+                <input className='realtive mt-auto mb-auto h-[30px] ml-4 mr-14 bg-transparent border-b-2 border-solid border-neutral-900 focus:outline-none text-black' style={{width: '-webkit-fill-available'}}/>
             </div>
         </>
     );

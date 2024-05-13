@@ -22,7 +22,6 @@ export default function SearchListPage({ params }) {
                 throw new Error('Network response was not ok');
             }
             const data = await response.json();
-            console.log(data)
 
             setMusicData(data);
         };

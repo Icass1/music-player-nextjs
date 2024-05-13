@@ -21,7 +21,6 @@ export default function ListPage({ params }) {
                 throw new Error('Network response was not ok');
             }
             const data = await response.json();
-            console.log("setMusicData /list/", data)
             setMusicData(data);
         };
         fetchData();

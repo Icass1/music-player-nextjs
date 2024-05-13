@@ -5,6 +5,8 @@ import { useContext, useEffect, useState } from 'react';
 import Image from 'next/image';
 // import './globals.css'
 import Slider from './slider';
+import Equalizer from './equalizer';
+import clsx from 'clsx';
 
 export default function SongInfo() {
     const {
@@ -21,6 +23,7 @@ export default function SongInfo() {
     } = useContext(MediaPlayerContext);
 
     const [sliderValue, setSliderValue] = useState(0);
+    const [showingEqualizer, setShowingEqualizer] = useState(false);
 
     useEffect(() => {
         if (audioDuration == 0) {return}
@@ -83,7 +86,16 @@ export default function SongInfo() {
         <>
             <label className='block text-3xl ml-2 mt-2 mr-2 fade-out-neutral-400'>{currentSong.title}</label>
             <label className='block text-2xl fade-out-neutral-400 ml-2 mr-2 mb-2'>{currentSong.artist}</label>
-            <Image priority="high" className='ml-auto mr-auto mt-auto mb-auto' alt="Current Song" src={`https://api.music.rockhosting.org/api/song/image/${currentSong.id == "" ? ("_"):(currentSong.id)}`} width={180} height={180} />
+            <div className='m-auto w-[180px] cursor-pointer' onClick={() => {setShowingEqualizer((prevState) => !prevState)}}>
+
+                <Image priority="high" className={clsx('absolute select-none', {"opacity-40": showingEqualizer})} alt="Current Song" src={`https://api.music.rockhosting.org/api/song/image/${currentSong.id == "" ? ("_"):(currentSong.id)}`} width={180} height={180} />
+                
+                {showingEqualizer ? (
+                    <Equalizer bar_gap={0} bar_count={180} toggleCenter={false} centered={true} className='absolute w-[180px] h-[180px]'/>
+                ) : (
+                    <></>
+                )}
+            </div>
 
             <div className='absolute bottom-1'>
                 <div className='grid items-center justify-items-center ml-auto mr-auto w-[120px]' style={{ gridTemplateColumns: '30px 60px 30px' }}>

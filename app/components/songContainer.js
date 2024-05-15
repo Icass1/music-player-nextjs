@@ -1,13 +1,25 @@
-import { useContext } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { MediaPlayerContext } from "./audioContext";
 import clsx from "clsx";
 import Image from "next/image";
 import Equalizer from "./equalizer";
 import Link from "next/link";
+import ContextMenu from "./contextMenu";
 
 export function Song({ type, songsList, index, song, listId }) {
 
-    const { audio, setCurrentSong, randomQueue, currentSong, currentList, setCurrentList, setQueue, setQueueIndex } = useContext(MediaPlayerContext);
+    const { 
+        audio, 
+        setCurrentSong, 
+        randomQueue, 
+        currentSong, 
+        currentList, 
+        setCurrentList, 
+        setQueue, 
+        setQueueIndex, 
+        queue, 
+        queueIndex,
+    } = useContext(MediaPlayerContext);
 
     function handlePlayClick() {
 
@@ -38,16 +50,51 @@ export function Song({ type, songsList, index, song, listId }) {
         }
     };
 
+    const handleDownload = () => {
+        fetch(`https://api.music.rockhosting.org/api/song/${song.id}`)
+            .then(response => response.blob())
+            .then(blob => {
+                let url = window.URL.createObjectURL(blob);
+                let link = document.createElement("a");
+                link.href = url;
+                link.download = `${song.title} - ${song.artist}.mp3`;  // Assign a meaningful filename
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(error => console.error('Download failed:', error));
+    }
+
+    const handleAddToQueue = () => {
+
+        console.log(queue, queueIndex)
+
+        let tempQueue = queue.slice(0, queueIndex + 1)
+        let tempEndQueue = queue.slice(queueIndex + 1)
+
+        setQueue(tempQueue.concat(song).concat(tempEndQueue))
+    }
+
     return (
-        <div onClick={handlePlayClick} className="relative ml-3 mr-3 mt-2 mb-2">
-            {type == "Album" ? (
-                <AlbumSong key={index} songsList={songsList} song={song} index={index} listId={listId}></AlbumSong>
-            ) : (
-                <PlaylistSong key={index} songsList={songsList} song={song} index={index} listId={listId}></PlaylistSong>
-            )}
-        </div>
+        <ContextMenu
+            options={{
+                "Download": handleDownload,
+                "Add to queue": handleAddToQueue,
+            }}
+        >
+            <div onClick={handlePlayClick} className="relative ml-3 mr-3 mt-2 mb-2">
+                {type == "Album" ? (
+                    <AlbumSong key={index} songsList={songsList} song={song} index={index} listId={listId}></AlbumSong>
+                ) : (
+                    <PlaylistSong key={index} songsList={songsList} song={song} index={index} listId={listId}></PlaylistSong>
+                )}
+            </div>
+        </ContextMenu>
     )
 }
+
+
 
 function AlbumSong({ index, songsList, song, listId }) {
 

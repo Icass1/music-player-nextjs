@@ -1,13 +1,105 @@
 'use client'
 
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import Image from 'next/image';
 import { MediaPlayerContext } from '@/app/components/audioContext';
 import { Song } from '@/app/components/songContainer';
 import clsx from 'clsx';
 import Animation from './animation';
+import { debounce } from 'lodash';
+import classNames from 'classnames';
 
 
+function CircularProgressBar({ className = "", progress = 50, smooth = true, onClick }) {
+
+    let jsxSmooth;
+    if (smooth) {
+        jsxSmooth = "transition: stroke-dasharray 0.3s linear;";
+    } else {
+        jsxSmooth = ""
+    }
+
+    return (
+        <div className={classNames(className, 'rounded-full')} onClick={onClick}>
+            <svg className='circular-progress absolute' viewBox="0 0 250 250">
+                <circle className="bg"></circle>
+                <circle className="fg"></circle>
+            </svg>
+
+            <style jsx> {`
+
+                .circular-progress {
+                    --progress: ${progress};
+                    --size: 250px;
+                    --half-size: calc(var(--size) / 2);
+                    --stroke-width: 20px;
+                    --radius: calc((var(--size) - var(--stroke-width)) / 2);
+                    --circumference: calc(var(--radius) * 3.141592653589793 * 2);
+                    --dash: calc((var(--progress) * var(--circumference)) / 100);
+                    position: absolute;
+                    width: calc(100%);
+                    height: calc(100%);
+                    viewBox: 0 0 250 250;
+                }
+
+                .circular-progress circle {
+                    cx: var(--half-size);
+                    cy: var(--half-size);
+                    r: var(--radius);
+                    stroke-width: var(--stroke-width);
+                    fill: none;
+                    stroke-linecap: round;
+                }
+
+                .circular-progress circle.bg {
+                    stroke: transparent);
+                }
+
+                .circular-progress circle.fg {
+                    transform: rotate(-90deg);
+                    transform-origin: var(--half-size) var(--half-size);
+                    stroke-dasharray: var(--dash) calc(var(--circumference) - var(--dash));
+                    {*transition: stroke-dasharray 0.3s linear;*}
+                    ${jsxSmooth}
+                    stroke: black;
+                }
+
+
+                {*
+                .icon {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    height: 70%;
+                    width: 70%;
+                }
+                *}
+      
+                {*@keyframes progress-animation {
+                    from {
+                        --progress: 0;
+                    }
+                    to {
+                        --progress: 100;
+                    }
+                }
+      
+                @property --progress {
+                    syntax: "<number>";
+                    inherits: false;
+                    initial-value: 0;
+                }
+            
+                .circular-progress {
+                    animation: progress-animation 5s linear 0s 1 forwards;
+                }*}
+
+            `}</style>
+
+        </div>
+    )
+}
 
 export default function DefaultListPage({ listId, musicData }) {
 
@@ -19,6 +111,7 @@ export default function DefaultListPage({ listId, musicData }) {
         isPlaying,
         setQueue,
         setQueueIndex,
+        randomQueue,
     } = useContext(MediaPlayerContext);
 
     const [showingMusicData, setShowingMusicData] = useState({
@@ -30,11 +123,26 @@ export default function DefaultListPage({ listId, musicData }) {
         cover_url: '',
     });
 
+    const [searchResult, setSearchResult] = useState([]);
+    const searchBox = useRef();
+
     const [backgroundGradient, setBackgroundGradient] = useState('');
     const [genres, setGenres] = useState([]);
     const [sortingBy, setSortingBy] = useState({ 'filter': 'artist', 'direction': 1 });
 
-    const [animationValue, toggleAnimation] = Animation(56, 56, 200, 10)
+    const [animationValue, toggleAnimation] = Animation(56, 56, 200, 10);
+
+    const [downloadingURL, setdownloadingURL] = useState('');
+    const [downloadProgress, setDownloadProgress] = useState(undefined);
+    const [downloadSmooth, setDownloadSmooth] = useState(true);
+
+    // document in undefined on server so using document.location.pathname directly gives an annoying error. 
+    let pathName;
+    if (typeof (window) === "undefined") {
+        pathName = "";
+    } else {
+        pathName = document.location.pathname;
+    }
 
     useEffect(() => {
 
@@ -53,24 +161,73 @@ export default function DefaultListPage({ listId, musicData }) {
 
         genres = Object.entries(genres).filter(genre => !(genre[0] == "" || genre[0] == 'null'));
         genres.sort((a, b) => b[1] - a[1]); // Sort in descending order
-        genres = genres.map(a => a[0])
+        genres = genres.map(a => a[0]);
         // genres = Object.fromEntries(genres);
 
-        setGenres(genres)
-        sort(tempMusicData.songs, sortingBy.filter, sortingBy.direction);
 
+        setGenres(genres);
+        sort(tempMusicData.songs, sortingBy.filter, sortingBy.direction);
 
         setShowingMusicData(tempMusicData);
 
-    }, [musicData])
+    }, [musicData]);
+
+    useEffect(() => {
+
+        if (downloadingURL == "") { return };
+
+        const eventSource = new EventSource(downloadingURL);
+
+        eventSource.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+
+            if (message.status == "compress-ended") {
+                setDownloadProgress(100);
+                setdownloadingURL("");
+                eventSource.close();
+
+                setTimeout(() => { 
+                    setDownloadSmooth(false);
+                    setDownloadProgress(undefined);
+                }, 1000);
+
+                // let uri = `http://12.12.12.3:8000/api/download-list/${message.outputName}`;
+                let uri = `https://api.music.rockhosting.org/api/download-list/${message.outputName}`;
+                let link = document.createElement("a");
+                link.href = uri;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+            } else if (message.status == "compress-started") {
+                setDownloadSmooth(true);
+                setDownloadProgress(0);
+            } else if (message.status == "compressing") {
+                setDownloadSmooth(true);
+                console.log(message.progress);
+                setDownloadProgress(message.progress);
+            }
+        };
+
+        eventSource.onerror = (error) => {
+            console.error('EventSource failed:', error);
+            eventSource.close();
+            setdownloadingURL("");
+            setDownloadProgress(0);
+        };
+
+        return () => {
+            eventSource.close();
+        };
+    }, [downloadingURL]);
 
     function sort(dict, sortBy, direction) {
 
         dict.sort(function (a, b) {
-            let titleA = a[sortBy]
-            let titleB = b[sortBy]
-            if (titleA != null) { titleA = titleA.toUpperCase(); }
-            if (titleB != null) { titleB = titleB.toUpperCase(); }
+            let titleA = a[sortBy];
+            let titleB = b[sortBy];
+            if (titleA != null) { titleA = titleA.toUpperCase(); };
+            if (titleB != null) { titleB = titleB.toUpperCase(); };
 
             if (titleA < titleB || titleA == null) {
                 return direction * -1;
@@ -82,7 +239,7 @@ export default function DefaultListPage({ listId, musicData }) {
             return 0;
         });
 
-        return dict
+        return dict;
     }
 
     const handlePauseClick = () => {
@@ -93,12 +250,23 @@ export default function DefaultListPage({ listId, musicData }) {
         if (listId == currentList) {
             audio.play();
         } else {
-            audio.src = `https://api.music.rockhosting.org/api/song/${musicData.songs[0].id}`;
+
+            let _list = [...musicData.songs].filter(song => { if (!song.in_database) { return false } else { return true } });
+
+            if (_list.length == 0) {
+                return;
+            }
+
+            if (randomQueue) {
+                _list.sort(() => Math.random() - 0.5);
+            }
+
+            audio.src = `https://api.music.rockhosting.org/api/song/${_list[0].id}`;
             audio.play();
 
-            setQueue(musicData.songs);
+            setQueue(_list);
             setQueueIndex(0);
-            setCurrentSong(musicData.songs[0]);
+            setCurrentSong(_list[0]);
             setCurrentList(listId);
         }
     };
@@ -140,7 +308,7 @@ export default function DefaultListPage({ listId, musicData }) {
 
     const handleSort = (e) => {
 
-        console.log("handleSort")
+        console.log("handleSort");
 
         let sortBy;
         let direction;
@@ -168,44 +336,47 @@ export default function DefaultListPage({ listId, musicData }) {
         setSortingBy({ "filter": sortBy, "direction": direction });
 
         let tempMusicData = {};
-        Object.assign(tempMusicData, musicData);
+        Object.assign(tempMusicData, showingMusicData);
 
         sort(tempMusicData.songs, sortBy, direction);
 
         setShowingMusicData(tempMusicData);
     }
 
-    // const toggleAnimation = () => {
+    const handleSearch = debounce((e) => {
 
-    //     const interval = setInterval(() => {
-    //         setAnimationValue((prevValue) => prevValue + 10);
-    //         if (animationValue > 200) {
-    //             clearInterval(interval)
-    //         }
+        if (e.target.value == "") {
+            setSearchResult([]);
+            return;
+        }
 
-    //     }, 0);
+        let result = showingMusicData.songs.map((song, index) => {
+            if (song.search.includes(e.target.value.toUpperCase())) {
+                return index;
+            } else {
+                return undefined;
+            }
+        }).filter(value => (value != undefined));
 
-    //     // if (animationValue == 56) {
-    //     //     setAnimationValue(200)
-    //     // } else {
-    //     //     setAnimationValue(56)
-    //     // }
-    // }
+        let songsOut = [];
 
-    // document in undefined on server so using document.location.pathname directly gives an annoying error. 
-    let pathName;
-    if (typeof (window) === "undefined") {
-        pathName = ""
-    } else {
-        pathName = document.location.pathname
-    }
+        songsOut = result.map(value => showingMusicData.songs[value]);
+
+        setSearchResult(songsOut);
+    }, 300);
+
+    useEffect(() => {
+        if (animationValue == 200) {
+            searchBox.current.focus();
+        }
+    }, [animationValue]);
 
     return (
-        <>
-            <div className='overflow-hidden h-full overflow-y-scroll'>
+        <div className='relative h-full'>
+            <div className='overflow-hidden h-full overflow-y-scroll rounded-tl-md'>
                 <div className='grid gap-2 h-[700px] mb-[-380px]' style={{ gridTemplateColumns: 'max-content 1fr', background: `linear-gradient(0deg, transparent, ${backgroundGradient})` }}>
                     <Image alt={musicData.name} className='m-2 shadow-lg rounded-2xl' src={musicData.cover_url ? (musicData.cover_url) : ('https://api.music.rockhosting.org/images/defaultAlbum.png')} width={300} height={300} onLoad={showGradient} />
-                    <div className='grid inherit' style={{ gridTemplateRows: '160px 50px 40px 30px' }}>
+                    <div className='grid inherit' style={{ gridTemplateRows: '160px 55px 40px 30px' }}>
                         {currentList == listId && isPlaying ?
                             <Image alt='A' className='mt-20 cursor-pointer bg-yellow-400 rounded-full p-2.5' src={`https://api.music.rockhosting.org/images/pause.svg`} width={70} height={70} onClick={handlePauseClick} />
                             :
@@ -240,22 +411,70 @@ export default function DefaultListPage({ listId, musicData }) {
                     </div>
                 )}
 
-                {showingMusicData.songs.map((item, index) => (
-                    <Song key={index} type={musicData.type} listSongs={musicData.songs} listId={listId} song={item} index={index} />
+                {showingMusicData.songs.filter(x => searchResult.includes(x)).map((item, index) => (
+                    <Song key={index + "searchresult"} type={musicData.type} songsList={musicData.songs} listId={listId} song={item} index={index} />
                 ))}
+
+                {searchResult.length != 0 ? (
+                    <div className='grid ml-5 mr-5 items-center' style={{ gridTemplateColumns: '1fr max-content 1fr' }}>
+                        <div className='h-2 bg-yellow-600 rounded-lg'></div>
+                        <label className='text-center ml-2 mr-3'>End of search results</label>
+                        <div className='h-2 bg-yellow-600 rounded-lg'></div>
+                    </div>
+                ) : (
+                    <></>
+                )}
+
+                {showingMusicData.songs.filter(x => !searchResult.includes(x)).map((item, index) => (
+                    <Song key={index} type={musicData.type} songsList={musicData.songs} listId={listId} song={item} index={index} />
+                ))}
+                <div className='h-20' />
             </div>
 
-            <div className='flex flex-row absolute h-14 bg-yellow-600 rounded-full bottom-10 right-10' style={{ width: animationValue }}>
+            <div className='flex flex-row absolute h-14 bg-yellow-600 rounded-full bottom-4 right-4' style={{ width: animationValue }}>
                 <Image
                     src="https://api.music.rockhosting.org/images/search.svg"
                     width={35}
                     height={35}
-                    className='relative top-1/2 -translate-y-1/2 left-[28px] -translate-x-1/2'
+                    className='relative top-1/2 -translate-y-1/2 left-[28px] -translate-x-1/2 select-none cursor-pointer'
                     onClick={toggleAnimation}
                 />
-                {/* <input className='realtive mt-auto mb-auto h-[50px] left-14 right-1' style={{width: '-webkit-fill-available'}}/> */}
-                <input className='realtive mt-auto mb-auto h-[30px] ml-4 mr-14 bg-transparent border-b-2 border-solid border-neutral-900 focus:outline-none text-black' style={{width: '-webkit-fill-available'}}/>
+                {/* <input className='realtive mt-auto mb-auto h-[30px] ml-4 mr-14 bg-transparent border-b-2 border-solid border-neutral-900 focus:outline-none text-black' style={{width: '-webkit-fill-available'}}/> */}
+                <input
+                    ref={searchBox}
+                    className='realtive mt-auto mb-auto ml-4 h-[30px] bg-transparent border-b-2 border-solid border-neutral-900 focus:outline-none text-black'
+                    style={{ width: 'calc(100% - 70px)' }}
+                    onInput={handleSearch}
+                />
             </div>
-        </>
+
+            {/* <div
+                className='absolute h-14 w-14 bg-yellow-600 rounded-full bottom-4 left-4 cursor-pointer'
+                onClick={
+                    // () => { setdownloadingURL(`http://12.12.12.3:1234/api/compress-list/${listId}`) }
+                    () => { setdownloadingURL(`https://api.music.rockhosting.org/api/compress-list/${listId}`) }
+                }
+            >
+                <Image src='https://api.music.rockhosting.org/images/download.svg' height={35} width={35} className='relative ml-auto mr-auto top-1/2 -translate-y-1/2' />
+            </div> */}
+            <div
+                className='absolute h-14 w-14 bg-yellow-600 rounded-full bottom-4 left-4 cursor-pointer'
+                onClick={
+                    // () => { setdownloadingURL(`http://12.12.12.3:1234/api/compress-list/${listId}`) }
+                    () => { setdownloadingURL(`https://api.music.rockhosting.org/api/compress-list/${listId}`) }
+                }
+            >
+                {downloadProgress == undefined ? (
+                    <></>
+                ) : (
+                    <CircularProgressBar
+                        className='absolute h-14 w-14 bg-yellow-600 rounded-full cursor-pointer'
+                        progress={downloadProgress}
+                        smooth={downloadSmooth}
+                    />
+                )}
+                <Image src='https://api.music.rockhosting.org/images/download.svg' height={35} width={35} className='relative ml-auto mr-auto top-1/2 -translate-y-1/2' />
+            </div>
+        </div>
     );
 }

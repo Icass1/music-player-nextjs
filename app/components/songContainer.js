@@ -3,8 +3,9 @@ import { MediaPlayerContext } from "./audioContext";
 import clsx from "clsx";
 import Image from "next/image";
 import Equalizer from "./equalizer";
+import Link from "next/link";
 
-export function Song({ type, listSongs, index, song, listId }) {
+export function Song({ type, songsList, index, song, listId }) {
 
     const { audio, setCurrentSong, randomQueue, currentSong, currentList, setCurrentList, setQueue, setQueueIndex } = useContext(MediaPlayerContext);
 
@@ -19,10 +20,10 @@ export function Song({ type, listSongs, index, song, listId }) {
             audio.play()
         } else {
 
-            let _listSongs = listSongs.filter(song => { if (song.in_database == false) { return false } else { return true } })
+            let _songsList = songsList.filter(song => { if (song.in_database == false) { return false } else { return true } })
 
-            let index = _listSongs.indexOf(song)
-            let list = _listSongs.slice(index + 1).concat(_listSongs.slice(0, index))
+            let index = _songsList.indexOf(song)
+            let list = _songsList.slice(index + 1).concat(_songsList.slice(0, index))
 
             if (randomQueue) {
                 list.sort(() => Math.random() - 0.5)
@@ -40,15 +41,15 @@ export function Song({ type, listSongs, index, song, listId }) {
     return (
         <div onClick={handlePlayClick} className="relative ml-3 mr-3 mt-2 mb-2">
             {type == "Album" ? (
-                <AlbumSong key={index} listSongs={listSongs} song={song} index={index} listId={listId}></AlbumSong>
+                <AlbumSong key={index} songsList={songsList} song={song} index={index} listId={listId}></AlbumSong>
             ) : (
-                <PlaylistSong key={index} listSongs={listSongs} song={song} index={index} listId={listId}></PlaylistSong>
+                <PlaylistSong key={index} songsList={songsList} song={song} index={index} listId={listId}></PlaylistSong>
             )}
         </div>
     )
 }
 
-function AlbumSong({ index, listSongs, song, listId }) {
+function AlbumSong({ index, songsList, song, listId }) {
 
     const { currentSong, currentList, isPlaying } = useContext(MediaPlayerContext);
 
@@ -79,7 +80,7 @@ function AlbumSong({ index, listSongs, song, listId }) {
     )
 }
 
-function PlaylistSong({ index, listSongs, song, listId }) {
+function PlaylistSong({ index, songsList, song, listId }) {
 
     const { currentSong, isPlaying, currentList } = useContext(MediaPlayerContext);
 
@@ -107,7 +108,13 @@ function PlaylistSong({ index, listSongs, song, listId }) {
                 <label className={clsx('cursor-pointer fade-out-neutral-300 min-w-0 max-w-full', { 'fade-out-yellow-600': song.id == currentSong.id && listId == currentList })}>{song.artist}</label>
             </div>
             <label className={clsx('fade-out-neutral-200 min-w-0 max-w-full', { 'fade-out-yellow-500': song.id == currentSong.id && listId == currentList })} title={song.genre}>{song.genre}</label>
-            <label className={clsx('fade-out-neutral-200 min-w-0 max-w-full', { 'fade-out-yellow-500': song.id == currentSong.id && listId == currentList })} title={song.album}>{song.album}</label>
+            <Link
+                href={`/s/album/${song?.album_url?.replace("https://open.spotify.com/album/", '')}`}
+                onClick={(e) => e.stopPropagation()}
+
+                className={clsx('fade-out-neutral-200 min-w-0 max-w-full hover:fade-out-neutral-400', { 'fade-out-yellow-500 hover:fade-out-yellow-700': song.id == currentSong.id && listId == currentList })}
+                title={song.album}>{song.album}
+            </Link>
 
             {song.in_database == undefined ? (
                 <label></label>

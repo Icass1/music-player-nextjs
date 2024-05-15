@@ -21,6 +21,12 @@ export default function ListPage({ params }) {
                 throw new Error('Network response was not ok');
             }
             const data = await response.json();
+            if (data.type == "Album") {
+                data.songs = data.songs.map(song => Object.assign({}, song, { "search": song.title.toUpperCase() }))
+            } else {
+                data.songs = data.songs.map(song => Object.assign({}, song, { "search": song.title.toUpperCase() + " " +  song.artist.toUpperCase() + " "  + song.album.toUpperCase() + " "  + song.genre.toUpperCase()}))
+            }
+            
             setMusicData(data);
         };
         fetchData();

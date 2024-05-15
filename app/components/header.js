@@ -85,7 +85,10 @@ export default function Header({ handleSearch }) {
     }
 
     return (
-        <div className="grid h-full items-center ml-5 mr-5 gap-4" style={{ gridTemplateColumns: '30px min-content 1fr 30px 30px 30px 150px min-content', gridTemplateRows: '60px' }}>
+        <div className="grid h-full items-center ml-5 mr-5 gap-4" style={{ gridTemplateColumns: '30px 30px min-content 1fr 30px 30px 30px 150px min-content', gridTemplateRows: '60px' }}>
+            <Link href="/">
+                <Image className="invert-[0.8] hover:invert-[0.7] select-none" src='https://api.music.rockhosting.org/images/home.svg' width={30} height={30} alt="Search" />
+            </Link>
             <Link href="/search">
                 <Image className="invert-[0.8] hover:invert-[0.7] select-none" src='https://api.music.rockhosting.org/images/search.svg' width={30} height={30} alt="Search" />
             </Link>

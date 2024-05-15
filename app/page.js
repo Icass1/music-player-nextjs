@@ -55,12 +55,21 @@ function Grid({ musicData }) {
 
 function ListWithName({ musicData }) {
 
-    const { scrollValue, setScrollValue } = useContext(ScrollContext)
+    const { scrollValue, setScrollValue } = useContext(ScrollContext);
 
     const mainRef = useRef();
-    if (mainRef.current) {
-        mainRef.current.scrollTop = scrollValue
-    }
+
+    useEffect(() => {
+
+        if (mainRef.current) {
+            // console.log("mainRef.current", mainRef.current, scrollValue);
+            // setTimeout(() => {
+
+            mainRef.current.scrollTop = scrollValue;
+            // }, 1000);
+        }
+
+    }, [mainRef.current])
 
     const { currentList, isPlaying } = useContext(MediaPlayerContext);
 

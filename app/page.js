@@ -7,6 +7,7 @@ import clsx from 'clsx';
 import { MediaPlayerContext } from './components/audioContext';
 import Equalizer from './components/equalizer';
 import { ScrollContext } from './components/scrollContext';
+import ContextMenu from './components/contextMenu';
 
 export default function Home() {
 
@@ -89,6 +90,54 @@ function ListWithName({ musicData }) {
 
     listsByName = listsByNameTemp;
 
+    const handlePlayList = () => {
+
+        fetch(`https://api.music.rockhosting.org/api/list/${params.id}`).then()
+
+
+
+        fetch("/html/homeMain.html", {priority: 'high'})
+        .then(response => response.text())
+        .then(data => {
+
+            // document.open();
+            // document.write(data);
+            // document.close();
+
+            document.getElementById("main-container").hidden = true;
+            document.getElementById("main-container").outerHTML = data
+
+
+            let scripts = document.getElementById("main-container").querySelectorAll("script");
+            scripts.forEach(script => {
+                
+                var newScript = document.createElement('script');
+                newScript.src = script.src;
+                document.getElementById("main-container").appendChild(newScript);
+                script.remove()
+            });
+        })
+
+        // let _list = [...musicData.songs].filter(song => { if (!song.in_database) { return false } else { return true } });
+
+        // if (_list.length == 0) {
+        //     return;
+        // }
+
+        // if (randomQueue) {
+        //     _list.sort(() => Math.random() - 0.5);
+        // }
+
+        // audio.src = `https://api.music.rockhosting.org/api/song/${_list[0].id}`;
+        // audio.play();
+
+        // setQueue(_list);
+        // setQueueIndex(0);
+        // setCurrentSong(_list[0]);
+        // setCurrentList(listId);
+
+    }
+
     return (
         <div
             ref={mainRef}
@@ -102,20 +151,28 @@ function ListWithName({ musicData }) {
                     <label className='text-4xl font-bold'>{author}</label>
                     <div className='grid gap-2 mt-1' style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))' }}>
                         {listsByName[author].map((item) => (
+                            <ContextMenu
+                                key={item.id}
+                                options={{ 
+                                    "Play list": handlePlayList,
+                                    "Download list": () => {},
+                                    "Add list to queue": () => {},
+                                }}
+                            >
+                                <Link href={`/list/${item.id}`} className={
+                                    clsx('rounded-lg grid grid-cols-2 bg-neutral-700 hover:bg-neutral-600 items-center shadow-lg')
+                                } style={{ gridTemplateColumns: '50px 1fr min-content', gridTemplateRows: '50px' }}>
 
-                            <Link href={`/list/${item.id}`} key={item.id} className={
-                                clsx('rounded-lg grid grid-cols-2 bg-neutral-700 hover:bg-neutral-600 items-center shadow-lg')
-                            } style={{ gridTemplateColumns: '50px 1fr min-content', gridTemplateRows: '50px' }}>
+                                    <Image src={`https://api.music.rockhosting.org/api/list/image/${item.id}_50x50`} width={50} height={50} className='rounded-lg' alt={item.name}></Image>
+                                    <label className={clsx('ml-2 text-2xl pr-3 fade-out-neutral-200 font-bold cursor-pointer min-w-0 max-w-full', { 'fade-out-yellow-600': item.id == currentList })}>{item.name}</label>
 
-                                <Image src={`https://api.music.rockhosting.org/api/list/image/${item.id}_50x50`} width={50} height={50} className='rounded-lg' alt={item.name}></Image>
-                                <label className={clsx('ml-2 text-2xl pr-3 fade-out-neutral-200 font-bold cursor-pointer min-w-0 max-w-full', { 'fade-out-yellow-600': item.id == currentList })}>{item.name}</label>
-
-                                {item.id == currentList && isPlaying ? (
-                                    <Equalizer className='w-20 h-full p-1' bar_count={15} bar_gap={1} centered={true}></Equalizer>
-                                ) : (
-                                    <div></div>
-                                )}
-                            </Link>
+                                    {item.id == currentList && isPlaying ? (
+                                        <Equalizer className='w-20 h-full p-1' bar_count={15} bar_gap={1} centered={true}></Equalizer>
+                                    ) : (
+                                        <div></div>
+                                    )}
+                                </Link>
+                            </ContextMenu>
                         ))}
                     </div>
                 </div>

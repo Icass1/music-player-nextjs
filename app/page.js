@@ -60,6 +60,10 @@ function ListWithName({ musicData }) {
 
     const mainRef = useRef();
 
+    const [downloadingID, detDownloadingID] = useState('');
+    const [downloadProgress, setDownloadProgress] = useState(0);
+    const [downloadSmooth, setDownloadSmooth] = useState(true);
+
     useEffect(() => {
 
         if (mainRef.current) {
@@ -72,7 +76,56 @@ function ListWithName({ musicData }) {
 
     }, [mainRef.current])
 
-    const { currentList, isPlaying } = useContext(MediaPlayerContext);
+    useEffect(() => {
+
+        if (downloadingID == "") { return };
+
+        const eventSource = new EventSource(`https://api.music.rockhosting.org/api/compress-list/${downloadingID}`);
+
+        eventSource.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+
+            if (message.status == "compress-ended") {
+                setDownloadProgress({id: downloadingID, progress: 100});
+                detDownloadingID("");
+                eventSource.close();
+
+                setTimeout(() => {
+                    setDownloadSmooth(false);
+                    setDownloadProgress({id: downloadingID, progress: 0});
+                }, 1000);
+
+                // let uri = `http://12.12.12.3:8000/api/download-list/${message.outputName}`;
+                let uri = `https://api.music.rockhosting.org/api/download-list/${message.outputName}`;
+                let link = document.createElement("a");
+                link.href = uri;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+            } else if (message.status == "compress-started") {
+                setDownloadSmooth(true);
+                setDownloadProgress({id: downloadingID, progress: 0});
+            } else if (message.status == "compressing") {
+                setDownloadSmooth(true);
+                console.log(message.progress);
+                setDownloadProgress({id: downloadingID, progress: message.progress});
+            }
+        };
+
+        eventSource.onerror = (error) => {
+            console.error('EventSource failed:', error);
+            eventSource.close();
+            detDownloadingID("");
+            setDownloadProgress({id: downloadingID, progress: 0});
+        };
+
+        return () => {
+            eventSource.close();
+        };
+    }, [downloadingID]);
+
+    const { currentList, isPlaying, randomQueue, setCurrentList, audio, setQueue, setQueueIndex, setCurrentSong, queue, queueIndex } = useContext(MediaPlayerContext);
 
     let listsByName = {};
     let listsByNameTemp = {};
@@ -90,52 +143,57 @@ function ListWithName({ musicData }) {
 
     listsByName = listsByNameTemp;
 
-    const handlePlayList = () => {
+    const handlePlayList = (id) => {
 
-        fetch(`https://api.music.rockhosting.org/api/list/${params.id}`).then()
+        fetch(`https://api.music.rockhosting.org/api/list/${id}`)
+            .then(response => response.text())
+            .then(data => JSON.parse(data))
+            .then(musicData => {
 
+                let _list = [...musicData.songs].filter(song => { if (song.in_database == false) { return false } else { return true } });
 
+                if (_list.length == 0) {
+                    return;
+                }
 
-        fetch("/html/homeMain.html", {priority: 'high'})
-        .then(response => response.text())
-        .then(data => {
+                if (randomQueue) {
+                    _list.sort(() => Math.random() - 0.5);
+                }
 
-            // document.open();
-            // document.write(data);
-            // document.close();
+                audio.src = `https://api.music.rockhosting.org/api/song/${_list[0].id}`;
+                audio.play();
 
-            document.getElementById("main-container").hidden = true;
-            document.getElementById("main-container").outerHTML = data
+                setQueue(_list);
+                setQueueIndex(0);
+                setCurrentSong(_list[0]);
+                setCurrentList(id);
+            })
+    }
 
+    const handleDownloadList = (id) => {
+        detDownloadingID(id)
+    }
+    const handleAddListToQueue = (id) => {
+        fetch(`https://api.music.rockhosting.org/api/list/${id}`)
+            .then(response => response.text())
+            .then(data => JSON.parse(data))
+            .then(musicData => {
 
-            let scripts = document.getElementById("main-container").querySelectorAll("script");
-            scripts.forEach(script => {
-                
-                var newScript = document.createElement('script');
-                newScript.src = script.src;
-                document.getElementById("main-container").appendChild(newScript);
-                script.remove()
-            });
-        })
+                let _list = [...musicData.songs].filter(song => { if (song.in_database == false) { return false } else { return true } });
 
-        // let _list = [...musicData.songs].filter(song => { if (!song.in_database) { return false } else { return true } });
+                if (_list.length == 0) {
+                    return;
+                }
 
-        // if (_list.length == 0) {
-        //     return;
-        // }
+                if (randomQueue) {
+                    _list.sort(() => Math.random() - 0.5);
+                }
 
-        // if (randomQueue) {
-        //     _list.sort(() => Math.random() - 0.5);
-        // }
+                let tempQueue = queue.slice(0, queueIndex + 1)
+                let tempEndQueue = queue.slice(queueIndex + 1)
 
-        // audio.src = `https://api.music.rockhosting.org/api/song/${_list[0].id}`;
-        // audio.play();
-
-        // setQueue(_list);
-        // setQueueIndex(0);
-        // setCurrentSong(_list[0]);
-        // setCurrentList(listId);
-
+                setQueue(tempQueue.concat(_list).concat(tempEndQueue))
+            })
     }
 
     return (
@@ -153,15 +211,19 @@ function ListWithName({ musicData }) {
                         {listsByName[author].map((item) => (
                             <ContextMenu
                                 key={item.id}
-                                options={{ 
-                                    "Play list": handlePlayList,
-                                    "Download list": () => {},
-                                    "Add list to queue": () => {},
+                                options={{
+                                    "Play list": () => handlePlayList(item.id),
+                                    "Download list": () => handleDownloadList(item.id),
+                                    "Add list to queue": () => handleAddListToQueue(item.id),
                                 }}
                             >
-                                <Link href={`/list/${item.id}`} className={
-                                    clsx('rounded-lg grid grid-cols-2 bg-neutral-700 hover:bg-neutral-600 items-center shadow-lg')
-                                } style={{ gridTemplateColumns: '50px 1fr min-content', gridTemplateRows: '50px' }}>
+                                <Link
+                                    href={`/list/${item.id}`}
+                                    className={
+                                        clsx('rounded-lg grid grid-cols-2 bg-neutral-700 hover:bg-neutral-600 items-center shadow-lg')
+                                    }
+                                    style={{ gridTemplateColumns: '50px 1fr min-content', gridTemplateRows: '50px', background: downloadProgress.id == item.id ? `linear-gradient(90deg, rgb(100 100 100) 0%, rgb(100 100 100) ${downloadProgress.progress - 5}%, rgb(64 64 64) ${downloadProgress.progress}%, rgb(64 64 64) 100%)` : ''}}
+                                >
 
                                     <Image src={`https://api.music.rockhosting.org/api/list/image/${item.id}_50x50`} width={50} height={50} className='rounded-lg' alt={item.name}></Image>
                                     <label className={clsx('ml-2 text-2xl pr-3 fade-out-neutral-200 font-bold cursor-pointer min-w-0 max-w-full', { 'fade-out-yellow-600': item.id == currentList })}>{item.name}</label>

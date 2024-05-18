@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useCallback } from 'react';
 
 const MediaPlayerContext = createContext();
 
@@ -71,7 +71,16 @@ const AudioProvider = ({ children }) => {
         } else {
             document.title = "Music Player"
         }
-
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: currentSong.title,
+                artist: currentSong.artist,
+                album: currentSong.album,
+                artwork: [
+                    { src: `https://api.music.rockhosting.org/api/song/image/${currentSong.id}`, sizes: '640x640', type: 'image/jpeg' },
+                ]
+            });
+        }
 
     }, [currentSong]);
 
@@ -101,6 +110,7 @@ const AudioProvider = ({ children }) => {
         }
     }, [queueIndex]);
 
+
     useEffect(() => {
         if (!(audio instanceof HTMLAudioElement)) { return }
 
@@ -126,7 +136,7 @@ const AudioProvider = ({ children }) => {
                 source.connect(_analyser);
                 _analyser.connect(context.destination);
                 setAnalyser(_analyser)
-            }            
+            }
         })
 
         audio.addEventListener("pause", function () {
@@ -142,6 +152,46 @@ const AudioProvider = ({ children }) => {
         })
 
     }, [audio]);
+
+    useEffect(() => {
+
+        navigator.mediaSession.setActionHandler('previoustrack', () => {
+            if (currentTime > 5) {
+                audio.currentTime = 0;
+            } else {
+                if (queueIndex <= 0) {
+                    return
+                }
+                else {
+                    audio.src = `https://api.music.rockhosting.org/api/song/${queue[queueIndex - 1].id}`;
+                    audio.play();
+
+                    setCurrentSong(queue[queueIndex - 1]);
+                    setQueueIndex(queueIndex - 1);
+                }
+            }
+        });
+
+        navigator.mediaSession.setActionHandler('nexttrack', () => {
+
+            if (queueIndex >= queue.length - 1) {
+                audio.src = `https://api.music.rockhosting.org/api/song/${queue[0].id}`;
+                audio.play();
+    
+                setCurrentSong(queue[0]);
+                setQueueIndex(0);
+    
+            } else {
+                audio.src = `https://api.music.rockhosting.org/api/song/${queue[queueIndex + 1].id}`;
+                audio.play();
+    
+                setCurrentSong(queue[queueIndex + 1]);
+                setQueueIndex(queueIndex + 1);
+            }
+
+        });
+
+    }, [currentSong, currentTime, queue, queueIndex])
 
     useEffect(() => {
         if (!(audio instanceof HTMLAudioElement)) { return }
@@ -168,7 +218,7 @@ const AudioProvider = ({ children }) => {
 
     useEffect(() => {
 
-        if (randomQueue == null) {return}
+        if (randomQueue == null) { return }
 
         localStorage.setItem('randomQueue', JSON.stringify(randomQueue))
 

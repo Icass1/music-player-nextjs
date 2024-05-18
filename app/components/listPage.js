@@ -251,7 +251,7 @@ export default function DefaultListPage({ listId, musicData }) {
             audio.play();
         } else {
 
-            let _list = [...musicData.songs].filter(song => { if (!song.in_database) { return false } else { return true } });
+            let _list = [...musicData.songs].filter(song => { if (song.in_database == false) { return false } else { return true } });
 
             if (_list.length == 0) {
                 return;

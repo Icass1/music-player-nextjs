@@ -65,13 +65,14 @@ export default function Equalizer({ className, bar_count = 20, bar_gap = 1, cent
         const r = 202;
         const g = 129;
         const b = 4;
+        const a = 0.8;
 
         fbc_array = fbc_array.slice(0, 675)
 
         const groupedFrequencies = groupFrequencies(fbc_array, bar_count);
         for (let i = 0; i < bar_count; i++) {
 
-            ctx.fillStyle = `rgb(${r / (i / (bar_count - 1) + 1)} ${g / (i / (bar_count - 1) + 1)} ${b / (i / (bar_count - 1) + 1)})`
+            ctx.fillStyle = `rgba(${r / (i / (bar_count - 1) + 1)}, ${g / (i / (bar_count - 1) + 1)}, ${b / (i / (bar_count - 1) + 1)}, ${a})`
 
             const bar_pos = bar_width * i + bar_gap * i;
             const bar_height = groupedFrequencies[i] / 255 * canvas.height;

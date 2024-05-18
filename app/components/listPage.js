@@ -186,7 +186,7 @@ export default function DefaultListPage({ listId, musicData }) {
                 setdownloadingURL("");
                 eventSource.close();
 
-                setTimeout(() => { 
+                setTimeout(() => {
                     setDownloadSmooth(false);
                     setDownloadProgress(undefined);
                 }, 1000);
@@ -377,11 +377,21 @@ export default function DefaultListPage({ listId, musicData }) {
                 <div className='grid gap-2 h-[700px] mb-[-380px]' style={{ gridTemplateColumns: 'max-content 1fr', background: `linear-gradient(0deg, transparent, ${backgroundGradient})` }}>
                     <Image alt={musicData.name} className='m-2 shadow-lg rounded-2xl' src={musicData.cover_url ? (musicData.cover_url) : ('https://api.music.rockhosting.org/images/defaultAlbum.png')} width={300} height={300} onLoad={showGradient} />
                     <div className='grid inherit' style={{ gridTemplateRows: '160px 55px 40px 30px' }}>
-                        {currentList == listId && isPlaying ?
-                            <Image alt='A' className='mt-20 cursor-pointer bg-yellow-400 rounded-full p-2.5' src={`https://api.music.rockhosting.org/images/pause.svg`} width={70} height={70} onClick={handlePauseClick} />
-                            :
-                            <Image alt='A' className='mt-20 cursor-pointer bg-yellow-400 rounded-full pl-2.5 pt-2 pb-2 pr-1.5' src={`https://api.music.rockhosting.org/images/play.svg`} width={70} height={70} onClick={handlePlayClick} />
-                        }
+
+
+                        <div
+                            className='mt-20 h-16 w-16 bg-yellow-600 rounded-full bottom-4 left-4 cursor-pointer'
+                            onClick={currentList == listId && isPlaying ? (handlePauseClick) : (handlePlayClick)}
+                        >
+                            <Image
+                                src={currentList == listId && isPlaying ? (`https://api.music.rockhosting.org/images/pause.svg`) : (`https://api.music.rockhosting.org/images/play.svg`)}
+                                height={40}
+                                width={40}
+                                className='relative ml-auto mr-auto top-1/2 -translate-y-1/2'
+                            />
+                        </div>
+
+
                         <label className='text-5xl fade-out-neutral-200 font-bold min-w-0 max-w-full'>{musicData.name}</label>
                         <label className='text-2xl fade-out-neutral-400 min-w-0 max-w-full'>{musicData.author}</label>
                         <label className='text-xl fade-out-neutral-400 min-w-0 max-w-full'>Genres | {genres?.join(", ")}</label>
@@ -447,16 +457,6 @@ export default function DefaultListPage({ listId, musicData }) {
                     onInput={handleSearch}
                 />
             </div>
-
-            {/* <div
-                className='absolute h-14 w-14 bg-yellow-600 rounded-full bottom-4 left-4 cursor-pointer'
-                onClick={
-                    // () => { setdownloadingURL(`http://12.12.12.3:1234/api/compress-list/${listId}`) }
-                    () => { setdownloadingURL(`https://api.music.rockhosting.org/api/compress-list/${listId}`) }
-                }
-            >
-                <Image src='https://api.music.rockhosting.org/images/download.svg' height={35} width={35} className='relative ml-auto mr-auto top-1/2 -translate-y-1/2' />
-            </div> */}
             <div
                 className='absolute h-14 w-14 bg-yellow-600 rounded-full bottom-4 left-4 cursor-pointer'
                 onClick={

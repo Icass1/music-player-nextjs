@@ -191,7 +191,7 @@ const AudioProvider = ({ children }) => {
 
         });
 
-    }, [currentSong, currentTime, queue, queueIndex])
+    }, [audio, currentSong, currentTime, queue, queueIndex])
 
     useEffect(() => {
         if (!(audio instanceof HTMLAudioElement)) { return }

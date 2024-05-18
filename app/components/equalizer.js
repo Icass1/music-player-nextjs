@@ -19,12 +19,12 @@ export default function Equalizer({ className, bar_count = 20, bar_gap = 1, cent
             else if (updateFunc == 1) { setUpdateFunc(0) }
         }
 
-    }, [updateFunc]);
+    }, [updateFunc, toggleCenter]);
 
     useEffect(() => {
         cancelAnimationFrame(requestRef.current)
         update()
-    }, [analyser, updateFunc]); // Re-render when updateFunction changes
+    }, [analyser, updateFunc, update]); // Re-render when updateFunction changes
 
     function update() {
         requestRef.current = requestAnimationFrame(update);

@@ -53,7 +53,7 @@ export default function Animation(initialValue, min, max, step, delay=1) {
             setAnimationValue(min)
         }
 
-    }, [animationValue, animationInterval])
+    }, [animationValue, animationInterval, animationIsIncreasing, max, min])
 
     return [animationValue, toggleAnimation, animationIsIncreasing]
 }

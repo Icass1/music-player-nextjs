@@ -56,7 +56,7 @@ export default function Header({ handleSearch }) {
                 }
             }
         }
-    }, [muteAnimationValue, lastAudioVolume, muted])
+    }, [audio, muteAnimationValue, lastAudioVolume, muted])
 
     let debounceTimer;
     const handleSearchInputChange = (e) => {

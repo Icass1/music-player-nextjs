@@ -170,7 +170,7 @@ export default function DefaultListPage({ listId, musicData }) {
 
         setShowingMusicData(tempMusicData);
 
-    }, [musicData]);
+    }, [musicData, sortingBy]);
 
     useEffect(() => {
 
@@ -388,6 +388,8 @@ export default function DefaultListPage({ listId, musicData }) {
                                 height={40}
                                 width={40}
                                 className='relative ml-auto mr-auto top-1/2 -translate-y-1/2'
+                                title={currentList == listId && isPlaying ? ("Pause") : ("Play")}
+                                alt=""
                             />
                         </div>
 
@@ -446,8 +448,10 @@ export default function DefaultListPage({ listId, musicData }) {
                     src="https://api.music.rockhosting.org/images/search.svg"
                     width={35}
                     height={35}
-                    className='relative top-1/2 -translate-y-1/2 left-[28px] -translate-x-1/2 select-none cursor-pointer'
+                    className='relative top-1/2 -translate-y-1/2 left-[28px] -translate-x-1/2 select-none cursor-pointer w-[35px] h-[35px]'
                     onClick={toggleAnimation}
+                    alt=''
+                    title='Click to search in list'
                 />
                 {/* <input className='realtive mt-auto mb-auto h-[30px] ml-4 mr-14 bg-transparent border-b-2 border-solid border-neutral-900 focus:outline-none text-black' style={{width: '-webkit-fill-available'}}/> */}
                 <input
@@ -473,7 +477,7 @@ export default function DefaultListPage({ listId, musicData }) {
                         smooth={downloadSmooth}
                     />
                 )}
-                <Image src='https://api.music.rockhosting.org/images/download.svg' height={35} width={35} className='relative ml-auto mr-auto top-1/2 -translate-y-1/2' />
+                <Image src='https://api.music.rockhosting.org/images/download.svg' height={35} width={35} className='relative ml-auto mr-auto top-1/2 -translate-y-1/2' alt='' />
             </div>
         </div>
     );

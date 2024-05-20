@@ -8,6 +8,7 @@ import clsx from 'clsx';
 import Animation from './animation';
 import { debounce } from 'lodash';
 import classNames from 'classnames';
+import { usePathname } from 'next/navigation';
 
 
 function CircularProgressBar({ className = "", progress = 50, smooth = true, onClick }) {
@@ -137,12 +138,14 @@ export default function DefaultListPage({ listId, musicData }) {
     const [downloadSmooth, setDownloadSmooth] = useState(true);
 
     // document in undefined on server so using document.location.pathname directly gives an annoying error. 
-    let pathName;
-    if (typeof (window) === "undefined") {
-        pathName = "";
-    } else {
-        pathName = document.location.pathname;
-    }
+    // let pathName;
+    // if (typeof (window) === "undefined") {
+    //     pathName = "";
+    // } else {
+    //     pathName = document.location.pathname;
+    // }
+
+    const pathname = usePathname()
 
     useEffect(() => {
 
@@ -418,7 +421,8 @@ export default function DefaultListPage({ listId, musicData }) {
                         </div>
                         <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Genre</label>
                         <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Album</label>
-                        <label className={clsx({ 'w-[30px]': pathName.includes("/s/") })}></label>
+                        {/* <label className={clsx({ 'w-[30px]': usePathname("/s/") })}></label> */}
+                        <label className={pathname.includes("/s/") ? "w-[30px]" : ""}></label>
                         <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Time</label>
                     </div>
                 )}

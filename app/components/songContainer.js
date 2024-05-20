@@ -5,21 +5,24 @@ import Image from "next/image";
 import Equalizer from "./equalizer";
 import Link from "next/link";
 import ContextMenu from "./contextMenu";
+import { useRouter } from "next/router";
 
 export function Song({ type, songsList, index, song, listId }) {
 
-    const { 
-        audio, 
-        setCurrentSong, 
-        randomQueue, 
-        currentSong, 
-        currentList, 
-        setCurrentList, 
-        setQueue, 
-        setQueueIndex, 
-        queue, 
+    const {
+        audio,
+        setCurrentSong,
+        randomQueue,
+        currentSong,
+        currentList,
+        setCurrentList,
+        setQueue,
+        setQueueIndex,
+        queue,
         queueIndex,
     } = useContext(MediaPlayerContext);
+
+    const [downloadProgress, setDownloadProgress] = useState(undefined)
 
     function handlePlayClick() {
 
@@ -76,40 +79,88 @@ export function Song({ type, songsList, index, song, listId }) {
         setQueue(tempQueue.concat(song).concat(tempEndQueue))
     }
 
+    const handleDownloadToDatabase = () => {
+
+        const id = song.spotify_url.replace("https://open.spotify.com/track/", "")
+        const url = `https://api.music.rockhosting.org/api/download-song/${id}`
+
+        const eventSource = new EventSource(url);
+
+        setDownloadProgress(0)
+
+        eventSource.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+
+            console.log(message);
+
+            setDownloadProgress(message.completed);
+
+            if ((message.completed) == 100) {
+                setDownloadProgress(undefined);
+                eventSource.close();
+                song.in_database = true;
+                song.title = message.title
+                song.artist = message.artist
+                song.id = message.id;
+                song.genre = message.genre
+                song.album = message.album
+                song.cover_url = message.cover_url
+                song.duration = message.duration
+                song.album_url = message.album_url
+                console.log(song)
+            }
+        };
+
+        eventSource.onerror = (error) => {
+            console.error(error)
+            eventSource.close();
+            setDownloadProgress(undefined)
+        };
+    }
+
     return (
         <ContextMenu
-            options={{
+            options={song.in_database == false ? {
+                "Download to database": handleDownloadToDatabase,
+                "Copy Spotify URL": () => { console.log(song.spotify_url) },
+                "Copy Spotify ID": () => { console.log(song.spotify_url.replace("https://open.spotify.com/track/", "")) },
+            } : {
                 "Download": handleDownload,
                 "Add to queue": handleAddToQueue,
             }}
         >
             <div onClick={handlePlayClick} className="relative ml-3 mr-3 mt-2 mb-2">
                 {type == "Album" ? (
-                    <AlbumSong key={index} songsList={songsList} song={song} index={index} listId={listId}></AlbumSong>
+                    <AlbumSong key={index} songsList={songsList} song={song} index={index} listId={listId} downloadProgress={downloadProgress}></AlbumSong>
                 ) : (
-                    <PlaylistSong key={index} songsList={songsList} song={song} index={index} listId={listId}></PlaylistSong>
+                    <PlaylistSong key={index} songsList={songsList} song={song} index={index} listId={listId} downloadProgress={downloadProgress}></PlaylistSong>
                 )}
             </div>
         </ContextMenu>
     )
 }
 
-
-
-function AlbumSong({ index, songsList, song, listId }) {
+function AlbumSong({ index, songsList, song, listId, downloadProgress }) {
 
     const { currentSong, currentList, isPlaying } = useContext(MediaPlayerContext);
 
     return (
-        <div className='grid items-center cursor-pointer hover:bg-neutral-800 rounded-md h-[50px] gap-2' style={{ gridTemplateColumns: '50px 1fr max-content 60px', gridTemplateRows: '50px' }}>
+        <div className={clsx('grid items-center rounded-md h-[50px] gap-2', { 'hover:bg-neutral-800 cursor-pointer': song.in_database !== false })} style={{ gridTemplateColumns: '50px 1fr max-content max-content 60px', gridTemplateRows: '50px' }}>
 
             {song.id == currentSong.id && isPlaying ? (
                 <Equalizer className='w-full h-full top-0' bar_count={10} bar_gap={1} centered={true} toggleCenter={false} />
             ) : (
-                <label className={clsx('text-xl text-neutral-400 text-center cursor-pointer', { 'text-yellow-600': song.id == currentSong.id && currentList == listId })}>{index + 1}</label>
+                <label className={clsx('text-xl text-neutral-400 text-center ', { 'text-yellow-600': song.id == currentSong.id && currentList == listId, 'cursor-pointer': song.in_database !== false })}>{index + 1}</label>
             )}
 
-            <label className={clsx('relative text-2xl fade-out-neutral-300 min-w-0 max-w-full cursor-pointer', { 'fade-out-yellow-600': song.id == currentSong.id && currentList == listId })}>{song.title}</label>
+            <label className={clsx('relative text-2xl fade-out-neutral-300 min-w-0 max-w-full', { 'fade-out-yellow-600': song.id == currentSong.id && currentList == listId, 'cursor-pointer': song.in_database !== false })}>{song.title}</label>
+
+            {downloadProgress != undefined ? (
+                <label>{downloadProgress}%</label>
+            ) : (
+                <label></label>
+            )}
+
             {song.in_database == undefined ? (
                 <label></label>
             ) : (
@@ -122,7 +173,7 @@ function AlbumSong({ index, songsList, song, listId }) {
                     title="TEST"
                 />
             )}
-            <label className={clsx('text-xl text-neutral-400', { 'text-yellow-600': song.id == currentSong.id && currentList == listId })}>{song.duration}</label>
+            <label className={clsx('text-xl text-neutral-400', { 'text-yellow-600': song.id == currentSong.id && currentList == listId , 'cursor-pointer': song.in_database !== false })}>{song.duration}</label>
         </div>
     )
 }
@@ -133,11 +184,9 @@ function PlaylistSong({ index, songsList, song, listId }) {
 
     return (
         <div
-            className='grid gap-x-2 cursor-pointer rounded-md items-center hover:bg-neutral-800'
+            className={clsx('grid gap-x-2 rounded-md cursor-pointer items-center', { 'hover:bg-neutral-800': song.in_database !== false })}
             style={{ gridTemplateColumns: '50px 3fr 1fr 1fr max-content 60px', gridTemplateRows: '50px' }}
         >
-
-            {/* <div className="relative w-4 h-4" style={{}}></div> */}
 
             <div className='relative h-[50px]'>
                 {song.id == currentSong.id && isPlaying && listId == currentList ? (

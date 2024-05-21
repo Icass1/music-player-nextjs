@@ -145,15 +145,18 @@ function AlbumSong({ index, songsList, song, listId, downloadProgress }) {
     const { currentSong, currentList, isPlaying } = useContext(MediaPlayerContext);
 
     return (
-        <div className={clsx('grid items-center rounded-md h-[50px] gap-2', { 'hover:bg-neutral-800 cursor-pointer': song.in_database !== false })} style={{ gridTemplateColumns: '50px 1fr max-content max-content 60px', gridTemplateRows: '50px' }}>
+        <div
+            className={clsx('grid items-center rounded-md h-9 md:h-12 gap-2', { 'md:hover:bg-neutral-800 cursor-pointer': song.in_database !== false })}
+            style={{ gridTemplateColumns: 'max-content 1fr max-content max-content max-content', gridTemplateRows: '50px' }}
+        >
 
             {song.id == currentSong.id && isPlaying ? (
-                <Equalizer className='w-full h-full top-0' bar_count={10} bar_gap={1} centered={true} toggleCenter={false} />
+                <Equalizer className='w-6 md:w-[50px] h-full top-0' bar_count={innerWidth > 768 ? 10: 5} bar_gap={1} centered={true} toggleCenter={false} />
             ) : (
-                <label className={clsx('text-xl text-neutral-400 text-center ', { 'text-yellow-600': song.id == currentSong.id && currentList == listId, 'cursor-pointer': song.in_database !== false })}>{index + 1}</label>
+                <label className={clsx('text-xl w-6 md:w-[50px] text-neutral-400 text-center ', { 'text-yellow-600': song.id == currentSong.id && currentList == listId, 'cursor-pointer': song.in_database !== false })}>{index + 1}</label>
             )}
 
-            <label className={clsx('relative text-2xl fade-out-neutral-300 min-w-0 max-w-full', { 'fade-out-yellow-600': song.id == currentSong.id && currentList == listId, 'cursor-pointer': song.in_database !== false })}>{song.title}</label>
+            <label className={clsx('relative text-xl md:text-2xl fade-out-neutral-300 min-w-0 max-w-full', { 'fade-out-yellow-600': song.id == currentSong.id && currentList == listId, 'cursor-pointer': song.in_database !== false })}>{song.title}</label>
 
             {downloadProgress != undefined ? (
                 <label>{downloadProgress}%</label>
@@ -173,7 +176,7 @@ function AlbumSong({ index, songsList, song, listId, downloadProgress }) {
                     title="TEST"
                 />
             )}
-            <label className={clsx('text-xl text-neutral-400', { 'text-yellow-600': song.id == currentSong.id && currentList == listId , 'cursor-pointer': song.in_database !== false })}>{song.duration}</label>
+            <label className={clsx('md:text-xl md:w-[60px] text-neutral-400', { 'text-yellow-600': song.id == currentSong.id && currentList == listId, 'cursor-pointer': song.in_database !== false })}>{song.duration}</label>
         </div>
     )
 }

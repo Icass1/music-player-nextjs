@@ -6,7 +6,7 @@ import Link from "next/link";
 export default function Search({ searchResults }) {
 
     return (
-        <div className="flex flex-col w-full h-full gap-6 m-2">
+        <div className="flex flex-col gap-6 m-2">
             {/* <label>{JSON.stringify(searchResults)}</label> */}
             <div>
                 <label className="text-4xl font-bold">Albums</label>

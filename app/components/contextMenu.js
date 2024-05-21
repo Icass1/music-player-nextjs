@@ -48,18 +48,28 @@ export default function ContextMenu({ children, options }) {
                     e.preventDefault();
                     setShowing(true)
 
-                    let x = e.clientX
-                    let y = e.clientY
+                    let x;
+                    let y;
+
+                    if (innerWidth < 768) {
+                        x = e.clientX - contextMenuRef.current.offsetWidth;
+                        y = e.clientY - contextMenuRef.current.offsetHeight;
+                    } else {
+
+                        x = e.clientX;
+                        y = e.clientY;
+                    }
+
 
                     if (e.clientX + contextMenuRef.current.offsetWidth > window.innerWidth) {
-                        x = e.clientX - contextMenuRef.current.offsetWidth
+                        x = e.clientX - contextMenuRef.current.offsetWidth;
                     }
 
                     if (e.clientY + contextMenuRef.current.offsetHeight > window.innerHeight) {
-                        y = e.clientY - contextMenuRef.current.offsetHeight
+                        y = e.clientY - contextMenuRef.current.offsetHeight;
                     }
 
-                    setPosition([x, y])
+                    setPosition([x, y]);
                 }}
             >
                 {children}

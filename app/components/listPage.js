@@ -375,79 +375,89 @@ export default function DefaultListPage({ listId, musicData }) {
     }, [animationValue]);
 
     return (
-        <div className='relative h-full'>
-            <div className='overflow-hidden h-full overflow-y-scroll rounded-tl-md'>
-                <div className='grid gap-2 h-[700px] mb-[-380px]' style={{ gridTemplateColumns: 'max-content 1fr', background: `linear-gradient(0deg, transparent, ${backgroundGradient})` }}>
-                    <Image alt={musicData.name} className='m-2 shadow-lg rounded-2xl' src={musicData.cover_url ? (musicData.cover_url) : ('https://api.music.rockhosting.org/images/defaultAlbum.png')} width={300} height={300} onLoad={showGradient} />
-                    <div className='grid inherit' style={{ gridTemplateRows: '160px 55px 40px 30px' }}>
+        <>
+            <div className='relative h-full'>
+                <div className='overflow-hidden rounded-tl-md min-h-full'>
+                    <div className='grid gap-2 h-[540px] md:h-[700px] mb-[-380px]' style={{ gridTemplateColumns: 'max-content 1fr', background: `linear-gradient(0deg, transparent, ${backgroundGradient})` }}>
+                        <Image
+                            alt={musicData.name}
+                            className='m-2 shadow-lg rounded-2xl w-32 h-32 md:w-72 md:h-72'
+                            src={musicData.cover_url ? (musicData.cover_url) : ('https://api.music.rockhosting.org/images/defaultAlbum.png')}
+                            width={300}
+                            height={300}
+                            onLoad={showGradient}
+                        />
+                        <div className='grid inherit' style={{ gridTemplateRows: 'max-content max-content max-content max-content' }}>
+
+                            <label className='h-2 md:hidden'></label>
+
+                            <div
+                                className='hidden md:block mt-20 mb-2 h-16 w-16 bg-yellow-600 rounded-full bottom-4 left-4 cursor-pointer'
+                                onClick={currentList == listId && isPlaying ? (handlePauseClick) : (handlePlayClick)}
+                            >
+                                <Image
+                                    src={currentList == listId && isPlaying ? (`https://api.music.rockhosting.org/images/pause.svg`) : (`https://api.music.rockhosting.org/images/play.svg`)}
+                                    height={40}
+                                    width={40}
+                                    className='relative ml-auto mr-auto top-1/2 -translate-y-1/2'
+                                    title={currentList == listId && isPlaying ? ("Pause") : ("Play")}
+                                    alt=""
+                                />
+                            </div>
 
 
-                        <div
-                            className='mt-20 h-16 w-16 bg-yellow-600 rounded-full bottom-4 left-4 cursor-pointer'
-                            onClick={currentList == listId && isPlaying ? (handlePauseClick) : (handlePlayClick)}
-                        >
-                            <Image
-                                src={currentList == listId && isPlaying ? (`https://api.music.rockhosting.org/images/pause.svg`) : (`https://api.music.rockhosting.org/images/play.svg`)}
-                                height={40}
-                                width={40}
-                                className='relative ml-auto mr-auto top-1/2 -translate-y-1/2'
-                                title={currentList == listId && isPlaying ? ("Pause") : ("Play")}
-                                alt=""
-                            />
+                            <label className='text-3xl md:text-5xl fade-out-neutral-200 font-bold mt-8 md:mt-0 min-w-0 md:min-h-14 max-w-full'>{musicData.name}</label>
+                            <label className='text-xl md:text-2xl fade-out-neutral-400 min-w-0 max-w-full'>{musicData.author}</label>
+                            <label className='text-lg md:text-xl fade-out-neutral-400 min-w-0 max-w-full'>Genres | {genres?.join(", ")}</label>
                         </div>
-
-
-                        <label className='text-5xl fade-out-neutral-200 font-bold min-w-0 max-w-full'>{musicData.name}</label>
-                        <label className='text-2xl fade-out-neutral-400 min-w-0 max-w-full'>{musicData.author}</label>
-                        <label className='text-xl fade-out-neutral-400 min-w-0 max-w-full'>Genres | {genres?.join(", ")}</label>
                     </div>
+
+                    {musicData.type == "Album" ? (
+                        // Album column titles
+                        <div className='grid ml-3 mr-3 items-center rounded-md gap-2' style={{ gridTemplateColumns: '50px 1fr 60px' }}>
+                            <div></div>
+                            <div className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Title</div>
+                            <div className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Time</div>
+                        </div>
+                    ) : (
+                        // Playlist column titles
+                        <div className='grid gap-x-2 ml-3 mr-3' style={{ gridTemplateColumns: '50px 3fr 1fr 1fr max-content 60px' }}>
+                            <label></label>
+                            <div className='flex gap-1 items-center'>
+                                <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Title</label>
+                                <label className='font-bold text-sm text-neutral-300 select-none'>/</label>
+                                <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Artist</label>
+                            </div>
+                            <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Genre</label>
+                            <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Album</label>
+                            {/* <label className={clsx({ 'w-[30px]': usePathname("/s/") })}></label> */}
+                            <label className={pathname.includes("/s/") ? "w-[30px]" : ""}></label>
+                            <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Time</label>
+                        </div>
+                    )}
+
+                    {showingMusicData.songs.filter(x => searchResult.includes(x)).map((item, index) => (
+                        <Song key={index + "searchresult"} type={musicData.type} songsList={musicData.songs} listId={listId} song={item} index={index} />
+                    ))}
+
+                    {searchResult.length != 0 ? (
+                        <div className='grid ml-5 mr-5 items-center' style={{ gridTemplateColumns: '1fr max-content 1fr' }}>
+                            <div className='h-2 bg-yellow-600 rounded-lg'></div>
+                            <label className='text-center ml-2 mr-3'>End of search results</label>
+                            <div className='h-2 bg-yellow-600 rounded-lg'></div>
+                        </div>
+                    ) : (
+                        <></>
+                    )}
+
+                    {showingMusicData.songs.filter(x => !searchResult.includes(x)).map((item, index) => (
+                        <Song key={index} type={musicData.type} songsList={musicData.songs} listId={listId} song={item} index={index} />
+                    ))}
+                    <div className='hidden md:h-20 md:block' />
                 </div>
 
-                {musicData.type == "Album" ? (
-                    // Album column titles
-                    <div className='grid ml-3 mr-3 items-center rounded-md gap-2' style={{ gridTemplateColumns: '50px 1fr 60px' }}>
-                        <div></div>
-                        <div className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Title</div>
-                        <div className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Time</div>
-                    </div>
-                ) : (
-                    // Playlist column titles
-                    <div className='grid gap-x-2 ml-3 mr-3' style={{ gridTemplateColumns: '50px 3fr 1fr 1fr max-content 60px' }}>
-                        <label></label>
-                        <div className='flex gap-1 items-center'>
-                            <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Title</label>
-                            <label className='font-bold text-sm text-neutral-300 select-none'>/</label>
-                            <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Artist</label>
-                        </div>
-                        <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Genre</label>
-                        <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Album</label>
-                        {/* <label className={clsx({ 'w-[30px]': usePathname("/s/") })}></label> */}
-                        <label className={pathname.includes("/s/") ? "w-[30px]" : ""}></label>
-                        <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Time</label>
-                    </div>
-                )}
-
-                {showingMusicData.songs.filter(x => searchResult.includes(x)).map((item, index) => (
-                    <Song key={index + "searchresult"} type={musicData.type} songsList={musicData.songs} listId={listId} song={item} index={index} />
-                ))}
-
-                {searchResult.length != 0 ? (
-                    <div className='grid ml-5 mr-5 items-center' style={{ gridTemplateColumns: '1fr max-content 1fr' }}>
-                        <div className='h-2 bg-yellow-600 rounded-lg'></div>
-                        <label className='text-center ml-2 mr-3'>End of search results</label>
-                        <div className='h-2 bg-yellow-600 rounded-lg'></div>
-                    </div>
-                ) : (
-                    <></>
-                )}
-
-                {showingMusicData.songs.filter(x => !searchResult.includes(x)).map((item, index) => (
-                    <Song key={index} type={musicData.type} songsList={musicData.songs} listId={listId} song={item} index={index} />
-                ))}
-                <div className='h-20' />
             </div>
-
-            <div className='flex flex-row absolute h-14 bg-yellow-600 rounded-full bottom-4 right-4' style={{ width: animationValue }}>
+            <div className='hidden md:block fixed  flex-row h-14 bg-yellow-600 rounded-full bottom-5 right-6' style={{ width: animationValue }}>
                 <Image
                     src="https://api.music.rockhosting.org/images/search.svg"
                     width={35}
@@ -466,7 +476,7 @@ export default function DefaultListPage({ listId, musicData }) {
                 />
             </div>
             <div
-                className='absolute h-14 w-14 bg-yellow-600 rounded-full bottom-4 left-4 cursor-pointer'
+                className='hidden md:block fixed h-14 w-14 bg-yellow-600 rounded-full bottom-5 cursor-pointer ml-2'
                 onClick={
                     // () => { setdownloadingURL(`http://12.12.12.3:1234/api/compress-list/${listId}`) }
                     () => { setdownloadingURL(`https://api.music.rockhosting.org/api/compress-list/${listId}`) }
@@ -483,6 +493,6 @@ export default function DefaultListPage({ listId, musicData }) {
                 )}
                 <Image src='https://api.music.rockhosting.org/images/download.svg' height={35} width={35} className='relative ml-auto mr-auto top-1/2 -translate-y-1/2' alt='' />
             </div>
-        </div>
+        </>
     );
 }

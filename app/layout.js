@@ -9,22 +9,19 @@ import Header from "./components/header";
 import './layout.css';
 
 import SessionWrapper from "./components/sessionWrapper";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useContext, useEffect, useRef, useState } from "react";
 
 import { usePathname } from "next/navigation";
 import Search from "./search/page";
 import Home from "./page";
 import { ScrollProvider } from "./components/scrollContext";
+import { ScrollContext } from './components/scrollContext';
+
 
 const inter = Inter({ subsets: ["latin"] });
 
 
 export default function RootLayout({ children }) {
-
-    const [searchResults, setSearchResults] = useState(null);
-    const [scrollValue, setScrollValue] = useState(0);
-
-    const mainRef = useRef();
 
     const handleSearch = async (query) => {
 
@@ -38,41 +35,37 @@ export default function RootLayout({ children }) {
         }
     };
 
-    // const childrenWithProps = Children.map(children, (child) => {
-    //     return cloneElement(child, {
-    //         // searchQuery: searchQuery,
-    //         searchResults: searchResults
-    //     });
-    // });
-
     return (
         <SessionWrapper>
             <html lang="en">
-                <body className={inter.className}>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+                    
+                <body className={inter.className} >
                     <AudioProvider>
                         <ScrollProvider>
-                            <div id='page' className='grid grid-rows-2 h-full'>
-                                <header className='bg-slate-100'>
+                            <div id='page' className='pb-2 md:pb-0 grid h-full w-full md:p-2 gap-2 mobile-layout md:desktop-layout'>
+                                <header className=' bg-neutral-900 rounded-md' style={{ gridArea: 'head' }}>
                                     <Header handleSearch={handleSearch}></Header>
                                 </header>
-                                <div id='song-info' className="overflow-hidden relative">
+                                <div id='song-info' className="overflow-hidden relative bg-neutral-900 rounded-md" style={{ gridArea: 'song-info' }}>
                                     <SongInfo></SongInfo>
                                 </div>
-                                <div id='queue' className="overflow-y-scroll overflow-x-hidden">
+                                <div id='queue' className="overflow-y-auto overflow-x-hidden hidden md:block bg-neutral-900 rounded-md" style={{ gridArea: 'queue' }}>
                                     <Queue></Queue>
                                 </div>
                                 <main
-                                // className="overflow-y-scroll overflow-x-hidden"
-                                // ref={mainRef}
-                                // onScroll={(e) => { console.log(window.location.pathname, e.target.scrollTop); window.location.pathname == "/" ? (setScrollValue(e.target.scrollTop)) : (null) }}
+                                    style={{ gridArea: 'main' }}
+                                    className="bg-neutral-900 rounded-md relative h-full overflow-y-auto scroll-smooth"
+                                    // onScroll={(e) => { window.location.pathname == "/" ? (setScrollValue(e.target.scrollTop)) : (null) }}
+                                    
                                 >
                                     {usePathname() == "/search" ? (
                                         <Search searchResults={searchResults}></Search>
                                     ) : (
                                         children
+
                                     )}
                                 </main>
-
                             </div>
                         </ScrollProvider>
                     </AudioProvider>

@@ -65,15 +65,10 @@ function ListWithName({ musicData }) {
     const [downloadSmooth, setDownloadSmooth] = useState(true);
 
     useEffect(() => {
-
         if (mainRef.current) {
-            // console.log("mainRef.current", mainRef.current, scrollValue);
-            // setTimeout(() => {
-
-            mainRef.current.scrollTop = scrollValue;
-            // }, 1000);
+            mainRef.current.parentNode.onscroll = (e) => { window.location.pathname == "/" ? (setScrollValue(e.target.scrollTop)) : (null) }
+            mainRef.current.parentNode.scrollTop = scrollValue;
         }
-
     }, [mainRef.current])
 
     useEffect(() => {
@@ -86,13 +81,13 @@ function ListWithName({ musicData }) {
             const message = JSON.parse(event.data);
 
             if (message.status == "compress-ended") {
-                setDownloadProgress({id: downloadingID, progress: 100});
+                setDownloadProgress({ id: downloadingID, progress: 100 });
                 detDownloadingID("");
                 eventSource.close();
 
                 setTimeout(() => {
                     setDownloadSmooth(false);
-                    setDownloadProgress({id: downloadingID, progress: 0});
+                    setDownloadProgress({ id: downloadingID, progress: 0 });
                 }, 1000);
 
                 // let uri = `http://12.12.12.3:8000/api/download-list/${message.outputName}`;
@@ -105,11 +100,11 @@ function ListWithName({ musicData }) {
 
             } else if (message.status == "compress-started") {
                 setDownloadSmooth(true);
-                setDownloadProgress({id: downloadingID, progress: 0});
+                setDownloadProgress({ id: downloadingID, progress: 0 });
             } else if (message.status == "compressing") {
                 setDownloadSmooth(true);
                 console.log(message.progress);
-                setDownloadProgress({id: downloadingID, progress: message.progress});
+                setDownloadProgress({ id: downloadingID, progress: message.progress });
             }
         };
 
@@ -117,7 +112,7 @@ function ListWithName({ musicData }) {
             console.error('EventSource failed:', error);
             eventSource.close();
             detDownloadingID("");
-            setDownloadProgress({id: downloadingID, progress: 0});
+            setDownloadProgress({ id: downloadingID, progress: 0 });
         };
 
         return () => {
@@ -199,15 +194,14 @@ function ListWithName({ musicData }) {
     return (
         <div
             ref={mainRef}
-            className="overflow-y-scroll overflow-x-hidden h-full"
-            onScroll={(e) => { window.location.pathname == "/" ? (setScrollValue(e.target.scrollTop)) : (null) }}
+            className="overflow-x-hidden"
         // onScroll={(e) => { console.log(window.location.pathname, e.target.scrollTop); window.location.pathname == "/" ? (setScrollValue(e.target.scrollTop)) : (null) }}
         // onScroll={(e) => { console.log(window.location.pathname, e.target.scrollTop) }}
         >
             {Object.keys(listsByName).map((author) => (
                 <div key={author} className='m-2 mb-4'>
-                    <label className='text-4xl font-bold'>{author}</label>
-                    <div className='grid gap-2 mt-1' style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))' }}>
+                    <label className='text-2xl md:text-4xl font-bold'>{author}</label>
+                    <div className='grid gap-2 mt-1]' style={{ gridTemplateColumns: `repeat(auto-fill, minmax(${innerWidth > 768 ? '350px' : '150px'}, 1fr))` }}>
                         {listsByName[author].map((item) => (
                             <ContextMenu
                                 key={item.id}
@@ -220,16 +214,16 @@ function ListWithName({ musicData }) {
                                 <Link
                                     href={`/list/${item.id}`}
                                     className={
-                                        clsx('rounded-lg grid grid-cols-2 bg-neutral-700 hover:bg-neutral-600 items-center shadow-lg')
+                                        clsx('rounded-lg grid grid-cols-2 bg-neutral-700 md:hover:bg-neutral-600 items-center shadow-lg h-9 md:h-[50px]')
                                     }
-                                    style={{ gridTemplateColumns: '50px 1fr min-content', gridTemplateRows: '50px', background: downloadProgress.id == item.id ? `linear-gradient(90deg, rgb(100 100 100) 0%, rgb(100 100 100) ${downloadProgress.progress - 5}%, rgb(64 64 64) ${downloadProgress.progress}%, rgb(64 64 64) 100%)` : ''}}
+                                    style={{ gridTemplateColumns: 'max-content 1fr min-content', gridTemplateRows: '100%', background: downloadProgress.id == item.id ? `linear-gradient(90deg, rgb(100 100 100) 0%, rgb(100 100 100) ${downloadProgress.progress - 5}%, rgb(64 64 64) ${downloadProgress.progress}%, rgb(64 64 64) 100%)` : '' }}
                                 >
 
-                                    <Image src={`https://api.music.rockhosting.org/api/list/image/${item.id}_50x50`} width={50} height={50} className='rounded-lg' alt={item.name}></Image>
-                                    <label className={clsx('ml-2 text-2xl pr-3 fade-out-neutral-200 font-bold cursor-pointer min-w-0 max-w-full', { 'fade-out-yellow-600': item.id == currentList })}>{item.name}</label>
+                                    <Image src={`https://api.music.rockhosting.org/api/list/image/${item.id}_50x50`} width={50} height={50} className='rounded-lg w-9 h-9 md:w-[50px] md:h-[50px]' alt={item.name}></Image>
+                                    <label className={clsx('ml-2 text-lg md:text-2xl pr-3 fade-out-neutral-200 font-bold cursor-pointer min-w-0 max-w-full', { 'fade-out-yellow-600': item.id == currentList })}>{item.name}</label>
 
                                     {item.id == currentList && isPlaying ? (
-                                        <Equalizer className='w-20 h-full p-1' bar_count={15} bar_gap={1} centered={true}></Equalizer>
+                                        <Equalizer className='w-8 md:w-20 h-full p-1' bar_count={innerWidth < 768 ? 6 : 15} bar_gap={1} centered={true} />
                                     ) : (
                                         <div></div>
                                     )}

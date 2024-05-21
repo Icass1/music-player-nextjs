@@ -10,6 +10,7 @@ import Slider from "./slider";
 import { MediaPlayerContext } from './audioContext';
 import { usePathname } from "next/navigation";
 import Animation from "./animation";
+import { Libre_Caslon_Display } from "next/font/google";
 
 export default function Header({ handleSearch }) {
 
@@ -122,7 +123,7 @@ export default function Header({ handleSearch }) {
                 onClick={toggleRandomQueue}
             />
 
-            <div className="relative h-[30px] w-[30px]">
+            <div className="hidden md:block relative h-[30px] w-[30px]">
                 <Image
                     className="absolute invert-[0.6] select-none cursor-pointer hover:invert-[0.7]"
                     src='https://api.music.rockhosting.org/images/volumeMuted.png'
@@ -149,7 +150,16 @@ export default function Header({ handleSearch }) {
 
                 {/* <Image className="rounded-full invert-[0.6] select-none" src='https://api.music.rockhosting.org/images/volume.svg' width={30} height={30} alt=""/> */}
             </div>
-            <Slider value={audioVolume} onChange={sliderChange}></Slider>
+            <label className="md:hidden"></label>
+
+
+            <div className="hidden md:block">
+                <Slider value={audioVolume} onChange={sliderChange}></Slider>
+            </div>
+            <label className="md:hidden"></label>
+
+
+
             {session.data ? (
                 <div className="flex flex-row gap-2 w-max items-center">
                     <Image className="rounded-full" src={session?.data?.user?.image} width={40} height={40} alt="" />
@@ -159,6 +169,7 @@ export default function Header({ handleSearch }) {
             ) : (
                 <Link className="bg-neutral-700 pl-2 pr-2 rounded-lg hover:bg-green-600" href='/login'>Login</Link>
             )}
+
         </div>
     )
 }

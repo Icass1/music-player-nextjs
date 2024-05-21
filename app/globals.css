@@ -2,10 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 
 body, html {
     min-width: 700px;
     overflow-x: hidden;
-}
+} */
 
 :root {
     --foreground-rgb: 255, 255, 255;
@@ -21,7 +22,8 @@ body, html {
     }
 } */
 
-body {
+body,
+html {
     color: rgb(var(--foreground-rgb));
     background: linear-gradient(to bottom,
             transparent,
@@ -29,6 +31,21 @@ body {
     height: 100%;
     width: 100%;
     position: absolute;
+    /* min-width: 700px; */
+    overflow-x: hidden;
+
+    /* height: 100%;
+    width: 100%;
+    position: absolute;
+    display: block;
+    left: 0px;
+    right: 0px;
+    margin: 0px;
+    background-color: rgb(0, 0, 0);
+    overflow: hidden; */
+
+
+
 }
 
 @layer utilities {
@@ -48,5 +65,13 @@ body {
 
 ::-webkit-scrollbar {
     width: 10px;
-    height: 10px;
+    /* height: 10px; */
+}
+
+@media screen and (max-width: 768px) {
+    ::-webkit-scrollbar {
+        width: 0px;
+        /* height: 10px; */
+    }
+
 }

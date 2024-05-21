@@ -1,7 +1,8 @@
-const {nextui} = require('@nextui-org/theme');
+// const { nextui } = require('@nextui-org/theme');
 /** @type {import('tailwindcss').Config} */
 
 const fadeOut = require('./fade-out-tailwind.js');
+const plugin = require('tailwindcss/plugin')
 
 
 module.exports = {
@@ -20,5 +21,28 @@ module.exports = {
       },
     },
   },
-  plugins: [fadeOut(), nextui()],
+  plugins: [
+    fadeOut(),
+    // nextui(),
+    plugin(function ({ addUtilities }) {
+      addUtilities({
+        ".desktop-layout": {
+          "grid-template-areas": `
+            "head head" 
+            "song-info  main" 
+            "queue  main"`,
+          'grid-template-rows': '60px 500px 1fr',
+          'grid-template-columns': '250px 1fr'
+        },
+        ".mobile-layout": {
+          "grid-template-areas": `
+          "main" 
+          "song-info" 
+          "head"`,
+          'grid-template-rows': '1fr 60px 50px',
+          'grid-template-columns': '100%'
+        }
+      })
+    })
+  ],
 }

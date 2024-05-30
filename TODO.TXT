@@ -1,0 +1,7 @@
+Add videoclip with youtube url
+
+Add queue view in phone
+Add lyrics in desktop
+Add lyrics in phone
+
+When song ends save info of time played in database

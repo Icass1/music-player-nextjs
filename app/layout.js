@@ -23,6 +23,8 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({ children }) {
 
+    const [searchResults, setSearchResults] = useState(); 
+
     const handleSearch = async (query) => {
 
         // Perform fetch request here with the search query
@@ -39,11 +41,12 @@ export default function RootLayout({ children }) {
         <SessionWrapper>
             <html lang="en">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-                    
+                <link rel="manifest" href="/manifest.json" id="manifest" />
+
                 <body className={inter.className} >
                     <AudioProvider>
                         <ScrollProvider>
-                            <div id='page' className='pb-2 md:pb-0 grid h-full w-full md:p-2 gap-2 mobile-layout md:desktop-layout'>
+                            <div id='page' className='pb-0 md:pb-2 grid h-full w-full md:p-2 gap-2 mobile-layout md:desktop-layout'>
                                 <header className=' bg-neutral-900 rounded-md' style={{ gridArea: 'head' }}>
                                     <Header handleSearch={handleSearch}></Header>
                                 </header>
@@ -63,7 +66,6 @@ export default function RootLayout({ children }) {
                                         <Search searchResults={searchResults}></Search>
                                     ) : (
                                         children
-
                                     )}
                                 </main>
                             </div>

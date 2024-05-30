@@ -6,40 +6,49 @@ export default function ContextMenu({ children, options }) {
     const [position, setPosition] = useState([10, 10]);
     const [showing, setShowing] = useState(false);
     const contextMenuRef = useRef();
+    const [innerWidth, setInnerWidth] = useState(0)
+
+    useEffect(() => {
+        const handleResize = () => {
+            setInnerWidth(window.innerWidth)
+        }
+
+        window.addEventListener('resize', handleResize)
+        setInnerWidth(window.innerWidth)
+
+        return () => {
+            window.removeEventListener("resize", handleResize)
+        }
+    }, [])
 
     const close = useCallback((e) => {
+        let clientX = innerWidth > 768 ? e.clientX : e.touches[0].clientX
+        let clientY = innerWidth > 768 ? e.clientY : e.touches[0].clientY
+
         if (
-            e.clientX < position[0] ||
-            e.clientX > position[0] + contextMenuRef.current.offsetWidth ||
-            e.clientY < position[1] ||
-            e.clientY > position[1] + contextMenuRef.current.offsetHeight
+            clientX < position[0] ||
+            clientX > position[0] + contextMenuRef.current.offsetWidth ||
+            clientY < position[1] ||
+            clientY > position[1] + contextMenuRef.current.offsetHeight
         ) {
+            // console.log("setShowing(false)")
             setShowing(false);
         }
     }, [contextMenuRef, position])
 
-    // const close = (e) => {
-    //     if (
-    //         e.clientX < position[0] ||
-    //         e.clientX > position[0] + contextMenuRef.current.offsetWidth ||
-    //         e.clientY < position[1] ||
-    //         e.clientY > position[1] + contextMenuRef.current.offsetHeight
-    //     ) {
-    //         setShowing(false);
-    //     }
-    // };
-
     useEffect(() => {
         if (showing) {
-            // document.removeEventListener("mousedown", close)
-            document.addEventListener("mousedown", close)
+            innerWidth > 768 ? document.addEventListener("mousedown", close) : document.addEventListener("touchstart", close)
         } else {
+            document.removeEventListener("touchstart", close)
             document.removeEventListener("mousedown", close)
         }
         return () => {
             document.removeEventListener("mousedown", close);
+            document.removeEventListener("touchstart", close)
         };
     }, [showing, close])
+
 
     return (
         <>
@@ -60,7 +69,6 @@ export default function ContextMenu({ children, options }) {
                         y = e.clientY;
                     }
 
-
                     if (e.clientX + contextMenuRef.current.offsetWidth > window.innerWidth) {
                         x = e.clientX - contextMenuRef.current.offsetWidth;
                     }
@@ -69,6 +77,13 @@ export default function ContextMenu({ children, options }) {
                         y = e.clientY - contextMenuRef.current.offsetHeight;
                     }
 
+                    if (x < 5) { 
+                        x = 5
+                    }
+
+                    if (y < 5) { 
+                        y = 5
+                    }
                     setPosition([x, y]);
                 }}
             >
@@ -76,7 +91,7 @@ export default function ContextMenu({ children, options }) {
             </div>
             <div ref={contextMenuRef} className={clsx(`fixed bg-[#252525e0] rounded-lg z-50 w-max border-solid border-neutral-700 border-1`, { "invisible": !showing })} style={{ left: position[0], top: position[1] }}>
                 {Object.keys(options).map((key) => (
-                    <div key={key} className="p-2 rounded-lg text-sm hover:bg-neutral-600 cursor-pointer opacity-100" onClick={() => { options[key](); setShowing(false) }}>{key}</div>
+                    <div key={key} className="p-2 rounded-lg md:text-sm text-lg hover:bg-neutral-600 cursor-pointer opacity-100" onClick={() => { options[key](); setShowing(false) }}>{key}</div>
                 ))}
             </div>
         </>

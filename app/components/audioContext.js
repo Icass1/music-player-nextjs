@@ -243,6 +243,43 @@ const AudioProvider = ({ children }) => {
         return `${formattedMinutes}:${formattedSeconds}`;
     }
 
+    const previousSong = useCallback(() => {
+        console.log("previousSong useCallback")
+        if (currentTime > 5) {
+            audio.currentTime = 0;
+        } else {
+            if (queueIndex <= 0) {
+                return
+            }
+            else {
+                audio.src = `https://api.music.rockhosting.org/api/song/${queue[queueIndex - 1].id}`;
+                audio.play();
+
+                setCurrentSong(queue[queueIndex - 1]);
+                setQueueIndex(queueIndex - 1);
+            }
+        }
+    }, [audio, currentTime, queueIndex, queue, setCurrentSong, setQueueIndex])
+
+    const nextSong = useCallback(() => {
+        console.log("nextSong useCallback", queue)
+        if (queueIndex >= queue.length - 1) {
+
+            audio.src = `https://api.music.rockhosting.org/api/song/${queue[0].id}`;
+            audio.play();
+
+            setCurrentSong(queue[0]);
+            setQueueIndex(0);
+
+        } else {
+            audio.src = `https://api.music.rockhosting.org/api/song/${queue[queueIndex + 1].id}`;
+            audio.play();
+
+            setCurrentSong(queue[queueIndex + 1]);
+            setQueueIndex(queueIndex + 1);
+        }
+    }, [audio, currentTime, queueIndex, queue, setCurrentSong, setQueueIndex])
+
     return (
         <MediaPlayerContext.Provider value={{
             getTime,
@@ -276,6 +313,9 @@ const AudioProvider = ({ children }) => {
 
             audioVolume,
             setAudioVolume,
+
+            previousSong,
+            nextSong,
         }}>
             {children}
         </MediaPlayerContext.Provider>

@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link';
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useEffect, useContext, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import clsx from 'clsx';
 import { MediaPlayerContext } from './components/audioContext';
@@ -64,12 +64,44 @@ function ListWithName({ musicData }) {
     const [downloadProgress, setDownloadProgress] = useState(0);
     const [downloadSmooth, setDownloadSmooth] = useState(true);
 
+    const [scrollRestored, setScrollRestored] = useState(false);
+
+    const [innerWidth, setInnerWidth] = useState(0)
+
+    // const restoreScroll = useCallback(() => {
+    //     if (mainRef.current) {
+    //         setTimeout(() => {
+    //             console.log(mainRef.current.parentNode.scrollTop, scrollValue)
+    //         }, 100);
+    //     }
+    // }, [mainRef, scrollValue])
+
+    // useEffect(() => restoreScroll, [restoreScroll])
+
     useEffect(() => {
-        if (mainRef.current) {
-            mainRef.current.parentNode.onscroll = (e) => { window.location.pathname == "/" ? (setScrollValue(e.target.scrollTop)) : (null) }
-            mainRef.current.parentNode.scrollTop = scrollValue;
+        
+        const handleResize = () => {
+            setInnerWidth(window.innerWidth)
         }
-    }, [mainRef.current])
+
+        window.addEventListener('resize', handleResize)
+        setInnerWidth(window.innerWidth)
+
+        return () => {
+            window.removeEventListener("resize", handleResize)
+        }
+    }, [])
+
+    useEffect(() => {
+        if (scrollRestored) { return }
+        if (mainRef.current) {
+            setTimeout(() => {
+                mainRef.current.parentNode.scrollTop = scrollValue;
+            }, 100);
+            mainRef.current.parentNode.onscroll = (e) => { window.location.pathname == "/" ? (setScrollValue(e.target.scrollTop)) : (null) }
+            setScrollRestored(true)
+        }
+    }, [mainRef, setScrollValue, scrollValue, scrollRestored])
 
     useEffect(() => {
 
@@ -214,12 +246,16 @@ function ListWithName({ musicData }) {
                                 <Link
                                     href={`/list/${item.id}`}
                                     className={
-                                        clsx('rounded-lg grid grid-cols-2 bg-neutral-700 md:hover:bg-neutral-600 items-center shadow-lg h-9 md:h-[50px]')
+                                        clsx('rounded-lg grid grid-cols-2 bg-neutral-700 md:hover:bg-neutral-600 items-center shadow-lg h-12 md:h-[50px]')
                                     }
-                                    style={{ gridTemplateColumns: 'max-content 1fr min-content', gridTemplateRows: '100%', background: downloadProgress.id == item.id ? `linear-gradient(90deg, rgb(100 100 100) 0%, rgb(100 100 100) ${downloadProgress.progress - 5}%, rgb(64 64 64) ${downloadProgress.progress}%, rgb(64 64 64) 100%)` : '' }}
+                                    style={{ 
+                                        gridTemplateColumns: 'max-content 1fr min-content', 
+                                        gridTemplateRows: '100%', 
+                                        background: downloadProgress.id == item.id ? `linear-gradient(90deg, rgb(100 100 100) 0%, rgb(100 100 100) ${downloadProgress.progress - 5}%, rgb(64 64 64) ${downloadProgress.progress}%, rgb(64 64 64) 100%)` : '' 
+                                    }}
                                 >
 
-                                    <Image src={`https://api.music.rockhosting.org/api/list/image/${item.id}_50x50`} width={50} height={50} className='rounded-lg w-9 h-9 md:w-[50px] md:h-[50px]' alt={item.name}></Image>
+                                    <Image src={`https://api.music.rockhosting.org/api/list/image/${item.id}_50x50`} width={50} height={50} className='rounded-lg w-12 h-12 md:w-[50px] md:h-[50px]' alt={item.name}></Image>
                                     <label className={clsx('ml-2 text-lg md:text-2xl pr-3 fade-out-neutral-200 font-bold cursor-pointer min-w-0 max-w-full', { 'fade-out-yellow-600': item.id == currentList })}>{item.name}</label>
 
                                     {item.id == currentList && isPlaying ? (

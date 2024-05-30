@@ -10,7 +10,6 @@ import Slider from "./slider";
 import { MediaPlayerContext } from './audioContext';
 import { usePathname } from "next/navigation";
 import Animation from "./animation";
-import { Libre_Caslon_Display } from "next/font/google";
 
 export default function Header({ handleSearch }) {
 
@@ -28,7 +27,7 @@ export default function Header({ handleSearch }) {
     const [muteAnimationValue, toggleMuteAnimation] = Animation(30, 0, 30, 1, 1);
     const [lastAudioVolume, setLastAudioVolume] = useState(null);
     const [muted, setMuted] = useState(false);
-
+    const [innerWidth, setInnerWidth] = useState(0);
 
     const session = useSession();
 
@@ -59,6 +58,20 @@ export default function Header({ handleSearch }) {
         }
     }, [audio, muteAnimationValue, lastAudioVolume, muted])
 
+    useEffect(() => {
+        
+        const handleResize = () => {
+            setInnerWidth(window.innerWidth)
+        }
+
+        window.addEventListener('resize', handleResize)
+        setInnerWidth(window.innerWidth)
+
+        return () => {
+            window.removeEventListener("resize", handleResize)
+        }
+    }, [])
+
     let debounceTimer;
     const handleSearchInputChange = (e) => {
         const query = e.target.value;
@@ -86,35 +99,28 @@ export default function Header({ handleSearch }) {
     }
 
     return (
-        <div className="grid h-full items-center ml-5 mr-5 gap-4" style={{ gridTemplateColumns: '30px 30px min-content 1fr 30px 30px 30px 150px min-content', gridTemplateRows: '60px' }}>
+        <div className="grid h-full items-center ml-auto mr-auto w-min md:w-auto md:ml-5 md:mr-5 gap-10 md:gap-4" style={{ gridTemplateColumns: innerWidth > 768 ? '30px 30px min-content 1fr 30px 30px 30px 150px min-content': '30px 30px 30px', gridTemplateRows: '100%' }}>
             <Link href="/">
-                <Image className="invert-[0.8] hover:invert-[0.7] select-none" src='https://api.music.rockhosting.org/images/home.svg' width={30} height={30} alt="Search" />
+                <Image className="md:block invert-[0.8] hover:invert-[0.7] select-none" src='https://api.music.rockhosting.org/images/home.svg' width={30} height={30} alt="Search" />
             </Link>
             <Link href="/search">
-                <Image className="invert-[0.8] hover:invert-[0.7] select-none" src='https://api.music.rockhosting.org/images/search.svg' width={30} height={30} alt="Search" />
+                <Image className="md:block invert-[0.8] hover:invert-[0.7] select-none" src='https://api.music.rockhosting.org/images/search.svg' width={30} height={30} alt="Search" />
             </Link>
             {usePathname() == "/search" ? (
-                // <Input
-                //     type="text"
-                //     label='Type to search...'
-                //     className="w-52 scale-75"
-                //     size="sm"
-                // />
                 <input
                     placeholder="Type to search..."
-                    className="border-solid border-neutral-300 bg-transparent border-b-1 focus:outline-none"
+                    className="hidden md:block border-solid border-neutral-300 bg-transparent border-b focus:outline-none"
                     onInput={handleSearchInputChange}
                 />
             ) : (
-                <label>{/* Empty label to fill min-content */}</label>
+                <label className="hidden md:block">{/* Empty label to fill min-content */}</label>
             )
 
             }
-            <label></label> {/* Empty label to fill 1fr */}
-            {/* <Equalizer className='w-full max-h-full pt-1 pb-1'></Equalizer> */}
-            <Image className="invert-[0.8] select-none hover:invert-[0.9]" src='https://api.music.rockhosting.org/images/lyrics.png' width={30} height={30} alt="Toggle lyrics" />
+            <label className="hidden md:block"></label> {/* Empty label to fill 1fr */}
+            <Image className="hidden md:block invert-[0.8] select-none hover:invert-[0.9]" src='https://api.music.rockhosting.org/images/lyrics.png' width={30} height={30} alt="Toggle lyrics" />
             <Image
-                className="invert-[0.6] select-none hover:invert-[0.7] cursor-pointer"
+                className="md:block invert-[0.6] select-none hover:invert-[0.7] cursor-pointer"
                 style={{ filter: randomQueue ? ('brightness(0) saturate(100%) invert(44%) sepia(91%) saturate(474%) hue-rotate(3deg) brightness(105%) contrast(97%)') : ('') }}
                 src='https://api.music.rockhosting.org/images/random.svg'
                 width={30}
@@ -146,30 +152,22 @@ export default function Header({ handleSearch }) {
                     onClick={toggleMuteAnimation}
                 />
 
-                {/* <div className="absolute h-[30px] w-[10px] left-[0px]" style={{backgroundColor: 'rgb(28 28 28)'}}></div> */}
-
-                {/* <Image className="rounded-full invert-[0.6] select-none" src='https://api.music.rockhosting.org/images/volume.svg' width={30} height={30} alt=""/> */}
             </div>
-            <label className="md:hidden"></label>
 
-
-            <div className="hidden md:block">
-                <Slider value={audioVolume} onChange={sliderChange}></Slider>
-            </div>
-            <label className="md:hidden"></label>
-
+            {/* <div className="hidden md:block"> */}
+            <Slider value={audioVolume} onChange={sliderChange} className="hidden md:block"></Slider>
+            {/* </div> */}
 
 
             {session.data ? (
-                <div className="flex flex-row gap-2 w-max items-center">
+                <div className="hidden md:flex flex-row gap-2 w-max items-center">
                     <Image className="rounded-full" src={session?.data?.user?.image} width={40} height={40} alt="" />
                     <div>{session?.data?.user?.name}</div>
                     <button className="bg-neutral-700 pl-2 pr-2 rounded-lg hover:bg-red-600" onClick={() => signOut()}>Logout</button>
                 </div>
             ) : (
-                <Link className="bg-neutral-700 pl-2 pr-2 rounded-lg hover:bg-green-600" href='/login'>Login</Link>
+                <Link className="hidden md:block bg-neutral-700 pl-2 pr-2 rounded-lg hover:bg-green-600" href='/login'>Login</Link>
             )}
-
         </div>
     )
 }

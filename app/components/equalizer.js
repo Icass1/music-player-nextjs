@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState, useCallback } from 'react';
 import { MediaPlayerContext } from '@/app/components/audioContext';
 
-export default function Equalizer({ className, bar_count = 20, bar_gap = 1, centered=false, toggleCenter=true }) {
+export default function Equalizer({ className, bar_count = 20, bar_gap = 1, centered = false, toggleCenter = true }) {
     const canvasRef = useRef(null);
     const requestRef = useRef()
 
@@ -12,7 +12,7 @@ export default function Equalizer({ className, bar_count = 20, bar_gap = 1, cent
     } = useContext(MediaPlayerContext);
 
     useEffect(() => {
-        if (!toggleCenter) {return}
+        if (!toggleCenter) { return }
 
         canvasRef.current.onclick = function () {
             if (updateFunc == 0) { setUpdateFunc(1) }
@@ -21,27 +21,8 @@ export default function Equalizer({ className, bar_count = 20, bar_gap = 1, cent
 
     }, [updateFunc, toggleCenter]);
 
-    useEffect(() => {
-        cancelAnimationFrame(requestRef.current)
-        update()
-    }, [analyser, updateFunc, update]); // Re-render when updateFunction changes
 
-    function update() {
-        requestRef.current = requestAnimationFrame(update);
-
-        if (updateBottom == undefined || updateCentered == undefined) {
-            return
-        }
-
-        if (updateFunc == 0) {
-            updateBottom();
-        } else if (updateFunc == 1) {
-            updateCentered()
-        }
-    }
-
-    function updateCentered() {
-
+    const updateCentered = useCallback(() => {
         if (canvasRef.current == null) { return }
 
         const canvas = canvasRef.current;
@@ -79,9 +60,10 @@ export default function Equalizer({ className, bar_count = 20, bar_gap = 1, cent
 
             ctx.fillRect(bar_pos, canvas.height / 2 - bar_height / 2, bar_width, bar_height);
         }
-    }
+    }, [analyser, bar_count, bar_gap])
 
-    function updateBottom() {
+
+    const updateBottom = useCallback(() => {
 
         // console.log(analyser)
 
@@ -120,7 +102,28 @@ export default function Equalizer({ className, bar_count = 20, bar_gap = 1, cent
 
             ctx.fillRect(bar_pos, canvas.height, bar_width, bar_height);
         }
-    }
+    }, [analyser, bar_count, bar_gap])
+
+
+    const update = useCallback(() => {
+        requestRef.current = requestAnimationFrame(update);
+
+        if (updateBottom == undefined || updateCentered == undefined) {
+            return
+        }
+
+        if (updateFunc == 0) {
+            updateBottom();
+        } else if (updateFunc == 1) {
+            updateCentered()
+        }
+    }, [requestRef, updateCentered, updateBottom, updateFunc])
+
+    useEffect(() => {
+        cancelAnimationFrame(requestRef.current)
+        update()
+    }, [analyser, updateFunc, update]); // Re-render when updateFunction changes
+
 
     // Utility function to group frequencies
     function groupFrequencies(frequencies, numberOfGroups) {

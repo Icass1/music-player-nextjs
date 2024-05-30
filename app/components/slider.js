@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { createGlobalStyle } from 'styled-components';
+import classNames from 'classnames';
 
 const GlobalStyles = createGlobalStyle`
 .custom-slider[mouseover]::-webkit-slider-thumb {
@@ -32,7 +33,7 @@ const GlobalStyles = createGlobalStyle`
 
 `;
 
-export default function Slider({ value, onInput, onChange }) {
+export default function Slider({ value, onInput, onChange, className }) {
 
     const [mouseOver, setMouseOver] = useState(false);
 
@@ -50,7 +51,7 @@ export default function Slider({ value, onInput, onChange }) {
                 {...mouseOver && { mouseover: '' }}
                 // id={id}
                 type='range'
-                className='custom-slider min-w-0 w-full h-[0.4rem] rounded-full appearance-none'
+                className={classNames(className, 'custom-slider min-w-0 w-full h-[0.4rem] rounded-full appearance-none')}
                 {...(mouseOver ? {
                     style: { background: `linear-gradient(90deg, #ca8a04 0%, #ca8a04 calc(0.2rem + (100% - 0.4rem)*${value}), black calc(0.2rem + (100% - 0.4rem)*${value}), black 100%)` }
                 } : {

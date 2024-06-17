@@ -12,23 +12,24 @@
     "circular-progress-bar": "^2.1.0",
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
-    "framer-motion": "^11.1.7",
+    "eslint": "^8.0.0",
+    "framer-motion": "^11.2.10",
     "lodash": "^4.17.21",
-    "next": "14.2.3",
+    "next": "14.2.4",
     "next-auth": "^4.24.7",
     "nextjs": "^0.0.3",
-    "npm": "^10.7.0",
-    "react": "^18",
+    "npm": "10.8.1",
+    "react": "^18.3.1",
     "react-dnd": "^16.0.1",
-    "react-dom": "^18",
+    "react-dom": "^18.3.1",
+    "react-window": "^1.8.10",
     "shallowequal": "^1.1.0",
     "styled-components": "^6.1.11"
   },
   "devDependencies": {
-    "eslint": "^8",
-    "eslint-config-next": "14.2.3",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1"
+    "eslint-config-next": "14.2.4",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.4"
   },
   "engines": {
     "node": "19.9.0"

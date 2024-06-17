@@ -29,7 +29,11 @@ export default function Header({ handleSearch }) {
     const [muted, setMuted] = useState(false);
     const [innerWidth, setInnerWidth] = useState(0);
 
+    const [storage, setStorage] = useState(0);
+
     const session = useSession();
+
+    const searchInputRef = useRef();
 
     const sliderChange = (event) => {
         audio.volume = event.target.value;
@@ -75,7 +79,8 @@ export default function Header({ handleSearch }) {
     let debounceTimer;
     const handleSearchInputChange = (e) => {
         const query = e.target.value;
-        // setSearchQuery(query);
+
+        window.history.replaceState( {} , "RockIT", `/search?q=${query}` );
 
         // Clear the previous timer to avoid multiple fetches
         clearTimeout(debounceTimer);
@@ -98,6 +103,28 @@ export default function Header({ handleSearch }) {
         }
     }
 
+    useEffect(() => {
+
+        if (location.pathname != "/search") {
+            return;
+        }
+
+        let params = new URL(document.location).searchParams;
+        handleSearch(params.get("q"));
+        searchInputRef.current.value = params.get("q");
+    }, [])
+
+
+    // useEffect(() => {
+
+    //     navigator.storage.estimate().then(data => {
+    //         console.log(data)
+    //     })
+    
+    // }, [])
+
+    
+
     return (
         <div className="grid h-full items-center ml-auto mr-auto w-min md:w-auto md:ml-5 md:mr-5 gap-10 md:gap-4" style={{ gridTemplateColumns: innerWidth > 768 ? '30px 30px min-content 1fr 30px 30px 30px 150px min-content': '30px 30px 30px', gridTemplateRows: '100%' }}>
             <Link href="/">
@@ -108,6 +135,7 @@ export default function Header({ handleSearch }) {
             </Link>
             {usePathname() == "/search" ? (
                 <input
+                    ref={searchInputRef}
                     placeholder="Type to search..."
                     className="hidden md:block border-solid border-neutral-300 bg-transparent border-b focus:outline-none"
                     onInput={handleSearchInputChange}
@@ -161,8 +189,10 @@ export default function Header({ handleSearch }) {
 
             {session.data ? (
                 <div className="hidden md:flex flex-row gap-2 w-max items-center">
+                    {/* <Image className="rounded-full" src={session?.data?.token?.token?.user?.image} width={40} height={40} alt="" /> */}
                     <Image className="rounded-full" src={session?.data?.user?.image} width={40} height={40} alt="" />
-                    <div>{session?.data?.user?.name}</div>
+                    <div>{session?.data?.user?.name} {}</div>
+                    {/* <div>{session?.data?.token?.token?.user?.name}</div> */}
                     <button className="bg-neutral-700 pl-2 pr-2 rounded-lg hover:bg-red-600" onClick={() => signOut()}>Logout</button>
                 </div>
             ) : (

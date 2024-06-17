@@ -1,6 +1,8 @@
 'use client';
 
+import { useSession } from 'next-auth/react';
 import React, { createContext, useState, useEffect, useCallback } from 'react';
+import { apiFetch } from '../utils/apiFetch';
 
 const MediaPlayerContext = createContext();
 
@@ -27,50 +29,100 @@ const AudioProvider = ({ children }) => {
     const [queueIndex, setQueueIndex] = useState(null)
     const [randomQueue, setRandomQueue] = useState(null)
 
+    const session = useSession()
+
     useEffect(() => {
-        setAudio(new Audio(URL))
+        setAudio(new Audio())
     }, [])
 
     useEffect(() => {
-        const storedCurrentSong = localStorage.getItem('currentSong');
-        const storedCurrentList = localStorage.getItem('currentList');
-        const storedQueue = localStorage.getItem('queue');
-        const storedQueueIndex = localStorage.getItem('queueIndex');
-        const storedRandomQueue = localStorage.getItem('randomQueue');
 
-        if (storedCurrentSong) {
-            setCurrentSong(JSON.parse(storedCurrentSong));
+        let storedCurrentSong;
+        let storedCurrentList;
+        let storedQueue;
+        let storedQueueIndex;
+        let storedRandomQueue;
+
+        if (session.status == "authenticated") {
+
+            fetch(`https://api.music.rockhosting.org/api/song/info/${session.data.user.current_song}`).
+                then(response => response.json()).
+                then(data => {
+                    setCurrentSong(data);
+                })
+
+            setCurrentList(session.data.user.current_list);
+
+            setQueue(JSON.parse(session.data.user.queue))
+            setQueueIndex(session.data.user.queue_index)
+            setRandomQueue(session.data.user.random_queue)
+            audio.currentTime = session.data.user.current_time
+            console.log(session.data.user)
+
+        } else if (session.status == "unauthenticated") {
+            storedCurrentSong = JSON.parse(localStorage.getItem('currentSong'));
+            storedCurrentList = JSON.parse(localStorage.getItem('currentList'));
+            storedQueue = JSON.parse(localStorage.getItem('queue'));
+            storedQueueIndex = JSON.parse(localStorage.getItem('queueIndex'));
+            storedRandomQueue = JSON.parse(localStorage.getItem('randomQueue'));
+
+            if (storedCurrentSong) {
+                setCurrentSong(storedCurrentSong);
+            }
+            if (storedCurrentList) {
+                setCurrentList(storedCurrentList);
+            }
+            if (storedQueue) {
+                setQueue(storedQueue);
+            } else {
+                setQueue([]);
+            }
+            if (storedRandomQueue) {
+                setRandomQueue(storedRandomQueue);
+            } else {
+                setRandomQueue(false);
+            }
+            if (storedQueueIndex) {
+                setQueueIndex(storedQueueIndex)
+            } else {
+                setQueueIndex(0)
+            }
         }
-        if (storedCurrentList) {
-            setCurrentList(JSON.parse(storedCurrentList));
-        }
-        if (storedQueue) {
-            setQueue(JSON.parse(storedQueue));
-        } else {
-            setQueue([]);
-        }
-        if (storedRandomQueue) {
-            setRandomQueue(JSON.parse(storedRandomQueue));
-        } else {
-            setRandomQueue(false);
-        }
-        if (storedQueueIndex) {
-            setQueueIndex(JSON.parse(storedQueueIndex))
-        } else {
-            setQueueIndex(0)
-        }
-    }, []);
+
+    }, [session]);
 
     useEffect(() => {
-        if (currentSong.title !== '') {
+
+        if (currentSong.title == '' && currentSong.artist == '') {
+            document.title = "Music Player"
+            return
+        }
+
+        if (session.status == "authenticated") {
+            apiFetch('https://api.music.rockhosting.org/api/user/set', session, {
+                method: "POST",
+                body: JSON.stringify({
+                    current_song: currentSong.id,
+                })
+            })
+        } else if (session.status == "unauthenticated") {
             localStorage.setItem('currentSong', JSON.stringify(currentSong));
         }
 
-        if (currentSong.title != '' && currentSong.artist != '') {
-            document.title = currentSong.title + " - " + currentSong.artist
+        document.title = currentSong.title + " - " + currentSong.artist
+        if (audio.src == `https://api.music.rockhosting.org/api/song/${currentSong.id}`) {
+
+        } else if (audio.src == "") {
+            console.log()
+            let currentTime = audio.currentTime
+            audio.src = `https://api.music.rockhosting.org/api/song/${currentSong.id}`;
+            audio.currentTime = currentTime
         } else {
-            document.title = "Music Player"
+            audio.src = `https://api.music.rockhosting.org/api/song/${currentSong.id}`;
+            audio.play()
         }
+
+
         if ('mediaSession' in navigator) {
             navigator.mediaSession.metadata = new MediaMetadata({
                 title: currentSong.title,
@@ -82,47 +134,93 @@ const AudioProvider = ({ children }) => {
             });
         }
 
-    }, [currentSong]);
+    }, [currentSong, session, audio]);
 
     useEffect(() => {
-        if (currentList !== '') {
+        if (currentList == '') {
+            return
+        }
+
+        if (session.status == "authenticated") {
+            apiFetch('https://api.music.rockhosting.org/api/user/set', session, {
+                method: "POST",
+                body: JSON.stringify({
+                    current_list: currentList,
+                })
+            })
+
+        } else if (session.status == "unauthenticated") {
             localStorage.setItem('currentList', JSON.stringify(currentList));
         }
-    }, [currentList]);
+
+    }, [currentList, session]);
 
     useEffect(() => {
-        if (currentTime != "null" && currentTime != null) {
+        if (currentTime == "null" || currentTime == null) {
+            return
+        }
+
+        if (session.status == "authenticated") {
+
+            apiFetch('https://api.music.rockhosting.org/api/user/set', session, {
+                method: "POST",
+                body: JSON.stringify({
+                    current_time: currentTime,
+                })
+            })
+
+        } else if (session.status == "unauthenticated") {
             localStorage.setItem('currentTime', JSON.stringify(currentTime));
         }
-    }, [currentTime]);
+    }, [currentTime, session]);
 
     useEffect(() => {
-        if (queue != null && queue.length != 0) {
+        if (queue == null || queue.length == 0) {
+            return
+        }
+
+        if (session.status == "authenticated") {
+            apiFetch('https://api.music.rockhosting.org/api/user/set', session, {
+                method: "POST",
+                body: JSON.stringify({
+                    queue: queue,
+                })
+            })
+        } else if (session.status == "unauthenticated") {
             localStorage.setItem('queue', JSON.stringify(queue));
         }
-    }, [queue]);
+
+    }, [queue, session]);
 
     useEffect(() => {
 
-        if (queueIndex != null) {
-
+        if (queueIndex == null) {
+            return
+        }
+        if (session.status == "authenticated") {
+            apiFetch('https://api.music.rockhosting.org/api/user/set', session, {
+                method: "POST",
+                body: JSON.stringify({
+                    queue_index: queueIndex,
+                })
+            })
+        } else if (session.status == "unauthenticated") {
             localStorage.setItem('queueIndex', JSON.stringify(queueIndex));
         }
-    }, [queueIndex]);
-
+    }, [queueIndex, session]);
 
     useEffect(() => {
         if (!(audio instanceof HTMLAudioElement)) { return }
 
-        audio.src = `https://api.music.rockhosting.org/api/song/${currentSong.id}`;
+        // audio.src = `https://api.music.rockhosting.org/api/song/${currentSong.id}`;
         audio.volume = 1;
         audio.crossOrigin = "anonymous"
 
 
-        const storedCurrentTime = localStorage.getItem('currentTime');
-        if (storedCurrentTime && storedCurrentTime != "null") {
-            audio.currentTime = storedCurrentTime;
-        }
+        // const storedCurrentTime = localStorage.getItem('currentTime');
+        // if (storedCurrentTime && storedCurrentTime != "null") {
+        //     audio.currentTime = storedCurrentTime;
+        // }
 
         let context;
 
@@ -163,8 +261,8 @@ const AudioProvider = ({ children }) => {
                     return
                 }
                 else {
-                    audio.src = `https://api.music.rockhosting.org/api/song/${queue[queueIndex - 1].id}`;
-                    audio.play();
+                    // audio.src = `https://api.music.rockhosting.org/api/song/${queue[queueIndex - 1].id}`;
+                    // audio.play();
 
                     setCurrentSong(queue[queueIndex - 1]);
                     setQueueIndex(queueIndex - 1);
@@ -175,20 +273,19 @@ const AudioProvider = ({ children }) => {
         navigator.mediaSession.setActionHandler('nexttrack', () => {
 
             if (queueIndex >= queue.length - 1) {
-                audio.src = `https://api.music.rockhosting.org/api/song/${queue[0].id}`;
-                audio.play();
-    
+                // audio.src = `https://api.music.rockhosting.org/api/song/${queue[0].id}`;
+                // audio.play();
+
                 setCurrentSong(queue[0]);
                 setQueueIndex(0);
-    
+
             } else {
-                audio.src = `https://api.music.rockhosting.org/api/song/${queue[queueIndex + 1].id}`;
-                audio.play();
-    
+                // audio.src = `https://api.music.rockhosting.org/api/song/${queue[queueIndex + 1].id}`;
+                // audio.play();
+
                 setCurrentSong(queue[queueIndex + 1]);
                 setQueueIndex(queueIndex + 1);
             }
-
         });
 
     }, [audio, currentSong, currentTime, queue, queueIndex])
@@ -197,17 +294,18 @@ const AudioProvider = ({ children }) => {
         if (!(audio instanceof HTMLAudioElement)) { return }
 
         audio.onended = function () {
+
             if (queueIndex + 1 >= queue.length) {
-                audio.src = `https://api.music.rockhosting.org/api/song/${queue[0].id}`;
-                audio.play();
+                // audio.src = `https://api.music.rockhosting.org/api/song/${queue[0].id}`;
+                // audio.play();
 
                 setCurrentSong(queue[0]);
                 setQueueIndex(0);
                 return;
             }
 
-            audio.src = `https://api.music.rockhosting.org/api/song/${queue[queueIndex + 1].id}`;
-            audio.play();
+            // audio.src = `https://api.music.rockhosting.org/api/song/${queue[queueIndex + 1].id}`;
+            // audio.play();
 
             setCurrentSong(queue[queueIndex + 1]);
             setQueueIndex(queueIndex + 1);
@@ -252,8 +350,8 @@ const AudioProvider = ({ children }) => {
                 return
             }
             else {
-                audio.src = `https://api.music.rockhosting.org/api/song/${queue[queueIndex - 1].id}`;
-                audio.play();
+                // audio.src = `https://api.music.rockhosting.org/api/song/${queue[queueIndex - 1].id}`;
+                // audio.play();
 
                 setCurrentSong(queue[queueIndex - 1]);
                 setQueueIndex(queueIndex - 1);
@@ -265,15 +363,15 @@ const AudioProvider = ({ children }) => {
         console.log("nextSong useCallback", queue)
         if (queueIndex >= queue.length - 1) {
 
-            audio.src = `https://api.music.rockhosting.org/api/song/${queue[0].id}`;
-            audio.play();
+            // audio.src = `https://api.music.rockhosting.org/api/song/${queue[0].id}`;
+            // audio.play();
 
             setCurrentSong(queue[0]);
             setQueueIndex(0);
 
         } else {
-            audio.src = `https://api.music.rockhosting.org/api/song/${queue[queueIndex + 1].id}`;
-            audio.play();
+            // audio.src = `https://api.music.rockhosting.org/api/song/${queue[queueIndex + 1].id}`;
+            // audio.play();
 
             setCurrentSong(queue[queueIndex + 1]);
             setQueueIndex(queueIndex + 1);

@@ -8,15 +8,28 @@ import { MediaPlayerContext } from './components/audioContext';
 import Equalizer from './components/equalizer';
 import { ScrollContext } from './components/scrollContext';
 import ContextMenu from './components/contextMenu';
+import { useSession } from "next-auth/react";
+import { apiFetch } from './utils/apiFetch';
 
 export default function Home() {
 
     const [musicData, setMusicData] = useState([]);
+    const session = useSession();
 
     useEffect(() => {
+        if (session?.status != "authenticated") {return}
+
         const fetchData = async () => {
             try {
-                const response = await fetch('https://api.music.rockhosting.org/api/lists');
+                const response = await apiFetch(`https://api.music.rockhosting.org/api/user/get-lists`, session)
+                // const response = await fetch(`https://api.music.rockhosting.org/api/user/get-lists`, {
+                //     method: "GET",
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //         'Authorization': `Bearer ${session.data.user.id}` // Pass user id in the headers
+                //     },
+                // })
+
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -27,7 +40,7 @@ export default function Home() {
             }
         };
         fetchData();
-    }, []);
+    }, [session]);
 
     return (
         // <Grid musicData={musicData}></Grid>
@@ -60,7 +73,7 @@ function ListWithName({ musicData }) {
 
     const mainRef = useRef();
 
-    const [downloadingID, detDownloadingID] = useState('');
+    const [downloadingID, setDownloadingID] = useState('');
     const [downloadProgress, setDownloadProgress] = useState(0);
     const [downloadSmooth, setDownloadSmooth] = useState(true);
 
@@ -79,7 +92,7 @@ function ListWithName({ musicData }) {
     // useEffect(() => restoreScroll, [restoreScroll])
 
     useEffect(() => {
-        
+
         const handleResize = () => {
             setInnerWidth(window.innerWidth)
         }
@@ -114,7 +127,7 @@ function ListWithName({ musicData }) {
 
             if (message.status == "compress-ended") {
                 setDownloadProgress({ id: downloadingID, progress: 100 });
-                detDownloadingID("");
+                setDownloadingID("");
                 eventSource.close();
 
                 setTimeout(() => {
@@ -143,7 +156,7 @@ function ListWithName({ musicData }) {
         eventSource.onerror = (error) => {
             console.error('EventSource failed:', error);
             eventSource.close();
-            detDownloadingID("");
+            setDownloadingID("");
             setDownloadProgress({ id: downloadingID, progress: 0 });
         };
 
@@ -187,18 +200,18 @@ function ListWithName({ musicData }) {
                     _list.sort(() => Math.random() - 0.5);
                 }
 
-                audio.src = `https://api.music.rockhosting.org/api/song/${_list[0].id}`;
-                audio.play();
-
+                // audio.src = `https://api.music.rockhosting.org/api/song/${_list[0].id}`;
+                
                 setQueue(_list);
                 setQueueIndex(0);
                 setCurrentSong(_list[0]);
                 setCurrentList(id);
+                audio.play();
             })
     }
 
     const handleDownloadList = (id) => {
-        detDownloadingID(id)
+        setDownloadingID(id)
     }
     const handleAddListToQueue = (id) => {
         fetch(`https://api.music.rockhosting.org/api/list/${id}`)
@@ -223,6 +236,26 @@ function ListWithName({ musicData }) {
             })
     }
 
+    const handleAddListToBottomQueue = (id) => {
+        fetch(`https://api.music.rockhosting.org/api/list/${id}`)
+            .then(response => response.text())
+            .then(data => JSON.parse(data))
+            .then(musicData => {
+
+                let _list = [...musicData.songs].filter(song => { if (song.in_database == false) { return false } else { return true } });
+
+                if (_list.length == 0) {
+                    return;
+                }
+
+                if (randomQueue) {
+                    _list.sort(() => Math.random() - 0.5);
+                }
+                setQueue(queue.concat(_list))
+            })
+    }
+
+
     return (
         <div
             ref={mainRef}
@@ -233,7 +266,7 @@ function ListWithName({ musicData }) {
             {Object.keys(listsByName).map((author) => (
                 <div key={author} className='m-2 mb-4'>
                     <label className='text-2xl md:text-4xl font-bold'>{author}</label>
-                    <div className='grid gap-2 mt-1]' style={{ gridTemplateColumns: `repeat(auto-fill, minmax(${innerWidth > 768 ? '350px' : '150px'}, 1fr))` }}>
+                    <div className='grid gap-2 mt-1' style={{ gridTemplateColumns: `repeat(auto-fill, minmax(${innerWidth > 768 ? '350px' : '150px'}, 1fr))` }}>
                         {listsByName[author].map((item) => (
                             <ContextMenu
                                 key={item.id}
@@ -241,6 +274,7 @@ function ListWithName({ musicData }) {
                                     "Play list": () => handlePlayList(item.id),
                                     "Download list": () => handleDownloadList(item.id),
                                     "Add list to queue": () => handleAddListToQueue(item.id),
+                                    "Add list to bottom of queue": () => handleAddListToBottomQueue(item.id),
                                 }}
                             >
                                 <Link
@@ -248,10 +282,10 @@ function ListWithName({ musicData }) {
                                     className={
                                         clsx('rounded-lg grid grid-cols-2 bg-neutral-700 md:hover:bg-neutral-600 items-center shadow-lg h-12 md:h-[50px]')
                                     }
-                                    style={{ 
-                                        gridTemplateColumns: 'max-content 1fr min-content', 
-                                        gridTemplateRows: '100%', 
-                                        background: downloadProgress.id == item.id ? `linear-gradient(90deg, rgb(100 100 100) 0%, rgb(100 100 100) ${downloadProgress.progress - 5}%, rgb(64 64 64) ${downloadProgress.progress}%, rgb(64 64 64) 100%)` : '' 
+                                    style={{
+                                        gridTemplateColumns: 'max-content 1fr min-content',
+                                        gridTemplateRows: '100%',
+                                        background: downloadProgress.id == item.id ? `linear-gradient(90deg, rgb(100 100 100) 0%, rgb(100 100 100) ${downloadProgress.progress - 5}%, rgb(64 64 64) ${downloadProgress.progress}%, rgb(64 64 64) 100%)` : ''
                                     }}
                                 >
 

@@ -5,3 +5,27 @@ Add lyrics in desktop
 Add lyrics in phone
 
 When song ends save info of time played in database
+
+When song is added to queue, the list where it comes from is stored to set currentlist
+
+When there is only one genere, it should be 'Genre | Album Rock' instead of 'Genres | Album Rock'
+Store volume in localStorage
+
+
+
+User database
+id  
+username
+email
+picture_url
+lists  
+last_played_songs 
+current_list
+current_song
+current_time
+queue
+queue_index
+randomqueue
+volume
+admin
+super_admin

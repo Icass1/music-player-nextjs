@@ -43,13 +43,13 @@ export function Song({ type, songsList, index, song, listId }) {
             if (randomQueue) {
                 list.sort(() => Math.random() - 0.5)
             }
-            audio.src = `https://api.music.rockhosting.org/api/song/${song.id}`;
-            audio.play();
-
+            // audio.src = `https://api.music.rockhosting.org/api/song/${song.id}`;
+            
             setQueue([song].concat(list));
             setQueueIndex(0);
             setCurrentSong(song);
             setCurrentList(listId);
+            audio.play();
         }
     };
 
@@ -127,20 +127,21 @@ export function Song({ type, songsList, index, song, listId }) {
             } : {
                 "Download": handleDownload,
                 "Add to queue": handleAddToQueue,
+                "Copy ID": () => {console.log(song.id)}
             }}
         >
             <div onClick={handlePlayClick} className="relative ml-3 mr-3 mt-2 mb-2">
                 {type == "Album" ? (
-                    <AlbumSong key={index} songsList={songsList} song={song} index={index} listId={listId} downloadProgress={downloadProgress}></AlbumSong>
+                    <AlbumSong key={index} songsList={songsList} song={song} index={index} listId={listId} downloadProgress={downloadProgress} handleDownloadToDatabase={handleDownloadToDatabase}></AlbumSong>
                 ) : (
-                    <PlaylistSong key={index} songsList={songsList} song={song} index={index} listId={listId} downloadProgress={downloadProgress}></PlaylistSong>
+                    <PlaylistSong key={index} songsList={songsList} song={song} index={index} listId={listId} downloadProgress={downloadProgress} handleDownloadToDatabase={handleDownloadToDatabase}></PlaylistSong>
                 )}
             </div>
         </ContextMenu>
     )
 }
 
-function AlbumSong({ index, songsList, song, listId, downloadProgress }) {
+function AlbumSong({ index, songsList, song, listId, downloadProgress, handleDownloadToDatabase }) {
 
     const { currentSong, currentList, isPlaying } = useContext(MediaPlayerContext);
 
@@ -168,15 +169,17 @@ function AlbumSong({ index, songsList, song, listId, downloadProgress }) {
                 <label></label>
             ) : (
                 <Image
+                    className={clsx("cursor-pointer [filter:invert(29%)_sepia(93%)_saturate(1108%)_hue-rotate(25deg)_brightness(93%)_contrast(98%)]", {"hover:[filter:invert(45%)_sepia(100%)_saturate(412%)_hue-rotate(3deg)_brightness(90%)_contrast(97%)]": !song.in_database})}
                     src={song.in_database ? ("https://api.music.rockhosting.org/images/database2.webp") : ("https://api.music.rockhosting.org/images/download.svg")}
-                    style={{ filter: 'brightness(0) saturate(100%) invert(32%) sepia(57%) saturate(3843%) hue-rotate(39deg) brightness(86%) contrast(98%)' }}
+                    // style={{ filter: mouse_over ? ('brightness(0) saturate(100%) invert(32%) sepia(57%) saturate(3843%) hue-rotate(39deg) brightness(86%) contrast(98%)') : ("invert(30%) sepia(46%) saturate(2650%) hue-rotate(32deg) brightness(93%) contrast(98%)")}}
                     width={30}
                     height={30}
-                    alt="TEST"
-                    title="TEST"
+                    alt={song.in_database ? ("Database logo") : ("Download logo")}
+                    title={song.in_database ? ("Song is in database") : ("Click to download song")}
+                    onClick={!song.in_database ? handleDownloadToDatabase : () => {} }
                 />
             )}
-            <label className={clsx('md:text-xl md:w-[60px] text-neutral-400', { 'text-yellow-600': song.id == currentSong.id && currentList == listId, 'cursor-pointer': song.in_database !== false })}>{song.duration}</label>
+            <label className={clsx('md:text-xl w-[35px] md:w-[60px] text-neutral-400', { 'text-yellow-600': song.id == currentSong.id && currentList == listId, 'cursor-pointer': song.in_database !== false })}>{song.duration}</label>
         </div>
     )
 }
@@ -219,12 +222,14 @@ function PlaylistSong({ index, songsList, song, listId }) {
                 <label></label>
             ) : (
                 <Image
+                    className={clsx("cursor-pointer [filter:invert(29%)_sepia(93%)_saturate(1108%)_hue-rotate(25deg)_brightness(93%)_contrast(98%)]", {"hover:[filter:invert(45%)_sepia(100%)_saturate(412%)_hue-rotate(3deg)_brightness(90%)_contrast(97%)]": !song.in_database})}
                     src={song.in_database ? ("https://api.music.rockhosting.org/images/database2.webp") : ("https://api.music.rockhosting.org/images/download.svg")}
-                    style={{ filter: 'brightness(0) saturate(100%) invert(32%) sepia(57%) saturate(3843%) hue-rotate(39deg) brightness(86%) contrast(98%)' }}
+                    // style={{ filter: mouse_over ? ('brightness(0) saturate(100%) invert(32%) sepia(57%) saturate(3843%) hue-rotate(39deg) brightness(86%) contrast(98%)') : ("invert(30%) sepia(46%) saturate(2650%) hue-rotate(32deg) brightness(93%) contrast(98%)")}}
                     width={30}
                     height={30}
-                    alt="TEST"
-                    title={song.in_database ? ('Song in database') : ('Song is not available in database')}
+                    alt={song.in_database ? ("Database logo") : ("Download logo")}
+                    title={song.in_database ? ("Song is in database") : ("Click to download song")}
+                    onClick={!song.in_database ? handleDownloadToDatabase : () => {} }
                 />
             )}
 

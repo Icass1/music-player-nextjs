@@ -15,8 +15,8 @@ export default function Queue() {
     const handleClick = (e) => {
         let index = Number(e.target.getAttribute('index'));
 
-        audio.src = `https://api.music.rockhosting.org/api/song/${queue[index].id}`;
-        audio.play()
+        // audio.src = `https://api.music.rockhosting.org/api/song/${queue[index].id}`;
+        // audio.play()
 
         setQueueIndex(index);
         setCurrentSong(queue[index]);

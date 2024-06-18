@@ -4,11 +4,12 @@ import React, { useState, useEffect, useContext, useRef } from 'react';
 import Image from 'next/image';
 import { MediaPlayerContext } from '@/app/components/audioContext';
 import { Song } from '@/app/components/songContainer';
-import clsx from 'clsx';
 import Animation from './animation';
 import { debounce } from 'lodash';
 import classNames from 'classnames';
 import { usePathname } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { apiFetch } from '../utils/apiFetch';
 
 
 function CircularProgressBar({ className = "", progress = 50, smooth = true, onClick }) {
@@ -137,13 +138,16 @@ export default function DefaultListPage({ listId, musicData }) {
     const [downloadProgress, setDownloadProgress] = useState(undefined);
     const [downloadSmooth, setDownloadSmooth] = useState(true);
 
-    // document in undefined on server so using document.location.pathname directly gives an annoying error. 
-    // let pathName;
-    // if (typeof (window) === "undefined") {
-    //     pathName = "";
-    // } else {
-    //     pathName = document.location.pathname;
-    // }
+    const [userLists, setUserLists] = useState([]);
+
+    const session = useSession();
+
+    useEffect(() => {
+        if (session.status != "authenticated") { return }
+        apiFetch(`https://api.music.rockhosting.org/api/user/get-lists`, session).then(response => response.json()).then(data => {
+            setUserLists(data.map(list => list.id))
+        })
+    }, [session])
 
     const pathname = usePathname()
 
@@ -166,7 +170,6 @@ export default function DefaultListPage({ listId, musicData }) {
         genres.sort((a, b) => b[1] - a[1]); // Sort in descending order
         genres = genres.map(a => a[0]);
         // genres = Object.fromEntries(genres);
-
 
         setGenres(genres);
         sort(tempMusicData.songs, sortingBy.filter, sortingBy.direction);
@@ -368,6 +371,12 @@ export default function DefaultListPage({ listId, musicData }) {
         setSearchResult(songsOut);
     }, 300);
 
+    const handleAddListToLibrary = () => {
+        apiFetch(`https://api.music.rockhosting.org/api/user/add-list`, session, { method: "POST", body: JSON.stringify({ list_id: musicData.id }) }).then(response => response.json()).then(data => {
+            setUserLists(data.map(list => list.id))
+        })
+    }
+
     useEffect(() => {
         if (animationValue == 200) {
             searchBox.current.focus();
@@ -391,24 +400,43 @@ export default function DefaultListPage({ listId, musicData }) {
 
                             <label className='h-2 md:hidden'></label>
 
-                            <div
-                                className='hidden md:block mt-20 mb-2 h-16 w-16 bg-yellow-600 rounded-full bottom-4 left-4 cursor-pointer'
-                                onClick={currentList == listId && isPlaying ? (handlePauseClick) : (handlePlayClick)}
-                            >
-                                <Image
-                                    src={currentList == listId && isPlaying ? (`https://api.music.rockhosting.org/images/pause.svg`) : (`https://api.music.rockhosting.org/images/play.svg`)}
-                                    height={40}
-                                    width={40}
-                                    className='relative ml-auto mr-auto top-1/2 -translate-y-1/2'
-                                    title={currentList == listId && isPlaying ? ("Pause") : ("Play")}
-                                    alt=""
-                                />
+                            <div className='hidden md:flex mt-20 mb-2 flex-row gap-4'>
+                                <div
+                                    className='h-16 w-16 bg-yellow-600 rounded-full bottom-4 left-4 cursor-pointer'
+                                    onClick={currentList == listId && isPlaying ? (handlePauseClick) : (handlePlayClick)}
+                                >
+                                    <Image
+                                        src={currentList == listId && isPlaying ? (`https://api.music.rockhosting.org/images/pause.svg`) : (`https://api.music.rockhosting.org/images/play.svg`)}
+                                        height={40}
+                                        width={40}
+                                        className='relative ml-auto mr-auto top-1/2 -translate-y-1/2'
+                                        title={currentList == listId && isPlaying ? ("Pause") : ("Play")}
+                                        alt=""
+                                    />
+                                </div>
+                                {
+                                    !userLists.includes(listId) && !musicData.spotify_url ?
+                                        <div
+                                            className='h-16 w-16 bg-yellow-600 rounded-full bottom-4 left-4 cursor-pointer'
+                                            onClick={handleAddListToLibrary}
+                                        >
+                                            <Image
+                                                src='https://api.music.rockhosting.org/images/addList.svg'
+                                                height={40}
+                                                width={40}
+                                                className='relative ml-auto mr-auto top-1/2 -translate-y-1/2'
+                                                title='Add to library'
+                                                alt=""
+                                            />
+                                        </div>
+                                        :
+                                        <></>
+                                }
                             </div>
-
 
                             <label className='text-3xl md:text-5xl fade-out-neutral-200 font-bold mt-8 md:mt-0 min-w-0 md:min-h-14 max-w-full'>{musicData.name}</label>
                             <label className='text-xl md:text-2xl fade-out-neutral-400 min-w-0 max-w-full'>{musicData.author}</label>
-                            <label className='text-lg md:text-xl fade-out-neutral-400 min-w-0 max-w-full'>Genres | {genres?.join(", ")}</label>
+                            <label className='text-lg md:text-xl fade-out-neutral-400 min-w-0 max-w-full'>Genre{genres.length == 1 ? <></> : <>s</>} | {genres?.join(", ")}</label>
                         </div>
                     </div>
 
@@ -457,7 +485,7 @@ export default function DefaultListPage({ listId, musicData }) {
                 </div>
 
             </div>
-            <div className='hidden md:block fixed  flex-row h-14 bg-yellow-600 rounded-full bottom-5 right-6' style={{ width: animationValue }}>
+            <div className='hidden md:flex fixed flex-row h-14 bg-yellow-600 rounded-full bottom-5 right-6' style={{ width: animationValue }}>
                 <Image
                     src="https://api.music.rockhosting.org/images/search.svg"
                     width={35}

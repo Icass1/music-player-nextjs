@@ -23,15 +23,19 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({ children }) {
 
-    const [searchResults, setSearchResults] = useState(); 
+    const [searchResults, setSearchResults] = useState();
 
     const handleSearch = async (query) => {
 
-        // Perform fetch request here with the search query
+        if (query == null) { 
+            setSearchResults([]);
+            return
+        }
+
         try {
             const response = await fetch(`https://api.music.rockhosting.org/api/search?q=${query}`);
             const data = await response.json();
-            setSearchResults(data); // Assuming your API returns results
+            setSearchResults(data);
         } catch (error) {
             console.error('Error fetching search results:', error);
         }
@@ -59,8 +63,8 @@ export default function RootLayout({ children }) {
                                 <main
                                     style={{ gridArea: 'main' }}
                                     className="bg-neutral-900 rounded-md relative h-full overflow-y-auto scroll-smooth"
-                                    // onScroll={(e) => { window.location.pathname == "/" ? (setScrollValue(e.target.scrollTop)) : (null) }}
-                                    
+                                // onScroll={(e) => { window.location.pathname == "/" ? (setScrollValue(e.target.scrollTop)) : (null) }}
+
                                 >
                                     {usePathname() == "/search" ? (
                                         <Search searchResults={searchResults}></Search>

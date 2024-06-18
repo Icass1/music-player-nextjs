@@ -14,9 +14,9 @@ module.exports = function fadeOut () {
           'background': `linear-gradient(90deg, ${colorPalette[i]} 0%, ${colorPalette[i]} 80%, transparent 100%)`,
           'background-clip': 'text',
           '-webkit-text-fill-color': 'transparent',
+          'overflow-x': 'hidden',
         }
       }
-  
       addUtilities(utilities)
   }))
 }

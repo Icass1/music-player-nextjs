@@ -107,10 +107,9 @@ export default function SongInfo() {
     useEffect(() => {
 
         if (!songDataRef.current) {return}
-        
 
-        songDataRef.current.addEventListener('touchstart', handleTouchStart);
-        songDataRef.current.addEventListener('touchmove', handleTouchMove);
+        songDataRef.current.addEventListener('touchstart', handleTouchStart, {passive: true});
+        songDataRef.current.addEventListener('touchmove', handleTouchMove, {passive: true});
 
         var xDown = null;
         var yDown = null;

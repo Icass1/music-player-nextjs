@@ -45,6 +45,10 @@ const AudioProvider = ({ children }) => {
 
         if (session.status == "authenticated") {
 
+            if (randomQueue != null) {
+                return
+            }
+
             fetch(`https://api.music.rockhosting.org/api/song/info/${session.data.user.current_song}`).
                 then(response => response.json()).
                 then(data => {
@@ -57,7 +61,6 @@ const AudioProvider = ({ children }) => {
             setQueueIndex(session.data.user.queue_index)
             setRandomQueue(session.data.user.random_queue)
             audio.currentTime = session.data.user.current_time
-            console.log(session.data.user)
 
         } else if (session.status == "unauthenticated") {
             storedCurrentSong = JSON.parse(localStorage.getItem('currentSong'));
@@ -113,7 +116,6 @@ const AudioProvider = ({ children }) => {
         if (audio.src == `https://api.music.rockhosting.org/api/song/${currentSong.id}`) {
 
         } else if (audio.src == "") {
-            console.log()
             let currentTime = audio.currentTime
             audio.src = `https://api.music.rockhosting.org/api/song/${currentSong.id}`;
             audio.currentTime = currentTime
@@ -155,6 +157,18 @@ const AudioProvider = ({ children }) => {
 
     }, [currentList, session]);
 
+
+
+    // const updateCurrentTime = debounce((currentTime, session) => {
+    //     console.log("ASDF")
+    //     apiFetch('https://api.music.rockhosting.org/api/user/set', session, {
+    //         method: "POST",
+    //         body: JSON.stringify({
+    //             current_time: currentTime,
+    //         })
+    //     })
+    // }, 1000);
+
     useEffect(() => {
         if (currentTime == "null" || currentTime == null) {
             return
@@ -168,6 +182,8 @@ const AudioProvider = ({ children }) => {
                     current_time: currentTime,
                 })
             })
+
+            // updateCurrentTime(currentTime, session);
 
         } else if (session.status == "unauthenticated") {
             localStorage.setItem('currentTime', JSON.stringify(currentTime));
@@ -295,23 +311,19 @@ const AudioProvider = ({ children }) => {
 
         audio.onended = function () {
 
-            if (queueIndex + 1 >= queue.length) {
-                // audio.src = `https://api.music.rockhosting.org/api/song/${queue[0].id}`;
-                // audio.play();
+            // console.log(currentSong)
+            apiFetch("https://api.music.rockhosting.org/api/user/end-song", session, {method: "POST", body: JSON.stringify({song_id: currentSong})})
 
+            if (queueIndex + 1 >= queue.length) {
                 setCurrentSong(queue[0]);
                 setQueueIndex(0);
                 return;
             }
-
-            // audio.src = `https://api.music.rockhosting.org/api/song/${queue[queueIndex + 1].id}`;
-            // audio.play();
-
             setCurrentSong(queue[queueIndex + 1]);
             setQueueIndex(queueIndex + 1);
         }
 
-    }, [audio, queue, queueIndex])
+    }, [audio, queue, queueIndex, session])
 
 
     useEffect(() => {
@@ -342,7 +354,7 @@ const AudioProvider = ({ children }) => {
     }
 
     const previousSong = useCallback(() => {
-        console.log("previousSong useCallback")
+        // console.log("previousSong useCallback")
         if (currentTime > 5) {
             audio.currentTime = 0;
         } else {
@@ -360,7 +372,7 @@ const AudioProvider = ({ children }) => {
     }, [audio, currentTime, queueIndex, queue, setCurrentSong, setQueueIndex])
 
     const nextSong = useCallback(() => {
-        console.log("nextSong useCallback", queue)
+        // console.log("nextSong useCallback", queue)
         if (queueIndex >= queue.length - 1) {
 
             // audio.src = `https://api.music.rockhosting.org/api/song/${queue[0].id}`;

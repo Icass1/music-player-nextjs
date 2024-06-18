@@ -49,7 +49,7 @@ export function Song({ type, songsList, index, song, listId }) {
             setQueueIndex(0);
             setCurrentSong(song);
             setCurrentList(listId);
-            audio.play();
+            // audio.play();
         }
     };
 
@@ -184,7 +184,7 @@ function AlbumSong({ index, songsList, song, listId, downloadProgress, handleDow
     )
 }
 
-function PlaylistSong({ index, songsList, song, listId }) {
+function PlaylistSong({ index, songsList, song, listId, handleDownloadToDatabase }) {
 
     const { currentSong, isPlaying, currentList } = useContext(MediaPlayerContext);
 

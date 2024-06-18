@@ -43,13 +43,11 @@ export function Song({ type, songsList, index, song, listId }) {
             if (randomQueue) {
                 list.sort(() => Math.random() - 0.5)
             }
-            // audio.src = `https://api.music.rockhosting.org/api/song/${song.id}`;
             
             setQueue([song].concat(list));
             setQueueIndex(0);
             setCurrentSong(song);
             setCurrentList(listId);
-            // audio.play();
         }
     };
 

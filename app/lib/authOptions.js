@@ -52,7 +52,7 @@ export const authOptions = {
 
             if (response.ok) {
                 const data = await response.json()
-                console.log("data", data)
+                // console.log("data", data)
                 session.user.current_song = data.current_song
                 session.user.current_list = data.current_list
                 session.user.current_time = data.current_time

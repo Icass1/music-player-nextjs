@@ -16,35 +16,41 @@ export default function Home() {
     const [musicData, setMusicData] = useState([]);
     const session = useSession();
 
+
     useEffect(() => {
-        if (session?.status != "authenticated") {return}
+        if (session?.status != "authenticated") { return }
 
-        const fetchData = async () => {
-            try {
-                const response = await apiFetch(`https://api.music.rockhosting.org/api/user/get-lists`, session)
-                // const response = await fetch(`https://api.music.rockhosting.org/api/user/get-lists`, {
-                //     method: "GET",
-                //     headers: {
-                //         'Content-Type': 'application/json',
-                //         'Authorization': `Bearer ${session.data.user.id}` // Pass user id in the headers
-                //     },
-                // })
+        apiFetch(`https://api.music.rockhosting.org/api/user/get-lists`, session).then(response => response.json()).then(data => {
+            setMusicData(data);
+        })
 
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data = await response.json();
-                setMusicData(data);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
-        fetchData();
     }, [session]);
 
     return (
+        <>
+            {session?.status == "loading" ?
+                // {session?.status ?
+                <div className='relative text-3xl font-bold top-1/2 left-1/2 w-fit -translate-x-1/2 -translate-y-1/2'>Loading your lists...</div>
+                :
+                <>
+                    {
+                        musicData.length == 0 ?
+                            <div className='relative w-fit top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>
+                                <div className='w-auto text-center text-3xl font-bold'>It feels lonely here...</div>
+                                <div className='flex flex-row gap-2'>
+                                    <div className='w-auto text-center text-xl font-bold'>Click in the search button to add lists to your library</div>
+                                    <Link href="/search">
+                                        <Image className="md:block invert-[0.8] hover:invert-[0.7] select-none" src='https://api.music.rockhosting.org/images/search.svg' width={30} height={30} alt="Search" />
+                                    </Link>
+                                </div>
+                            </div>
+                            :
+                            <ListWithName musicData={musicData} setMusicData={setMusicData}></ListWithName>
+                    }
+                </>
+            }
+        </>
         // <Grid musicData={musicData}></Grid>
-        <ListWithName musicData={musicData}></ListWithName>
     );
 }
 
@@ -67,7 +73,7 @@ function Grid({ musicData }) {
     )
 }
 
-function ListWithName({ musicData }) {
+function ListWithName({ musicData, setMusicData }) {
 
     const { scrollValue, setScrollValue } = useContext(ScrollContext);
 
@@ -81,15 +87,7 @@ function ListWithName({ musicData }) {
 
     const [innerWidth, setInnerWidth] = useState(0)
 
-    // const restoreScroll = useCallback(() => {
-    //     if (mainRef.current) {
-    //         setTimeout(() => {
-    //             console.log(mainRef.current.parentNode.scrollTop, scrollValue)
-    //         }, 100);
-    //     }
-    // }, [mainRef, scrollValue])
-
-    // useEffect(() => restoreScroll, [restoreScroll])
+    const session = useSession()
 
     useEffect(() => {
 
@@ -201,7 +199,7 @@ function ListWithName({ musicData }) {
                 }
 
                 // audio.src = `https://api.music.rockhosting.org/api/song/${_list[0].id}`;
-                
+
                 setQueue(_list);
                 setQueueIndex(0);
                 setCurrentSong(_list[0]);
@@ -255,6 +253,11 @@ function ListWithName({ musicData }) {
             })
     }
 
+    const handleRemoveList = (id) => {
+        apiFetch(`https://api.music.rockhosting.org/api/user/remove-list`, session, { method: "POST", body: JSON.stringify({ list_id: id }) }).then(response => response.json()).then(data => {
+            setMusicData(data);
+        })
+    }
 
     return (
         <div
@@ -271,10 +274,11 @@ function ListWithName({ musicData }) {
                             <ContextMenu
                                 key={item.id}
                                 options={{
-                                    "Play list": () => handlePlayList(item.id),
-                                    "Download list": () => handleDownloadList(item.id),
-                                    "Add list to queue": () => handleAddListToQueue(item.id),
-                                    "Add list to bottom of queue": () => handleAddListToBottomQueue(item.id),
+                                    "Play": () => handlePlayList(item.id),
+                                    "Download": () => handleDownloadList(item.id),
+                                    "Add to queue": () => handleAddListToQueue(item.id),
+                                    "Add to bottom of queue": () => handleAddListToBottomQueue(item.id),
+                                    "Remove from library": () => { handleRemoveList(item.id) },
                                 }}
                             >
                                 <Link

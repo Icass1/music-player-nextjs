@@ -1,21 +1,21 @@
 'use client'
 
 import Link from 'next/link';
-import React, { useState, useEffect, useContext, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useContext, useRef, useCallback, cloneElement } from 'react';
 import Image from 'next/image';
 import clsx from 'clsx';
 import { MediaPlayerContext } from './components/audioContext';
 import Equalizer from './components/equalizer';
 import { ScrollContext } from './components/scrollContext';
 import ContextMenu from './components/contextMenu';
+import SelectionArea from './components/selectionArea';
 import { useSession } from "next-auth/react";
 import { apiFetch } from './utils/apiFetch';
 
 export default function Home() {
 
-    const [musicData, setMusicData] = useState([]);
+    const [musicData, setMusicData] = useState(null);
     const session = useSession();
-
 
     useEffect(() => {
         if (session?.status != "authenticated") { return }
@@ -28,19 +28,38 @@ export default function Home() {
 
     return (
         <>
+            <div className='flex flex-row md:hidden mt-3 ml-3 gap-4'>
+                <Link className='relative block md:hidden bg-yellow-600 w-12 h-12 rounded-full' href='/login'>
+                    <Image
+                        className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full'
+                        src={session.status == "authenticated" ? session?.data?.user?.image : 'https://api.music.rockhosting.org/images/user.svg'}
+                        width={40}
+                        height={40}
+                        alt='User icon'
+                    />
+                </Link>
+
+                <Link className='relative block md:hidden bg-white w-12 h-12 rounded-full ' href='/user'>
+                    <div className='w-10 h-10 block relative bg-black rounded-full left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'>
+                        <label className='block relative bg-black rounded-full text-center text-2xl font-bold left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'>U</label>
+                    </div>
+                </Link>
+
+            </div>
+
             {session?.status == "loading" ?
                 // {session?.status ?
                 <div className='relative text-3xl font-bold top-1/2 left-1/2 w-fit -translate-x-1/2 -translate-y-1/2'>Loading your lists...</div>
                 :
                 <>
                     {
-                        musicData.length == 0 ?
+                        musicData == null || musicData.length == 0 ?
                             <div className='relative w-fit top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>
                                 <div className='w-auto text-center text-3xl font-bold'>It feels lonely here...</div>
-                                <div className='flex flex-row gap-2'>
-                                    <div className='w-auto text-center text-xl font-bold'>Click in the search button to add lists to your library</div>
-                                    <Link href="/search">
-                                        <Image className="md:block invert-[0.8] hover:invert-[0.7] select-none" src='https://api.music.rockhosting.org/images/search.svg' width={30} height={30} alt="Search" />
+                                <div className='flex md:flex-row flex-col gap-2'>
+                                    <div className='w-auto text-center text-xl font-bold ml-2 mr-2'>Click in the search button to add lists to your library</div>
+                                    <Link className="block relative left-1/2 -translate-x-1/2 md:left-0 md:-translate-x-0 w-fit" href="/search">
+                                        <Image className="block invert-[0.8] hover:invert-[0.7] select-none" src='https://api.music.rockhosting.org/images/search.svg' width={30} height={30} alt="Search" />
                                     </Link>
                                 </div>
                             </div>
@@ -263,8 +282,6 @@ function ListWithName({ musicData, setMusicData }) {
         <div
             ref={mainRef}
             className="overflow-x-hidden"
-        // onScroll={(e) => { console.log(window.location.pathname, e.target.scrollTop); window.location.pathname == "/" ? (setScrollValue(e.target.scrollTop)) : (null) }}
-        // onScroll={(e) => { console.log(window.location.pathname, e.target.scrollTop) }}
         >
             {Object.keys(listsByName).map((author) => (
                 <div key={author} className='m-2 mb-4'>

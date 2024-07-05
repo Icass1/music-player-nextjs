@@ -10,6 +10,7 @@ import classNames from 'classnames';
 import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { apiFetch } from '../utils/apiFetch';
+import clsx from 'clsx';
 
 
 function CircularProgressBar({ className = "", progress = 50, smooth = true, onClick }) {
@@ -308,7 +309,7 @@ export default function DefaultListPage({ listId, musicData }) {
         }
 
         let backgroundColor = `rgb(${rSum / (image.width * image.height)}, ${gSum / (image.width * image.height)}, ${bSum / (image.width * image.height)})`;
-
+        
         setBackgroundGradient(backgroundColor);
     }
 
@@ -400,7 +401,7 @@ export default function DefaultListPage({ listId, musicData }) {
 
                             <label className='h-2 md:hidden'></label>
 
-                            <div className='hidden md:flex mt-20 mb-2 flex-row gap-4'>
+                            <div className='hidden md:flex md:mt-20 mb-2 flex-row gap-4'>
                                 <div
                                     className='h-16 w-16 bg-yellow-600 rounded-full bottom-4 left-4 cursor-pointer'
                                     onClick={currentList == listId && isPlaying ? (handlePauseClick) : (handlePlayClick)}
@@ -440,12 +441,47 @@ export default function DefaultListPage({ listId, musicData }) {
                         </div>
                     </div>
 
+                    <div className='md:hidden relative grid w-auto mr-3 ml-3 mb-3' style={{ gridTemplateColumns: '1fr max-content max-content' }}>
+                        <input
+                            placeholder="Type to search..."
+                            className="text-lg min-w-0 block border-solid text-neutral-700 border-neutral-300 bg-transparent border-b focus:outline-none"
+                            onInput={handleSearch}
+                        />
+                        {
+                            !userLists.includes(listId) && !musicData.spotify_url ?
+                                <Image
+                                    onClick={handleAddListToLibrary}
+                                    src='https://api.music.rockhosting.org/images/addList.svg'
+                                    height={40}
+                                    width={40}
+                                    className='relative ml-1 invert-[0.2]'
+                                    title='Add to library'
+                                    alt=""
+                                />
+                                :
+                                <label></label>
+                        }
+
+                        <Image
+                            src={currentList == listId && isPlaying ? (`https://api.music.rockhosting.org/images/pause.svg`) : (`https://api.music.rockhosting.org/images/play.svg`)}
+                            height={40}
+                            width={40}
+                            className='relative ml-1 invert-[0.2]'
+                            title={currentList == listId && isPlaying ? ("Pause") : ("Play")}
+                            alt=""
+                            onClick={currentList == listId && isPlaying ? (handlePauseClick) : (handlePlayClick)}
+
+                        />
+                    </div>
+
                     {musicData.type == "Album" ? (
                         // Album column titles
-                        <div className='grid ml-3 mr-3 items-center rounded-md gap-2' style={{ gridTemplateColumns: '50px 1fr 60px' }}>
-                            <div></div>
+                        <div className='grid ml-3 mr-3 items-center rounded-md gap-2' style={{ gridTemplateColumns: 'max-content 1fr max-content max-content max-content' }}>
+                            <div className='md:w-[50px] w-6'></div>
                             <div className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Title</div>
-                            <div className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Time</div>
+                            <label></label>
+                            <label></label>
+                            <div className='font-bold text-base md:text-lg text-neutral-300 cursor-pointer select-none hover:underline w-[35px] md:w-[60px]' onClick={handleSort}>Time</div>
                         </div>
                     ) : (
                         // Playlist column titles
@@ -471,7 +507,7 @@ export default function DefaultListPage({ listId, musicData }) {
                     {searchResult.length != 0 ? (
                         <div className='grid ml-5 mr-5 items-center' style={{ gridTemplateColumns: '1fr max-content 1fr' }}>
                             <div className='h-2 bg-yellow-600 rounded-lg'></div>
-                            <label className='text-center ml-2 mr-3'>End of search results</label>
+                            <label className='text-center ml-2 mr-3 font-bold'>End of search results</label>
                             <div className='h-2 bg-yellow-600 rounded-lg'></div>
                         </div>
                     ) : (

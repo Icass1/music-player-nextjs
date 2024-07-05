@@ -63,7 +63,7 @@ export default function Header({ handleSearch }) {
     }, [audio, muteAnimationValue, lastAudioVolume, muted])
 
     useEffect(() => {
-        
+
         const handleResize = () => {
             setInnerWidth(window.innerWidth)
         }
@@ -80,7 +80,7 @@ export default function Header({ handleSearch }) {
     const handleSearchInputChange = (e) => {
         const query = e.target.value;
 
-        window.history.replaceState( {} , "RockIT", `/search?q=${query}` );
+        window.history.replaceState({}, "RockIT", `/search?q=${query}`);
 
         // Clear the previous timer to avoid multiple fetches
         clearTimeout(debounceTimer);
@@ -120,13 +120,12 @@ export default function Header({ handleSearch }) {
     //     navigator.storage.estimate().then(data => {
     //         console.log(data)
     //     })
-    
+
     // }, [])
 
-    
 
     return (
-        <div className="grid h-full items-center ml-auto mr-auto w-min md:w-auto md:ml-5 md:mr-5 gap-10 md:gap-4" style={{ gridTemplateColumns: innerWidth > 768 ? '30px 30px min-content 1fr 30px 30px 30px 150px min-content': '30px 30px 30px', gridTemplateRows: '100%' }}>
+        <div className="grid h-full items-center ml-auto mr-auto w-min md:w-auto md:ml-5 md:mr-5 gap-10 md:gap-4" style={{ gridTemplateColumns: innerWidth > 768 ? '30px 30px min-content 1fr 30px 30px 30px 150px min-content' : '30px 30px 30px', gridTemplateRows: '100%' }}>
             <Link href="/">
                 <Image className="md:block invert-[0.8] hover:invert-[0.7] select-none" src='https://api.music.rockhosting.org/images/home.svg' width={30} height={30} alt="Search" />
             </Link>
@@ -189,10 +188,9 @@ export default function Header({ handleSearch }) {
 
             {session.data ? (
                 <div className="hidden md:flex flex-row gap-2 w-max items-center">
-                    {/* <Image className="rounded-full" src={session?.data?.token?.token?.user?.image} width={40} height={40} alt="" /> */}
-                    <Image className="rounded-full" src={session?.data?.user?.image} width={40} height={40} alt="" />
-                    <div>{session?.data?.user?.name} {}</div>
-                    {/* <div>{session?.data?.token?.token?.user?.name}</div> */}
+                    <Link href='/user'>
+                        <Image className="rounded-full" src={session?.data?.user?.image} width={40} height={40} alt="" />
+                    </Link>
                     <button className="bg-neutral-700 pl-2 pr-2 rounded-lg hover:bg-red-600" onClick={() => signOut()}>Logout</button>
                 </div>
             ) : (

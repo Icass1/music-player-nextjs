@@ -6,6 +6,7 @@ import Equalizer from "./equalizer";
 import Link from "next/link";
 import ContextMenu from "./contextMenu";
 import { useRouter } from "next/router";
+import { downloadAndSaveMusic, getMusicFile } from "../utils/storage";
 
 export function Song({ type, songsList, index, song, listId }) {
 
@@ -51,7 +52,7 @@ export function Song({ type, songsList, index, song, listId }) {
         }
     };
 
-    const handleDownload = () => {
+    const handleDownloadMP3 = () => {
         fetch(`https://api.music.rockhosting.org/api/song/${song.id}`)
             .then(response => response.blob())
             .then(blob => {
@@ -65,6 +66,12 @@ export function Song({ type, songsList, index, song, listId }) {
                 window.URL.revokeObjectURL(url);
             })
             .catch(error => console.error('Download failed:', error));
+    }
+
+    const handleDownload = () => {
+
+        downloadAndSaveMusic(`https://api.music.rockhosting.org/api/song/${song.id}`, song.id)
+        setStored(true)
     }
 
     const handleAddToQueue = () => {
@@ -115,6 +122,18 @@ export function Song({ type, songsList, index, song, listId }) {
             setDownloadProgress(undefined)
         };
     }
+    
+    const [stored, setStored] = useState(false)
+
+    useEffect(() => {
+        getMusicFile(song.id).then(data => {
+            if (data == undefined) {
+                setStored(false)
+            } else {
+                setStored(true)
+            }
+        })
+    }, [])
 
     return (
         <ContextMenu
@@ -123,6 +142,7 @@ export function Song({ type, songsList, index, song, listId }) {
                 "Copy Spotify URL": () => { console.log(song.spotify_url) },
                 "Copy Spotify ID": () => { console.log(song.spotify_url.replace("https://open.spotify.com/track/", "")) },
             } : {
+                "Download MP3": handleDownloadMP3,
                 "Download": handleDownload,
                 "Add to queue": handleAddToQueue,
                 "Copy ID": () => {console.log(song.id)}
@@ -130,26 +150,26 @@ export function Song({ type, songsList, index, song, listId }) {
         >
             <div onClick={handlePlayClick} className="relative ml-3 mr-3 mt-2 mb-2">
                 {type == "Album" ? (
-                    <AlbumSong key={index} songsList={songsList} song={song} index={index} listId={listId} downloadProgress={downloadProgress} handleDownloadToDatabase={handleDownloadToDatabase}></AlbumSong>
+                    <AlbumSong key={index} stored={stored} song={song} index={index} listId={listId} downloadProgress={downloadProgress} handleDownloadToDatabase={handleDownloadToDatabase}></AlbumSong>
                 ) : (
-                    <PlaylistSong key={index} songsList={songsList} song={song} index={index} listId={listId} downloadProgress={downloadProgress} handleDownloadToDatabase={handleDownloadToDatabase}></PlaylistSong>
+                    <PlaylistSong key={index} stored={stored} song={song} index={index} listId={listId} downloadProgress={downloadProgress} handleDownloadToDatabase={handleDownloadToDatabase}></PlaylistSong>
                 )}
             </div>
         </ContextMenu>
     )
 }
 
-function AlbumSong({ index, songsList, song, listId, downloadProgress, handleDownloadToDatabase }) {
+function AlbumSong({ index, stored, song, listId, downloadProgress, handleDownloadToDatabase }) {
 
     const { currentSong, currentList, isPlaying } = useContext(MediaPlayerContext);
 
     return (
         <div
             className={clsx('grid items-center rounded-md h-9 md:h-12 gap-2', { 'md:hover:bg-neutral-800 cursor-pointer': song.in_database !== false })}
-            style={{ gridTemplateColumns: 'max-content 1fr max-content max-content max-content', gridTemplateRows: '50px' }}
+            style={{ gridTemplateColumns: 'max-content 1fr max-content max-content max-content max-content', gridTemplateRows: '50px' }}
         >
 
-            {song.id == currentSong.id && isPlaying ? (
+            {song.id == currentSong.id && isPlaying && currentList == listId ? (
                 <Equalizer className='w-6 md:w-[50px] h-full top-0' bar_count={innerWidth > 768 ? 10: 5} bar_gap={1} centered={true} toggleCenter={false} />
             ) : (
                 <label className={clsx('text-xl w-6 md:w-[50px] text-neutral-400 text-center ', { 'text-yellow-600': song.id == currentSong.id && currentList == listId, 'cursor-pointer': song.in_database !== false })}>{index + 1}</label>
@@ -177,12 +197,17 @@ function AlbumSong({ index, songsList, song, listId, downloadProgress, handleDow
                     onClick={!song.in_database ? handleDownloadToDatabase : () => {} }
                 />
             )}
+            {stored ? (
+                <label>ok</label>
+            ) : (
+                <label></label>
+            )}
             <label className={clsx('md:text-xl w-[35px] md:w-[60px] text-neutral-400', { 'text-yellow-600': song.id == currentSong.id && currentList == listId, 'cursor-pointer': song.in_database !== false })}>{song.duration}</label>
         </div>
     )
 }
 
-function PlaylistSong({ index, songsList, song, listId, handleDownloadToDatabase }) {
+function PlaylistSong({ index, stored, song, listId, handleDownloadToDatabase }) {
 
     const { currentSong, isPlaying, currentList } = useContext(MediaPlayerContext);
 

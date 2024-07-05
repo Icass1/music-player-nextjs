@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, { cloneElement, useCallback, useEffect, useRef, useState } from "react";
 
 export default function ContextMenu({ children, options }) {
 
@@ -49,11 +49,11 @@ export default function ContextMenu({ children, options }) {
         };
     }, [showing, close])
 
+    const applyStyleToChildren = (child) => {
+        if (React.isValidElement(child)) {
 
-    return (
-        <>
-            <div
-                onContextMenu={(e) => {
+            let newProps = {
+                onContextMenu: (e) => {
                     e.preventDefault();
                     setShowing(true)
 
@@ -77,18 +77,25 @@ export default function ContextMenu({ children, options }) {
                         y = e.clientY - contextMenuRef.current.offsetHeight;
                     }
 
-                    if (x < 5) { 
+                    if (x < 5) {
                         x = 5
                     }
 
-                    if (y < 5) { 
+                    if (y < 5) {
                         y = 5
                     }
                     setPosition([x, y]);
-                }}
-            >
-                {children}
-            </div>
+
+                }
+            }
+            return cloneElement(child, newProps);
+        }
+        return child;
+    };
+
+    return (
+        <>
+            {applyStyleToChildren(children)}
             <div ref={contextMenuRef} className={clsx(`fixed bg-[#252525e0] rounded-lg z-50 w-max border-solid border-neutral-700 border-1`, { "invisible": !showing })} style={{ left: position[0], top: position[1] }}>
                 {Object.keys(options).map((key) => (
                     <div key={key} className="p-2 rounded-lg md:text-sm text-lg hover:bg-neutral-600 cursor-pointer opacity-100" onClick={() => { options[key](); setShowing(false) }}>{key}</div>

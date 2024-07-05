@@ -2,9 +2,6 @@
 
 
 export function apiFetch(url, session, options = {}) {
-    // console.log("apiFetch")
-
-    // console.log(session)
 
     // Default headers
     const headers = {

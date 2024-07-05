@@ -3,6 +3,7 @@
 import { useSession } from 'next-auth/react';
 import React, { createContext, useState, useEffect, useCallback } from 'react';
 import { apiFetch } from '../utils/apiFetch';
+import { getMusicFile } from '../utils/storage';
 
 const MediaPlayerContext = createContext();
 
@@ -48,12 +49,15 @@ const AudioProvider = ({ children }) => {
             if (randomQueue != null) {
                 return
             }
+            
+            if (session.data.user.current_song) {
 
-            fetch(`https://api.music.rockhosting.org/api/song/info/${session.data.user.current_song}`).
-                then(response => response.json()).
-                then(data => {
-                    setCurrentSong(data);
-                })
+                fetch(`https://api.music.rockhosting.org/api/song/info/${session.data.user.current_song}`).
+                    then(response => response.json()).
+                    then(data => {
+                        setCurrentSong(data);
+                    })
+            }
 
             setCurrentList(session.data.user.current_list);
 
@@ -312,7 +316,7 @@ const AudioProvider = ({ children }) => {
         audio.onended = function () {
 
             // console.log(currentSong)
-            apiFetch("https://api.music.rockhosting.org/api/user/end-song", session, {method: "POST", body: JSON.stringify({song_id: currentSong})})
+            apiFetch("https://api.music.rockhosting.org/api/user/end-song", session, { method: "POST", body: JSON.stringify({ song_id: currentSong }) })
 
             if (queueIndex + 1 >= queue.length) {
                 setCurrentSong(queue[0]);

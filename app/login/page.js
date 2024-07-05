@@ -1,19 +1,19 @@
 
 'use client';
 
-import { signIn } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 
 export default function Login() {
 
+    const session = useSession();
+
     const githubLogin = () => {
-        console.log("github login")
-        signIn("github", {callbackUrl: '/'})
+        signIn("github", { callbackUrl: '/' });
     }
 
     const googleLogin = () => {
-        console.log("google login")
-        signIn("google", {callbackUrl: '/'})
+        signIn("google", { callbackUrl: '/' });
     }
 
     return (
@@ -27,7 +27,7 @@ export default function Login() {
                 style={{ width: '100%', height: '100%' }}
             />
 
-            <div className=" bg-[#dcdcdc70] rounded-lg absolute left-1/2 top-1/2 w-96 h-auto -translate-x-1/2 -translate-y-1/2">
+            <div className=" bg-[#dcdcdc70] rounded-lg absolute left-1/2 top-1/2 w-80 h-auto -translate-x-1/2 -translate-y-1/2">
 
                 <label className="relative block text-3xl text-[#2a272b] font-bold text-center w-full pt-4 select-none" style={{ textShadow: '1px 1px 2px #3b3b3b' }}>Login</label>
 
@@ -54,6 +54,12 @@ export default function Login() {
                     />
                     <label className="font-bold mt-auto mb-auto text-lg ml-2 cursor-pointer select-none">Sign in with GitHub</label>
                 </div>
+                {
+                    session.status == "authenticated" ?
+                        <label className="font-bold block ml-auto mr-auto mt-6 mb-4 w-[250px] text-right text-red-800 text-xl cursor-pointer select-none" onClick={signOut}>Logout</label>
+                        :
+                        <></>
+                }
             </div>
         </div>
     )

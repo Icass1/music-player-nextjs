@@ -180,7 +180,7 @@ export default function SongInfo() {
 
         const handlePopState = (e) => {
 
-            if (e.timeStamp - lastTimeStamp < 2000) {return}
+            if (e.timeStamp - lastTimeStamp < 2000) { return }
 
             if (songViewAnimationRef.current == 0) {
                 lastTimeStamp = e.timeStamp
@@ -199,7 +199,7 @@ export default function SongInfo() {
     }, [songViewAnimationRef, toggleSongViewAnimationRef])
 
 
-    useEffect(() => { 
+    useEffect(() => {
         songViewAnimationRef.current = songViewAnimation
         toggleSongViewAnimationRef.current = toggleSongViewAnimation
     }, [songViewAnimation, toggleSongViewAnimation])
@@ -222,7 +222,31 @@ export default function SongInfo() {
                     width={0}
                     height={0}
                 />
-                <div className='relative grid max-w-full' style={{ gridTemplateRows: "1fr max-content 60px 60px", height: 'calc(100%)' }}>
+                <div className='relative grid max-w-full' style={{ gridTemplateRows: "1fr max-content 40px max-content 60px 60px", height: 'calc(100% - 60px)' }}>
+                    <label></label>
+
+                    <div className=' w-11/12 h-0 pb-[91.666667%] ml-auto mr-auto' onClick={(e) => { e.stopPropagation(); setShowingEqualizer((prevState) => !prevState) }}>
+
+                        <div className='z-10 relative w-full h-0 pb-[100%] mb-[-100%]'>
+                            {showingEqualizer ? (
+                            <Equalizer bar_gap={0} bar_count={innerWidth > 768 ? 180 : 52} toggleCenter={false} centered={true} className='w-full h-full absolute' />
+                            ) : (
+                                <></>
+                            )}
+                        </div>
+                        <Image
+                            priority="high"
+                            className={clsx('w-full rounded-xl', { 'opacity-40': showingEqualizer })}
+                            // className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-full w-auto md:w-auto max-w-none blur-sm opacity-60 brightness-50 select-none'
+                            alt="Current Song"
+                            sizes='100%'
+                            src={`https://api.music.rockhosting.org/api/song/image/${currentSong.id == "" ? ("_") : (currentSong.id)}`}
+                            width={0}
+                            height={0}
+                        />
+ 
+                    </div>
+
                     <label></label>
 
                     <div className='flex flex-col ml-4 mr-4 min-w-0'>
@@ -230,6 +254,11 @@ export default function SongInfo() {
                         <label className='text-2xl fade-out-neutral-300 '>{currentSong.artist}</label>
                     </div>
 
+                    <div className='grid relative gap-1 ml-2 mr-2 items-center justify-items-center' style={{ gridTemplateColumns: '50px 1fr 50px' }}>
+                        <label className='text-neutral-300'>{getTime(currentTime)}</label>
+                        <Slider value={sliderValue} onInput={sliderInput} onChange={sliderChange}></Slider>
+                        <label className='text-neutral-300'>{getTime(audioDuration)}</label>
+                    </div>
                     <div className='grid items-center justify-items-center ml-auto mr-auto gap-3' style={{ gridTemplateColumns: 'max-content max-content max-content' }}>
                         <Image alt="Previous" className='block invert-[0.8] hover:invert-[0.9] cursor-pointer' src='https://api.music.rockhosting.org/images/previous.svg' width={40} height={40} onClick={(e) => { e.stopPropagation(); handlePrevious() }} />
                         {isPlaying ?
@@ -238,11 +267,6 @@ export default function SongInfo() {
                             <Image alt="Play" className='invert-[0.8] hover:invert-[0.9] cursor-pointer' src='https://api.music.rockhosting.org/images/play.svg' width={60} height={60} onClick={(e) => { e.stopPropagation(); handlePlay() }} />
                         }
                         <Image alt="Next" className='block invert-[0.8] hover:invert-[0.9] cursor-pointer' src='https://api.music.rockhosting.org/images/next.svg' width={40} height={40} onClick={(e) => { e.stopPropagation(); handleNext() }} />
-                    </div>
-                    <div className='grid relative gap-1 ml-2 mr-2 items-center justify-items-center' style={{ gridTemplateColumns: '50px 1fr 50px' }}>
-                        <label>{getTime(currentTime)}</label>
-                        <Slider value={sliderValue} onInput={sliderInput} onChange={sliderChange}></Slider>
-                        <label>{getTime(audioDuration)}</label>
                     </div>
                 </div>
             </div>
@@ -266,15 +290,15 @@ export default function SongInfo() {
 
                     {queue.map((item, index) => (
                         <div key={index} className="flex-shrink-0 w-full">
-                            <label className='block text-xl md:text-3xl ml-2 mt-2 mr-2 fade-out-neutral-200 md:min-h-9 font-bold'>{item.title}</label>
-                            <label className='block text-lg md:text-2xl fade-out-neutral-300 ml-2 mr-2 mb-2 md:min-h-8'>{item.artist}</label>
+                            <label className='block text-lg md:text-3xl ml-2 mt-1 md:mt-2 mr-2 fade-out-neutral-200 h-6 md:h-auto md:min-h-9 font-bold'>{item.title}</label>
+                            <label className='block text-base md:text-2xl fade-out-neutral-300 ml-2 mr-2 mb-2 md:min-h-8'>{item.artist}</label>
                         </div>
                     ))}
                     <label className="flex-shrink-0 w-full block text-xl md:text-3xl ml-2 mt-2 mr-2 fade-out-neutral-200 md:min-h-9 font-bold">{currentTime}</label>
                     <label className="flex-shrink-0 w-full block text-xl md:text-3xl ml-2 mt-2 mr-2 fade-out-neutral-200 md:min-h-9 font-bold">{audioDuration}</label>
                 </div>
 
-                <div className='realtive   row-start-1 row-end-2     col-start-1 col-end-2    md:row-start-2 md:row-end-3     md:col-start-1 md:col-end-4    p-1 md:p-0  h-full md:w-[180px] md:h-[180px] flex cursor-pointer' onClick={() => { setShowingEqualizer((prevState) => !prevState) }}>
+                <div className='realtive   row-start-1 row-end-2     col-start-1 col-end-2    md:row-start-2 md:row-end-3     md:col-start-1 md:col-end-4    p-1 md:p-0  h-full md:w-[180px] md:h-[180px] flex cursor-pointer' onClick={(e) => { e.stopPropagation(); setShowingEqualizer((prevState) => !prevState) }}>
 
                     <Image priority="high" className={clsx('realtive select-none h-full w-auto rounded-lg md:rounded-none', { "opacity-40": showingEqualizer })} alt="Current Song" src={`https://api.music.rockhosting.org/api/song/image/${currentSong.id == "" ? ("_") : (currentSong.id)}`} width={180} height={180} />
 

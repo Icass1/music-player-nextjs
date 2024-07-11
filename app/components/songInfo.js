@@ -28,6 +28,7 @@ export default function SongInfo() {
     const [showingEqualizer, setShowingEqualizer] = useState(false);
     const [innerWidth, setInnerWidth] = useState(0);
     const [songViewAnimation, toggleSongViewAnimation] = Animation(100, 0, 100, 3, 1);
+    const [topScrollBarValue, toggleTopScrollBarValue] = Animation(0, 0, 100, 3, 1);
     const songViewAnimationRef = useRef();
     const toggleSongViewAnimationRef = useRef();
 
@@ -222,14 +223,27 @@ export default function SongInfo() {
                     width={0}
                     height={0}
                 />
-                <div className='relative grid max-w-full' style={{ gridTemplateRows: "1fr max-content 40px max-content 60px 60px", height: 'calc(100% - 60px)' }}>
+                <div className='relative grid max-w-full' style={{ gridTemplateRows: "1fr 40px 4fr max-content 40px max-content 60px 60px", height: 'calc(100% - 60px)' }}>
+                    <label></label>
+
+                    <div>
+                        <div className='absolute bg-[#8b8b8b7c] rounded-full w-24 h-[40px]' style={{left: `calc((100% - 192px)/2 + ${topScrollBarValue}/100*192px/2)`}}></div>
+                        {/* <div className='w-48 ml-auto mr-auto'> */}
+                        {/* </div> */}
+
+                        <div className='bg-[#8b8b8b7c] w-48 rounded-full ml-auto mr-auto grid items-center h-[40px]' style={{ gridTemplateColumns: '1fr 1fr' }}>
+                            <label className='text-center text-sm z-10'>COVER</label>
+                            <label className='text-center text-sm z-10'>LYRICS</label>
+                        </div>
+                    </div>
+
                     <label></label>
 
                     <div className=' w-11/12 h-0 pb-[91.666667%] ml-auto mr-auto' onClick={(e) => { e.stopPropagation(); setShowingEqualizer((prevState) => !prevState) }}>
 
                         <div className='z-10 relative w-full h-0 pb-[100%] mb-[-100%]'>
                             {showingEqualizer ? (
-                            <Equalizer bar_gap={0} bar_count={innerWidth > 768 ? 180 : 52} toggleCenter={false} centered={true} className='w-full h-full absolute' />
+                                <Equalizer bar_gap={0} bar_count={innerWidth > 768 ? 180 : 52} toggleCenter={false} centered={true} className='w-full h-full absolute' />
                             ) : (
                                 <></>
                             )}
@@ -244,7 +258,7 @@ export default function SongInfo() {
                             width={0}
                             height={0}
                         />
- 
+
                     </div>
 
                     <label></label>

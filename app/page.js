@@ -16,6 +16,9 @@ export default function Home() {
 
     const [musicData, setMusicData] = useState(null);
     const session = useSession();
+    const { scrollValue, setScrollValue } = useContext(ScrollContext);
+    const [scrollRestored, setScrollRestored] = useState(false);
+    const mainRef = useRef();
 
     useEffect(() => {
         if (session?.status != "authenticated") { return }
@@ -25,6 +28,18 @@ export default function Home() {
         })
 
     }, [session]);
+
+
+    useEffect(() => {
+        if (scrollRestored) { return }
+        if (mainRef.current) {
+            setTimeout(() => {
+                mainRef.current.parentNode.scrollTop = scrollValue;
+            }, 100);
+            mainRef.current.parentNode.onscroll = (e) => { window.location.pathname == "/" ? (setScrollValue(e.target.scrollTop)) : (null) }
+            setScrollRestored(true)
+        }
+    }, [mainRef, setScrollValue, scrollValue, scrollRestored])
 
     return (
         <>
@@ -64,7 +79,14 @@ export default function Home() {
                                 </div>
                             </div>
                             :
-                            <ListWithName musicData={musicData} setMusicData={setMusicData}></ListWithName>
+
+                            <div
+                                ref={mainRef}
+                                className="overflow-x-hidden"
+                            >
+                                {/* <ListWithName musicData={musicData} setMusicData={setMusicData}></ListWithName> */}
+                                <Grid musicData={musicData} setMusicData={setMusicData} ></Grid>
+                            </div>
                     }
                 </>
             }
@@ -73,65 +95,15 @@ export default function Home() {
     );
 }
 
-function Grid({ musicData }) {
-    const { currentList } = useContext(MediaPlayerContext);
-    return (
-        <div className='grid gap-2 p-2' style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))' }}>
-            {musicData.map((item) => (
-                <Link href={`/list/${item.id}`} key={item.id} className={
-                    clsx('rounded-lg grid grid-cols-2 bg-neutral-800 hover:bg-neutral-700', { 'bg-yellow-700 hover:bg-yellow-600': item.id == currentList })
-                } style={{ gridTemplateColumns: '50px 1fr' }}>
-                    <Image src={`https://api.music.rockhosting.org/api/list/image/${item.id}_50x50`} width={50} height={50} className='rounded-lg' alt={item.name}></Image>
-                    <div className='grid' style={{ gridTemplateRows: '24px 25px' }}>
-                        <label className='pl-3 text-lg pr-3 fade-out-neutral-200 font-bold cursor-pointer min-w-0 max-w-full'>{item.name}</label>
-                        <label className='pl-3 fade-out-neutral-300 cursor-pointer min-w-0 max-w-full'>{item.author}</label>
-                    </div>
-                </Link>
-            ))}
-        </div>
-    )
-}
-
-function ListWithName({ musicData, setMusicData }) {
-
-    const { scrollValue, setScrollValue } = useContext(ScrollContext);
-
-    const mainRef = useRef();
-
-    const [downloadingID, setDownloadingID] = useState('');
-    const [downloadProgress, setDownloadProgress] = useState(0);
-    const [downloadSmooth, setDownloadSmooth] = useState(true);
-
-    const [scrollRestored, setScrollRestored] = useState(false);
-
-    const [innerWidth, setInnerWidth] = useState(0)
-
+function AddContextMenu({ children, item, setDownloadProgress, setMusicData }) {
+    const { currentList, isPlaying, randomQueue, setCurrentList, audio, setQueue, setQueueIndex, setCurrentSong, queue, queueIndex } = useContext(MediaPlayerContext);
     const session = useSession()
 
-    useEffect(() => {
+    const [downloadingID, setDownloadingID] = useState('');
+    const [downloadSmooth, setDownloadSmooth] = useState(true);
 
-        const handleResize = () => {
-            setInnerWidth(window.innerWidth)
-        }
 
-        window.addEventListener('resize', handleResize)
-        setInnerWidth(window.innerWidth)
 
-        return () => {
-            window.removeEventListener("resize", handleResize)
-        }
-    }, [])
-
-    useEffect(() => {
-        if (scrollRestored) { return }
-        if (mainRef.current) {
-            setTimeout(() => {
-                mainRef.current.parentNode.scrollTop = scrollValue;
-            }, 100);
-            mainRef.current.parentNode.onscroll = (e) => { window.location.pathname == "/" ? (setScrollValue(e.target.scrollTop)) : (null) }
-            setScrollRestored(true)
-        }
-    }, [mainRef, setScrollValue, scrollValue, scrollRestored])
 
     useEffect(() => {
 
@@ -182,23 +154,6 @@ function ListWithName({ musicData, setMusicData }) {
         };
     }, [downloadingID]);
 
-    const { currentList, isPlaying, randomQueue, setCurrentList, audio, setQueue, setQueueIndex, setCurrentSong, queue, queueIndex } = useContext(MediaPlayerContext);
-
-    let listsByName = {};
-    let listsByNameTemp = {};
-
-    for (let i of musicData) {
-        if (listsByName[i.author] == undefined) {
-            listsByName[i.author] = [];
-        }
-        listsByName[i.author].push(i);
-    }
-
-    for (let k of Object.keys(listsByName).sort()) {
-        listsByNameTemp[k] = listsByName[k];
-    }
-
-    listsByName = listsByNameTemp;
 
     const handlePlayList = (id) => {
 
@@ -279,51 +234,125 @@ function ListWithName({ musicData, setMusicData }) {
     }
 
     return (
-        <div
-            ref={mainRef}
-            className="overflow-x-hidden"
+
+        <ContextMenu
+            options={{
+                "Play": () => handlePlayList(item.id),
+                "Download": () => handleDownloadList(item.id),
+                "Add to queue": () => handleAddListToQueue(item.id),
+                "Add to bottom of queue": () => handleAddListToBottomQueue(item.id),
+                "Remove from library": () => { handleRemoveList(item.id) },
+            }}
         >
-            {Object.keys(listsByName).map((author) => (
-                <div key={author} className='m-2 mb-4'>
-                    <label className='text-2xl md:text-4xl font-bold'>{author}</label>
-                    <div className='grid gap-2 mt-1' style={{ gridTemplateColumns: `repeat(auto-fill, minmax(${innerWidth > 768 ? '350px' : '150px'}, 1fr))` }}>
-                        {listsByName[author].map((item) => (
-                            <ContextMenu
-                                key={item.id}
-                                options={{
-                                    "Play": () => handlePlayList(item.id),
-                                    "Download": () => handleDownloadList(item.id),
-                                    "Add to queue": () => handleAddListToQueue(item.id),
-                                    "Add to bottom of queue": () => handleAddListToBottomQueue(item.id),
-                                    "Remove from library": () => { handleRemoveList(item.id) },
-                                }}
-                            >
-                                <Link
-                                    href={`/list/${item.id}`}
-                                    className={
-                                        clsx('rounded-lg grid grid-cols-2 bg-neutral-700 md:hover:bg-neutral-600 items-center shadow-lg h-12 md:h-[50px]')
-                                    }
-                                    style={{
-                                        gridTemplateColumns: 'max-content 1fr min-content',
-                                        gridTemplateRows: '100%',
-                                        background: downloadProgress.id == item.id ? `linear-gradient(90deg, rgb(100 100 100) 0%, rgb(100 100 100) ${downloadProgress.progress - 5}%, rgb(64 64 64) ${downloadProgress.progress}%, rgb(64 64 64) 100%)` : ''
-                                    }}
-                                >
+            {children}
+        </ContextMenu>
 
-                                    <Image src={`https://api.music.rockhosting.org/api/list/image/${item.id}_50x50`} width={50} height={50} className='rounded-lg w-12 h-12 md:w-[50px] md:h-[50px]' alt={item.name}></Image>
-                                    <label className={clsx('ml-2 text-lg md:text-2xl pr-3 fade-out-neutral-200 font-bold cursor-pointer min-w-0 max-w-full', { 'fade-out-yellow-600': item.id == currentList })}>{item.name}</label>
+    )
 
-                                    {item.id == currentList && isPlaying ? (
-                                        <Equalizer className='w-8 md:w-20 h-full p-1' bar_count={innerWidth < 768 ? 6 : 15} bar_gap={1} centered={true} />
-                                    ) : (
-                                        <div></div>
-                                    )}
-                                </Link>
-                            </ContextMenu>
-                        ))}
-                    </div>
-                </div>
+}
+
+function Grid({ musicData, setMusicData }) {
+    const { currentList } = useContext(MediaPlayerContext);
+
+    const [downloadProgress, setDownloadProgress] = useState(0);
+
+    return (
+        <div className='grid gap-2 p-2' style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))' }}>
+            {musicData.map((item) => (
+                <AddContextMenu key={item.id} item={item} setMusicData={setMusicData} setDownloadProgress={setDownloadProgress}>
+
+                    <Link
+                        href={`/list/${item.id}`}
+                        key={item.id}
+                        className='rounded-lg grid grid-cols-2 md:bg-neutral-800 md:hover:bg-neutral-700'
+                        style={{ gridTemplateColumns: '50px 1fr' }}
+                    >
+                        <Image src={`https://api.music.rockhosting.org/api/list/image/${item.id}_50x50`} width={50} height={50} className='rounded-lg' alt={item.name}></Image>
+                        <div className='grid h-[50px]' style={{ gridTemplateRows: 'max-content max-content' }}>
+                            <label className={clsx('pl-3 pr-3 text-lg fade-out-neutral-200 font-bold cursor-pointer h-6 overflow-y-hidden min-w-0 max-w-full', { 'fade-out-yellow-600': item.id == currentList })}>{item.name}</label>
+                            <label className={clsx('pl-3 pr-3 fade-out-neutral-300 cursor-pointer min-w-0 max-w-full', { 'fade-out-yellow-600': item.id == currentList })}>{item.author}</label>
+                        </div>
+                    </Link>
+                </AddContextMenu>
             ))}
         </div>
+    )
+}
+
+function ListWithName({ musicData, setMusicData }) {
+
+    const { currentList, isPlaying } = useContext(MediaPlayerContext);
+    const [innerWidth, setInnerWidth] = useState(0)
+    const [downloadProgress, setDownloadProgress] = useState(0);
+
+    useEffect(() => {
+
+        const handleResize = () => {
+            setInnerWidth(window.innerWidth)
+        }
+
+        window.addEventListener('resize', handleResize)
+        setInnerWidth(window.innerWidth)
+
+        return () => {
+            window.removeEventListener("resize", handleResize)
+        }
+    }, [])
+
+    let listsByName = {};
+    let listsByNameTemp = {};
+
+    for (let i of musicData) {
+        if (listsByName[i.author] == undefined) {
+            listsByName[i.author] = [];
+        }
+        listsByName[i.author].push(i);
+    }
+
+    for (let k of Object.keys(listsByName).sort()) {
+        listsByNameTemp[k] = listsByName[k];
+    }
+
+    listsByName = listsByNameTemp;
+
+
+
+    return (
+        <>
+            {
+                Object.keys(listsByName).map((author) => (
+                    <div key={author} className='m-2 mb-4'>
+                        <label className='text-2xl md:text-4xl font-bold'>{author}</label>
+                        <div className='grid gap-2 mt-1' style={{ gridTemplateColumns: `repeat(auto-fill, minmax(${innerWidth > 768 ? '350px' : '150px'}, 1fr))` }}>
+                            {listsByName[author].map((item) => (
+                                <AddContextMenu key={item.id} item={item} setDownloadProgress={setDownloadProgress} setMusicData={setMusicData}>
+                                    <Link
+                                        href={`/list/${item.id}`}
+                                        className={
+                                            clsx('rounded-lg grid grid-cols-2 bg-neutral-700 md:hover:bg-neutral-600 items-center shadow-lg h-12 md:h-[50px]')
+                                        }
+                                        style={{
+                                            gridTemplateColumns: 'max-content 1fr min-content',
+                                            gridTemplateRows: '100%',
+                                            background: downloadProgress.id == item.id ? `linear-gradient(90deg, rgb(100 100 100) 0%, rgb(100 100 100) ${downloadProgress.progress - 5}%, rgb(64 64 64) ${downloadProgress.progress}%, rgb(64 64 64) 100%)` : ''
+                                        }}
+                                    >
+
+                                        <Image src={`https://api.music.rockhosting.org/api/list/image/${item.id}_50x50`} width={50} height={50} className='rounded-lg w-12 h-12 md:w-[50px] md:h-[50px]' alt={item.name}></Image>
+                                        <label className={clsx('ml-2 text-lg md:text-2xl pr-3 fade-out-neutral-200 font-bold cursor-pointer min-w-0 max-w-full', { 'fade-out-yellow-600': item.id == currentList })}>{item.name}</label>
+
+                                        {item.id == currentList && isPlaying ? (
+                                            <Equalizer className='w-8 md:w-20 h-full p-1' bar_count={innerWidth < 768 ? 6 : 15} bar_gap={1} centered={true} />
+                                        ) : (
+                                            <div></div>
+                                        )}
+                                    </Link>
+                                </AddContextMenu>
+                            ))}
+                        </div>
+                    </div >
+                ))
+            }
+        </>
     )
 }

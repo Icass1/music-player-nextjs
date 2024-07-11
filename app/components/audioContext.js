@@ -101,7 +101,7 @@ const AudioProvider = ({ children }) => {
     useEffect(() => {
 
         if (currentSong.title == '' && currentSong.artist == '') {
-            document.title = "Music Player"
+            document.title = "RockIt"
             return
         }
 

@@ -4,8 +4,8 @@
     "display": "standalone",
     "scope": "/",
     "start_url": "/",
-    "name": "MusicPlayer",
-    "short_name": "MusicPlayer",
+    "name": "RockIt",
+    "short_name": "RockIt",
     "description": "The best music player in the world",
     "icons": [
         {

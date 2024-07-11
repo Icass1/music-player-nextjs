@@ -171,7 +171,7 @@ export default function SongInfo() {
 
     useEffect(() => {
         songDataRef.current.scrollTo(songDataRef.current.offsetWidth * queueIndex, 0)
-    }, [queue, queueIndex, songDataRef])
+    }, [queue, queueIndex, songDataRef, innerWidth])
 
 
     useEffect(() => {

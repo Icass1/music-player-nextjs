@@ -4,14 +4,19 @@
 var config = {
     version: 'achilles',
     staticCacheItems: [
-        '/_next/static/chunks/webpack.js',
-        '/_next/static/chunks/main-app.js',
-    ],
-    contentCacheItems: [
         '/',
-        '/list/randomstringthatcannotbefoundinhtml',
-    ]
+        '/_next/static/chunks/webpack.js',
+        '/_next/static/chunks/main-app.js'
+    ],
 };
+
+
+
+function parseRequest(request) {
+    
+}
+
+
 
 async function addToCache(request, response) {
 
@@ -19,19 +24,10 @@ async function addToCache(request, response) {
 
     let responseToSave;
 
-    console.log("addToCache", url.pathname, url.pathname.startsWith("/list/"))
-
-    // if (url.pathname.startsWith("/list/") && url.pathname.split("/").length == 3) {
     if (url.pathname.startsWith("/list/")) {
+        console.log(url.pathname)
         let id = url.pathname.split("/")[2];
-
-        let restOfThePath = url.pathname.split("/").slice(3).join("/");
-        url.pathname = "/list/[id]" + (restOfThePath ? "/" : "") + restOfThePath;
-
-
-        console.info("SaveCache:", url.pathname)
-        console.log("/list/[id]", (restOfThePath ? "/" : ""), restOfThePath)
-
+        url.pathname = "/list/[id]/" + url.pathname.split("/").slice(3).join("/");
 
         await response.clone().text().then(html => {
 
@@ -45,14 +41,6 @@ async function addToCache(request, response) {
                 headers: response.headers
             });
         })
-    } else if (url.pathname == "/_next/image") {
-
-        let imageUrl = new URL(url.searchParams.get("url"))
-
-        url.pathname = imageUrl.pathname
-
-        responseToSave = response.clone();
-
     } else {
         responseToSave = response.clone();
     }
@@ -87,14 +75,17 @@ async function addToCache(request, response) {
 
     let cacheKey = "static"
 
+    console.log(responseToSave, responseToSave.headers)
+
     if (responseToSave.headers.get("content-type") && responseToSave.headers.get("content-type").includes("text/html")) {
         cacheKey = "content"
     }
 
+
     if (response.ok) {
         caches.open(cacheKey).then(cache => {
-            cache.put(newRequest, responseToSave).catch((reason) => {console.error("Failed to save to cache", reason, newRequest.url)}) 
-        }).catch((reason) => {console.error("Failed to save to cache", reason, newRequest.url)})
+            cache.put(newRequest, responseToSave);
+        });
     }
     return response;
 }
@@ -103,6 +94,7 @@ async function fetchFromCache(event) {
 
     let request = event.request
     let url = new URL(request.url);
+    url.search = '';
 
     let requestOptions = {
         method: request.method,
@@ -123,35 +115,16 @@ async function fetchFromCache(event) {
     }
 
     let id;
-
     if (url.pathname.startsWith("/list/")) {
-        // if (url.pathname.startsWith("/list/") && url.pathname.split("/").length == 3) {
         id = url.pathname.split("/")[2];
-        // url.pathname = "/list/[id]";
-        let restOfThePath = url.pathname.split("/").slice(3).join("/")
-        url.pathname = "/list/[id]" + (restOfThePath ? "/" : "") + restOfThePath;
-        console.log("GetCache 1:", url.pathname)
+        url.pathname = "/list/[id]/" + url.pathname.split("/").slice(3).join("/");
 
-    } else if (url.pathname == "/_next/image") {
-        let imageUrl = new URL(url.searchParams.get("url"))
-        url.pathname = imageUrl.pathname
-    } else if (url.pathname.startsWith("/_next/static/chunks/app/list/")) {
-        id = url.pathname.split("/")[6];
-        let restOfThePath = url.pathname.split("/").slice(7).join("/")
-        url.pathname = "/_next/static/chunks/app/list/[id]" + (restOfThePath ? "/" : "") + restOfThePath;
-        console.log("GetCache 2:", url.pathname)
     }
-
-    url.search = '';
 
     let newRequest = new Request(url.toString(), requestOptions);
 
-
     return caches.match(newRequest).then(async (response) => {
         if (!response) {
-
-            console.log(await caches.keys())
-
             throw Error(`${newRequest.url} not found in cache`);
         }
 
@@ -165,29 +138,23 @@ async function fetchFromCache(event) {
                 while (modifiedHtml.includes('[id]')) {
                     modifiedHtml = modifiedHtml.replace('[id]', id);
                 }
-                while (modifiedHtml.includes('%5Bid%5D')) {
-                    modifiedHtml = modifiedHtml.replace('%5Bid%5D', id);
-                }
             })
             response = new Response(modifiedHtml, {
                 headers: response.headers
             });
         }
 
-        // console.log("fetchfromcache response", id, response)
+        console.log("fetchfromcache response", id, response)
         return response;
     })
 }
 
 self.addEventListener('install', event => {
     async function onInstall(event, opts) {
-        await caches.open('static')
+        var cacheKey = 'static';
+        return caches.open(cacheKey)
             .then(cache => {
                 cache.addAll(opts.staticCacheItems)
-            });
-        await caches.open('content')
-            .then(cache => {
-                cache.addAll(opts.contentCacheItems)
             });
     }
 
@@ -199,28 +166,18 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
     async function onActivate(event, opts) {
 
+        console.log("onactivate ")
         let startUrl = [
             "/",
-            "/list/randomstringthatcannotbefoundinhtml",
+            "/list/a",
             "_next/static/chunks/app/page.js",
-            "_next/static/chunks/app/layout.js",
-            "_next/static/chunks/app/list/randomstringthatcannotbefoundinhtml/page.js",
-            "https://api.music.rockhosting.org/images/pause.svg",
-            "https://api.music.rockhosting.org/images/play.svg",
-            "https://api.music.rockhosting.org/images/next.svg",
-            "https://api.music.rockhosting.org/images/previous.svg",
-            "https://api.music.rockhosting.org/images/addList.svg",
-            "https://api.music.rockhosting.org/images/download.svg",
-            "https://api.music.rockhosting.org/images/search.svg",
-            '/_next/static/chunks/webpack.js',
-            '/_next/static/chunks/main-app.js'
+            "_next/static/chunks/app/list/a/page.js",
         ]
 
-        if (navigator.onLine) {
-            for (let url of startUrl) {
-                let request = new Request(url)
-                fetch(request).then((response) => { addToCache(request, response) })
-            }
+        for (let url of startUrl) {
+            console.log(url)
+            let request = new Request(url)
+            fetch(request).then((response) => { addToCache(request, response) })
         }
 
         return caches.keys()
@@ -241,8 +198,6 @@ self.addEventListener('fetch', event => {
     var url = new URL(event.request.url);
 
     console.log("fetch", url.origin + url.pathname + url.search)
-
-    caches.keys().then(value => console.log("Cache:", value))
 
     function onFetch(event, opts) {
         var request = event.request;
@@ -270,9 +225,7 @@ self.addEventListener('fetch', event => {
                     fetchFromCache(event)
                 )
             } else {
-                event.respondWith(
-                    new Response("OK")
-                )
+                return Response("OK")
             }
 
         }

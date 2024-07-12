@@ -1,6 +1,6 @@
 'use server';
 
 export const metadata = {
-    title: "Music Player",
-    description: "Music Player",
+    title: "Rock It",
+    description: "Rock It",
 };

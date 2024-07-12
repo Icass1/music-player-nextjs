@@ -12,6 +12,8 @@ Done - When there is only one genere, it should be 'Genre | Album Rock' instead 
 Store volume in localStorage
 
 Add admin panel
+  Users view
+  Downloads view
 Add user view
   Done - Show recently played songs
     Add play to song containers
@@ -19,12 +21,17 @@ Add user view
   Show most listened genre
   Equalizer 
 
+Drop Spotify link anywhere and add list to library
+Add list to database when all songs are downloaded
+
 Home
   Show genres list with all the songs in database of one genre
 Maybe create library with user stuff
 
 Add total duration to list view 
 Create and rename lists
+
+Make usable when not logged in
 
 Done - User database
     id  

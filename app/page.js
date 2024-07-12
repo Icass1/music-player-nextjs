@@ -62,13 +62,13 @@ export default function Home() {
 
             </div>
 
-            {session?.status == "loading" ?
+            {session?.status == "loading" || musicData == null ?
                 // {session?.status ?
                 <div className='relative text-3xl font-bold top-1/2 left-1/2 w-fit -translate-x-1/2 -translate-y-1/2'>Loading your lists...</div>
                 :
                 <>
                     {
-                        musicData == null || musicData.length == 0 ?
+                        musicData.length == 0 ?
                             <div className='relative w-fit top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>
                                 <div className='w-auto text-center text-3xl font-bold'>It feels lonely here...</div>
                                 <div className='flex md:flex-row flex-col gap-2'>
@@ -101,9 +101,6 @@ function AddContextMenu({ children, item, setDownloadProgress, setMusicData }) {
 
     const [downloadingID, setDownloadingID] = useState('');
     const [downloadSmooth, setDownloadSmooth] = useState(true);
-
-
-
 
     useEffect(() => {
 
@@ -264,13 +261,13 @@ function Grid({ musicData, setMusicData }) {
                     <Link
                         href={`/list/${item.id}`}
                         key={item.id}
-                        className='rounded-lg grid grid-cols-2 md:bg-neutral-800 md:hover:bg-neutral-700'
+                        className='rounded-lg grid grid-cols-2 md:bg-neutral-700 md:hover:bg-neutral-600'
                         style={{ gridTemplateColumns: '50px 1fr' }}
                     >
                         <Image src={`https://api.music.rockhosting.org/api/list/image/${item.id}_50x50`} width={50} height={50} className='rounded-lg' alt={item.name}></Image>
                         <div className='grid h-[50px]' style={{ gridTemplateRows: 'max-content max-content' }}>
                             <label className={clsx('pl-3 pr-3 text-lg fade-out-neutral-200 font-bold cursor-pointer h-6 overflow-y-hidden min-w-0 max-w-full', { 'fade-out-yellow-600': item.id == currentList })}>{item.name}</label>
-                            <label className={clsx('pl-3 pr-3 fade-out-neutral-300 cursor-pointer min-w-0 max-w-full', { 'fade-out-yellow-600': item.id == currentList })}>{item.author}</label>
+                            <label className={clsx('pl-3 pr-3 fade-out-neutral-200 cursor-pointer min-w-0 max-w-full', { 'fade-out-yellow-600': item.id == currentList })}>{item.author}</label>
                         </div>
                     </Link>
                 </AddContextMenu>

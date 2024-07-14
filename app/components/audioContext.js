@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react';
 import React, { createContext, useState, useEffect, useCallback } from 'react';
 import { apiFetch } from '../utils/apiFetch';
 import { getMusicFile } from '../utils/storage';
+import io from 'socket.io-client';
 
 const MediaPlayerContext = createContext();
 
@@ -32,9 +33,43 @@ const AudioProvider = ({ children }) => {
 
     const session = useSession()
 
+    const [socket, setSocket] = useState(null)
+
     useEffect(() => {
         setAudio(new Audio())
     }, [])
+
+   
+    useEffect(() => {
+
+        if (session.status !== "authenticated") { return }
+
+
+        // let newSocket = io('http://12.12.12.3:8000')
+        let newSocket = io('https://api.music.rockhosting.org')
+
+        newSocket.on('connect', () => {
+            console.log('Connected to server');
+            newSocket?.emit('register', { id: session.data.user.id });  // Send the client ID to the server
+        });
+
+        newSocket.on('disconnect', () => {
+            console.log('Disconnected from server');
+            console.log('Reconnecting');
+            newSocket?.newSocket?.connect()
+        });
+
+        newSocket.on('message', (message) => {
+            // console.log('Received message:', message);
+        });
+
+        setSocket(newSocket)
+
+        return () => {
+            newSocket.disconnect();
+        };
+    }, [session]);
+
 
     useEffect(() => {
 
@@ -49,7 +84,7 @@ const AudioProvider = ({ children }) => {
             if (randomQueue != null) {
                 return
             }
-            
+
             if (session.data.user.current_song) {
 
                 fetch(`https://api.music.rockhosting.org/api/song/info/${session.data.user.current_song}`).
@@ -106,12 +141,15 @@ const AudioProvider = ({ children }) => {
         }
 
         if (session.status == "authenticated") {
-            apiFetch('https://api.music.rockhosting.org/api/user/set', session, {
-                method: "POST",
-                body: JSON.stringify({
-                    current_song: currentSong.id,
-                })
-            })
+
+            socket?.emit("set-user-data", { current_song: currentSong.id })
+
+            // apiFetch('https://api.music.rockhosting.org/api/user/set', session, {
+            //     method: "POST",
+            //     body: JSON.stringify({
+            //         current_song: currentSong.id,
+            //     })
+            // })
         } else if (session.status == "unauthenticated") {
             localStorage.setItem('currentSong', JSON.stringify(currentSong));
         }
@@ -148,12 +186,14 @@ const AudioProvider = ({ children }) => {
         }
 
         if (session.status == "authenticated") {
-            apiFetch('https://api.music.rockhosting.org/api/user/set', session, {
-                method: "POST",
-                body: JSON.stringify({
-                    current_list: currentList,
-                })
-            })
+            socket?.emit("set-user-data", { current_list: currentList })
+
+            // apiFetch('https://api.music.rockhosting.org/api/user/set', session, {
+            //     method: "POST",
+            //     body: JSON.stringify({
+            //         current_list: currentList,
+            //     })
+            // })
 
         } else if (session.status == "unauthenticated") {
             localStorage.setItem('currentList', JSON.stringify(currentList));
@@ -179,20 +219,21 @@ const AudioProvider = ({ children }) => {
         }
 
         if (session.status == "authenticated") {
+            socket?.emit("set-user-data", { current_time: currentTime, })
 
-            apiFetch('https://api.music.rockhosting.org/api/user/set', session, {
-                method: "POST",
-                body: JSON.stringify({
-                    current_time: currentTime,
-                })
-            })
+            // apiFetch('https://api.music.rockhosting.org/api/user/set', session, {
+            //     method: "POST",
+            //     body: JSON.stringify({
+            //         current_time: currentTime,
+            //     })
+            // })
 
             // updateCurrentTime(currentTime, session);
 
         } else if (session.status == "unauthenticated") {
             localStorage.setItem('currentTime', JSON.stringify(currentTime));
         }
-    }, [currentTime, session]);
+    }, [currentTime, session, socket]);
 
     useEffect(() => {
         if (queue == null || queue.length == 0) {
@@ -200,12 +241,14 @@ const AudioProvider = ({ children }) => {
         }
 
         if (session.status == "authenticated") {
-            apiFetch('https://api.music.rockhosting.org/api/user/set', session, {
-                method: "POST",
-                body: JSON.stringify({
-                    queue: queue,
-                })
-            })
+            socket?.emit("set-user-data", { queue: queue, })
+
+            // apiFetch('https://api.music.rockhosting.org/api/user/set', session, {
+            //     method: "POST",
+            //     body: JSON.stringify({
+            //         queue: queue,
+            //     })
+            // })
         } else if (session.status == "unauthenticated") {
             localStorage.setItem('queue', JSON.stringify(queue));
         }
@@ -218,12 +261,14 @@ const AudioProvider = ({ children }) => {
             return
         }
         if (session.status == "authenticated") {
-            apiFetch('https://api.music.rockhosting.org/api/user/set', session, {
-                method: "POST",
-                body: JSON.stringify({
-                    queue_index: queueIndex,
-                })
-            })
+            socket?.emit("set-user-data", { queue_index: queueIndex })
+
+            // apiFetch('https://api.music.rockhosting.org/api/user/set', session, {
+            //     method: "POST",
+            //     body: JSON.stringify({
+            //         queue_index: queueIndex,
+            //     })
+            // })
         } else if (session.status == "unauthenticated") {
             localStorage.setItem('queueIndex', JSON.stringify(queueIndex));
         }

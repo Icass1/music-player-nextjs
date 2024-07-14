@@ -11,9 +11,13 @@ When song is added to queue, the list where it comes from is stored to set curre
 Done - When there is only one genere, it should be 'Genre | Album Rock' instead of 'Genres | Album Rock'
 Store volume in localStorage
 
+URGENT - Limit to one download at a time and only for users.
+
 Add admin panel
   Users view
   Downloads view
+  See, search and edit songs and lists in database
+
 Add user view
   Done - Show recently played songs
     Add play to song containers

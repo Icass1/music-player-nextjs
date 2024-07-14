@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useEffect, useContext, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { MediaPlayerContext } from '@/app/components/audioContext';
 import { Song } from '@/app/components/songContainer';
@@ -10,7 +10,6 @@ import classNames from 'classnames';
 import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { apiFetch } from '../utils/apiFetch';
-import clsx from 'clsx';
 
 
 function CircularProgressBar({ className = "", progress = 50, smooth = true, onClick }) {
@@ -179,6 +178,41 @@ export default function DefaultListPage({ listId, musicData }) {
 
     }, [musicData, sortingBy]);
 
+
+
+    useEffect(() => {
+        console.log("musicData", musicData)
+
+        checkMusicData();
+    }, [musicData])
+
+    const checkMusicData = useCallback(() => {
+
+        let songsInDatabase = 0
+
+        for (let song of musicData.songs) {
+            if (song.in_database == true) {
+                songsInDatabase++;
+            }
+        }
+
+        if (songsInDatabase != 0 && songsInDatabase == musicData.songs.length) {
+            console.log("all songs are downloaded. this list should be added to database. TODO")
+
+            if (session.status == "authenticated") {
+                console.log("ADD list")
+                // apiFetch(`http://12.12.12.3:8000/api/add-list`, session, {
+                apiFetch(`https://api.music.rockhosting.org/api/add-list`, session, {
+                    method: "POST",
+                    body: JSON.stringify({ url: musicData.spotify_url })
+                }).then(response => response.json()).then(data => {
+                    console.log(data)
+                    musicData.id = data.id
+                })
+            }
+        }
+    }, [musicData, session])
+
     useEffect(() => {
 
         if (downloadingURL == "") { return };
@@ -309,7 +343,7 @@ export default function DefaultListPage({ listId, musicData }) {
         }
 
         let backgroundColor = `rgb(${rSum / (image.width * image.height)}, ${gSum / (image.width * image.height)}, ${bSum / (image.width * image.height)})`;
-        
+
         setBackgroundGradient(backgroundColor);
     }
 
@@ -375,6 +409,7 @@ export default function DefaultListPage({ listId, musicData }) {
     const handleAddListToLibrary = () => {
         apiFetch(`https://api.music.rockhosting.org/api/user/add-list`, session, { method: "POST", body: JSON.stringify({ list_id: musicData.id }) }).then(response => response.json()).then(data => {
             setUserLists(data.map(list => list.id))
+            console.log(data.map(list => list.id))
         })
     }
 
@@ -416,7 +451,7 @@ export default function DefaultListPage({ listId, musicData }) {
                                     />
                                 </div>
                                 {
-                                    !userLists.includes(listId) && !musicData.spotify_url ?
+                                    !userLists.includes(listId) && musicData.id ?
                                         <div
                                             className='h-16 w-16 bg-yellow-600 rounded-full bottom-4 left-4 cursor-pointer'
                                             onClick={handleAddListToLibrary}
@@ -448,7 +483,7 @@ export default function DefaultListPage({ listId, musicData }) {
                             onInput={handleSearch}
                         />
                         {
-                            !userLists.includes(listId) && !musicData.spotify_url ?
+                            !userLists.includes(listId) && musicData.id ?
                                 <Image
                                     onClick={handleAddListToLibrary}
                                     src='https://api.music.rockhosting.org/images/addList.svg'
@@ -501,7 +536,7 @@ export default function DefaultListPage({ listId, musicData }) {
                     )}
 
                     {showingMusicData.songs.filter(x => searchResult.includes(x)).map((item, index) => (
-                        <Song key={index + "searchresult"} type={musicData.type} songsList={musicData.songs} listId={listId} song={item} index={index} />
+                        <Song key={index + "searchresult"} type={musicData.type} musicData={musicData} checkMusicData={checkMusicData} listId={listId} song={item} index={index} />
                     ))}
 
                     {searchResult.length != 0 ? (
@@ -515,7 +550,7 @@ export default function DefaultListPage({ listId, musicData }) {
                     )}
 
                     {showingMusicData.songs.filter(x => !searchResult.includes(x)).map((item, index) => (
-                        <Song key={index} type={musicData.type} songsList={musicData.songs} listId={listId} song={item} index={index} />
+                        <Song key={index} type={musicData.type} musicData={musicData} checkMusicData={checkMusicData} listId={listId} song={item} index={index} />
                     ))}
                     <div className='hidden md:h-20 md:block' />
                 </div>
@@ -539,24 +574,28 @@ export default function DefaultListPage({ listId, musicData }) {
                     onInput={handleSearch}
                 />
             </div>
-            <div
-                className='hidden md:block fixed h-14 w-14 bg-yellow-600 rounded-full bottom-5 cursor-pointer ml-2'
-                onClick={
-                    // () => { setdownloadingURL(`http://12.12.12.3:1234/api/compress-list/${listId}`) }
-                    () => { setdownloadingURL(`https://api.music.rockhosting.org/api/compress-list/${listId}`) }
-                }
-            >
-                {downloadProgress == undefined ? (
-                    <></>
-                ) : (
-                    <CircularProgressBar
-                        className='absolute h-14 w-14 bg-yellow-600 rounded-full cursor-pointer'
-                        progress={downloadProgress}
-                        smooth={downloadSmooth}
-                    />
-                )}
-                <Image src='https://api.music.rockhosting.org/images/download.svg' height={35} width={35} className='relative ml-auto mr-auto top-1/2 -translate-y-1/2' alt='' />
-            </div>
+            {pathname.includes("/s/") ?
+                <></>
+                :
+                <div
+                    className='hidden md:block fixed h-14 w-14 bg-yellow-600 rounded-full bottom-5 cursor-pointer ml-2'
+                    onClick={
+                        // () => { setdownloadingURL(`http://12.12.12.3:1234/api/compress-list/${listId}`) }
+                        () => { setdownloadingURL(`https://api.music.rockhosting.org/api/compress-list/${listId}`) }
+                    }
+                >
+                    {downloadProgress == undefined ? (
+                        <></>
+                    ) : (
+                        <CircularProgressBar
+                            className='absolute h-14 w-14 bg-yellow-600 rounded-full cursor-pointer'
+                            progress={downloadProgress}
+                            smooth={downloadSmooth}
+                        />
+                    )}
+                    <Image src='https://api.music.rockhosting.org/images/download.svg' height={35} width={35} className='relative ml-auto mr-auto top-1/2 -translate-y-1/2' alt='' />
+                </div>
+            }
         </>
     );
 }

@@ -8,7 +8,7 @@ import ContextMenu from "./contextMenu";
 import { useRouter } from "next/router";
 import { downloadAndSaveMusic, getMusicFile } from "../utils/storage";
 
-export function Song({ type, songsList, index, song, listId }) {
+export function Song({ type, musicData, checkMusicData, index, song, listId }) {
 
     const {
         audio,
@@ -36,7 +36,7 @@ export function Song({ type, songsList, index, song, listId }) {
             audio.play()
         } else {
 
-            let _songsList = songsList.filter(song => { if (song.in_database == false) { return false } else { return true } })
+            let _songsList = musicData.songs.filter(song => { if (song.in_database == false) { return false } else { return true } })
 
             let index = _songsList.indexOf(song)
             let list = _songsList.slice(index + 1).concat(_songsList.slice(0, index))
@@ -96,7 +96,7 @@ export function Song({ type, songsList, index, song, listId }) {
         eventSource.onmessage = (event) => {
             const message = JSON.parse(event.data);
 
-            console.log(message);
+            // console.log(message);
 
             setDownloadProgress(message.completed);
 
@@ -112,7 +112,7 @@ export function Song({ type, songsList, index, song, listId }) {
                 song.cover_url = message.cover_url
                 song.duration = message.duration
                 song.album_url = message.album_url
-                console.log(song)
+                checkMusicData()
             }
         };
 

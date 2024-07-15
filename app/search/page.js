@@ -2,7 +2,9 @@
 
 import clsx from "clsx";
 import Image from "next/image";
-import Link from "next/link";
+// import Link from "next/link";
+import { Link } from 'next-view-transitions'
+
 import ContextMenu from "../components/contextMenu";
 import { apiFetch } from "../utils/apiFetch";
 import { useSession } from "next-auth/react";

@@ -1,6 +1,8 @@
 'use client'
 
-import Link from 'next/link';
+// import Link from 'next/link';
+import { Link } from 'next-view-transitions'
+
 import React, { useState, useEffect, useContext, useRef, useCallback, cloneElement } from 'react';
 import Image from 'next/image';
 import clsx from 'clsx';

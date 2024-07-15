@@ -3,7 +3,8 @@
 import { apiFetch } from "../utils/apiFetch";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import Link from "next/link";
+// import Link from "next/link";
+import { Link } from 'next-view-transitions'
 import { useEffect, useState } from "react";
 
 export default function User() {

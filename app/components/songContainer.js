@@ -3,7 +3,9 @@ import { MediaPlayerContext } from "./audioContext";
 import clsx from "clsx";
 import Image from "next/image";
 import Equalizer from "./equalizer";
-import Link from "next/link";
+// import Link from "next/link";
+import { Link } from 'next-view-transitions'
+
 import ContextMenu from "./contextMenu";
 import { useRouter } from "next/router";
 import { downloadAndSaveMusic, getMusicFile } from "../utils/storage";

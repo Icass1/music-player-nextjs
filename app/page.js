@@ -19,6 +19,7 @@ export default function Home() {
     const [musicData, setMusicData] = useState(null);
     const session = useSession();
     const { scrollValue, setScrollValue } = useContext(ScrollContext);
+    const { homeView } = useContext(MediaPlayerContext);
     const [scrollRestored, setScrollRestored] = useState(false);
     const mainRef = useRef();
 
@@ -42,6 +43,19 @@ export default function Home() {
             setScrollRestored(true)
         }
     }, [mainRef, setScrollValue, scrollValue, scrollRestored])
+
+
+    const renderView = (homeView) => {
+        switch (homeView?.view) {
+            case 0:
+                return <Grid musicData={musicData} setMusicData={setMusicData} ></Grid>
+            case 1:
+                return <ListWithName musicData={musicData} setMusicData={setMusicData}></ListWithName>
+            default:
+                return <Grid musicData={musicData} setMusicData={setMusicData} ></Grid>
+        }
+    };
+
 
     return (
         <>
@@ -87,7 +101,8 @@ export default function Home() {
                                 className="overflow-x-hidden"
                             >
                                 {/* <ListWithName musicData={musicData} setMusicData={setMusicData}></ListWithName> */}
-                                <Grid musicData={musicData} setMusicData={setMusicData} ></Grid>
+                                {/* <Grid musicData={musicData} setMusicData={setMusicData} ></Grid> */}
+                                {renderView(homeView)}
                             </div>
                     }
                 </>
@@ -233,7 +248,6 @@ function AddContextMenu({ children, item, setDownloadProgress, setMusicData }) {
     }
 
     return (
-
         <ContextMenu
             options={{
                 "Play": () => handlePlayList(item.id),
@@ -245,9 +259,7 @@ function AddContextMenu({ children, item, setDownloadProgress, setMusicData }) {
         >
             {children}
         </ContextMenu>
-
     )
-
 }
 
 function Grid({ musicData, setMusicData }) {
@@ -313,8 +325,6 @@ function ListWithName({ musicData, setMusicData }) {
     }
 
     listsByName = listsByNameTemp;
-
-
 
     return (
         <>

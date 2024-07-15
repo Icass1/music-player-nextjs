@@ -25,28 +25,27 @@ const AudioProvider = ({ children }) => {
 
     const [audioDuration, setAudioDuration] = useState(0);
     const [audioVolume, setAudioVolume] = useState(1);
-    const [analyser, setAnalyser] = useState(null)
+    const [analyser, setAnalyser] = useState(null);
 
-    const [queue, setQueue] = useState([])
-    const [queueIndex, setQueueIndex] = useState(null)
-    const [randomQueue, setRandomQueue] = useState(null)
+    const [queue, setQueue] = useState([]);
+    const [queueIndex, setQueueIndex] = useState(null);
+    const [randomQueue, setRandomQueue] = useState(null);
 
-    const session = useSession()
+    const session = useSession();
 
-    const [socket, setSocket] = useState(null)
+    const [socket, setSocket] = useState(null);
+    const [homeView, setHomeView] = useState({view: 0, numberOfViews: 2});
 
     useEffect(() => {
-        setAudio(new Audio())
+        setAudio(new Audio());
     }, [])
 
-   
     useEffect(() => {
 
         if (session.status !== "authenticated") { return }
 
-
         // let newSocket = io('http://12.12.12.3:8000')
-        let newSocket = io('https://api.music.rockhosting.org')
+        let newSocket = io('https://api.music.rockhosting.org');
 
         newSocket.on('connect', () => {
             console.log('Connected to server');
@@ -475,6 +474,9 @@ const AudioProvider = ({ children }) => {
 
             previousSong,
             nextSong,
+
+            homeView,
+            setHomeView,
         }}>
             {children}
         </MediaPlayerContext.Provider>

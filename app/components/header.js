@@ -24,6 +24,8 @@ export default function Header({ handleSearch }) {
         queueIndex,
         queue,
         setQueue,
+        homeView,
+        setHomeView,
     } = useContext(MediaPlayerContext);
 
     const [muteAnimationValue, toggleMuteAnimation] = Animation(30, 0, 30, 1, 1);
@@ -31,7 +33,7 @@ export default function Header({ handleSearch }) {
     const [muted, setMuted] = useState(false);
     const [innerWidth, setInnerWidth] = useState(0);
 
-    const [storage, setStorage] = useState(0);
+    const [homeViewIndicatorImagePath, setHomeViewIndicatorImagePath] = useState();
 
     const session = useSession();
 
@@ -105,6 +107,28 @@ export default function Header({ handleSearch }) {
         }
     }
 
+    const handleViewChange = () => {
+
+        setHomeView((value) => {
+            let newValue = { ...value }; // Create a new copy of the state
+            newValue.view = newValue.view + 1;
+            if (newValue.view >= newValue.numberOfViews) {
+                newValue.view = 0;
+            }
+            return newValue;
+        });
+    }
+
+    useEffect(() => {
+
+        if (homeView.view == 0) {
+            setHomeViewIndicatorImagePath('https://api.music.rockhosting.org/images/listWithName.svg')
+        } else if (homeView.view == 1) {
+            setHomeViewIndicatorImagePath('https://api.music.rockhosting.org/images/grid.svg')
+        }
+
+    }, [homeView])
+
     useEffect(() => {
 
         if (location.pathname != "/search") {
@@ -116,18 +140,8 @@ export default function Header({ handleSearch }) {
         searchInputRef.current.value = params.get("q");
     }, [])
 
-
-    // useEffect(() => {
-
-    //     navigator.storage.estimate().then(data => {
-    //         console.log(data)
-    //     })
-
-    // }, [])
-
-
     return (
-        <div className="grid h-full items-center ml-auto mr-auto w-min md:w-auto md:ml-5 md:mr-5 gap-10 md:gap-4" style={{ gridTemplateColumns: innerWidth > 768 ? '30px 30px min-content 1fr 30px 30px 30px 150px min-content' : '30px 30px 30px', gridTemplateRows: '100%' }}>
+        <div className="grid h-full items-center ml-auto mr-auto w-min md:w-auto md:ml-5 md:mr-5 gap-10 md:gap-4" style={{ gridTemplateColumns: innerWidth > 768 ? '30px 30px min-content 1fr 30px 30px 30px 30px 150px min-content' : '30px 30px 30px', gridTemplateRows: '100%' }}>
             <Link href="/">
                 <Image className="md:block invert-[0.8] hover:invert-[0.7] select-none" src='https://api.music.rockhosting.org/images/home.svg' width={30} height={30} alt="Search" />
             </Link>
@@ -147,6 +161,15 @@ export default function Header({ handleSearch }) {
 
             }
             <label className="hidden md:block"></label> {/* Empty label to fill 1fr */}
+
+            <Image
+                className="hidden md:block invert-[0.6] select-none hover:invert-[0.7]"
+                src={homeViewIndicatorImagePath}
+                width={30}
+                height={30}
+                alt="Toggle view"
+                onClick={handleViewChange}
+            />
             <Image className="hidden md:block invert-[0.8] select-none hover:invert-[0.9]" src='https://api.music.rockhosting.org/images/lyrics.png' width={30} height={30} alt="Toggle lyrics" />
             <Image
                 className="md:block invert-[0.6] select-none hover:invert-[0.7] cursor-pointer"

@@ -200,7 +200,26 @@ const AudioProvider = ({ children }) => {
 
     }, [currentList, session]);
 
+    useEffect(() => {
+        if (currentList == '') {
+            return
+        }
 
+        if (session.status == "authenticated") {
+            socket?.emit("set-user-data", { volume: audioVolume })
+
+            // apiFetch('https://api.music.rockhosting.org/api/user/set', session, {
+            //     method: "POST",
+            //     body: JSON.stringify({
+            //         current_list: currentList,
+            //     })
+            // })
+
+        } else if (session.status == "unauthenticated") {
+            localStorage.setItem('volume', JSON.stringify(audioVolume));
+        }
+
+    }, [audioVolume, session]);
 
     // const updateCurrentTime = debounce((currentTime, session) => {
     //     console.log("ASDF")

@@ -144,10 +144,11 @@ export function Song({ type, musicData, checkMusicData, index, song, listId }) {
                 "Copy Spotify URL": () => { console.log(song.spotify_url) },
                 "Copy Spotify ID": () => { console.log(song.spotify_url.replace("https://open.spotify.com/track/", "")) },
             } : {
+                "Play": handlePlayClick,
                 "Download MP3": handleDownloadMP3,
                 "Download": handleDownload,
                 "Add to queue": handleAddToQueue,
-                "Copy ID": () => {console.log(song.id)}
+                "Copy ID": () => {navigator.clipboard.writeText(song.id)}
             }}
         >
             <div onClick={handlePlayClick} className="relative ml-3 mr-3 mt-2 mb-2">

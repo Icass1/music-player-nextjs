@@ -99,6 +99,8 @@ const AudioProvider = ({ children }) => {
             setQueueIndex(session.data.user.queue_index)
             setRandomQueue(session.data.user.random_queue)
             audio.currentTime = session.data.user.current_time
+            audio.volume = session.data.user.volume;
+            setAudioVolume(session.data.user.volume);
 
         } else if (session.status == "unauthenticated") {
             storedCurrentSong = JSON.parse(localStorage.getItem('currentSong'));

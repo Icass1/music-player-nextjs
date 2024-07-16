@@ -9,9 +9,11 @@ Done - When song ends save info of time played in database
 When song is added to queue, the list where it comes from is stored to set currentlist
 
 Done - When there is only one genere, it should be 'Genre | Album Rock' instead of 'Genres | Album Rock'
-Store volume in localStorage
+IN PROGRESS - Store volume in localStorage
 
 URGENT - Limit to one download at a time and only for users.
+
+Change icons of home view.
 
 Add admin panel
   Users view
@@ -24,6 +26,13 @@ Add user view
   Show most listened song
   Show most listened genre
   Equalizer 
+
+Song options
+  Play
+  DONE - Download MP3
+  DONE - Download
+  DONE - Add to queue
+  Copy ID
 
 Drop Spotify link anywhere and add list to library
 Add list to database when all songs are downloaded

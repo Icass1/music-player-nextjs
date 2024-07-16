@@ -141,6 +141,7 @@ export default function DefaultListPage({ listId, musicData }) {
     const [userLists, setUserLists] = useState([]);
 
     const session = useSession();
+    const pathname = usePathname()
 
     useEffect(() => {
         if (session.status != "authenticated") { return }
@@ -149,7 +150,43 @@ export default function DefaultListPage({ listId, musicData }) {
         })
     }, [session])
 
-    const pathname = usePathname()
+    // Function to calculate total duration
+    const getTotalDuration = (songs) => {
+        let totalSeconds = 0;
+
+        songs.forEach(song => {
+            const [minutes, seconds] = song.duration.split(":").map(Number);
+            totalSeconds += minutes * 60 + seconds;
+        });
+
+        const totalHours = Math.floor(totalSeconds / 3600);
+        const remainingMinutes = Math.floor((totalSeconds - 3600*totalHours)/60);
+        let out = ""
+
+        if (totalHours == 0) {
+           
+        } else if (totalHours == 1) {
+            out += "1 hour"
+            
+        } else {
+            out += `${totalHours} hours`
+        }
+        if (totalHours != 0 && remainingMinutes != 0) {
+            out += " and "
+        }
+
+        if (remainingMinutes == 0) {
+           
+        } else if (remainingMinutes == 1) {
+            out += "1 minute"
+        } else {
+            out += `${remainingMinutes} minutes`
+        }
+
+        return out
+
+        // return `${totalHours}:${remainingMinutes.toString().padStart(2, '0')}`;
+    }
 
     useEffect(() => {
 
@@ -178,11 +215,7 @@ export default function DefaultListPage({ listId, musicData }) {
 
     }, [musicData, sortingBy]);
 
-
-
     useEffect(() => {
-        console.log("musicData", musicData)
-
         checkMusicData();
     }, [musicData])
 
@@ -432,11 +465,12 @@ export default function DefaultListPage({ listId, musicData }) {
                             height={300}
                             onLoad={showGradient}
                         />
-                        <div className='grid inherit' style={{ gridTemplateRows: 'max-content max-content max-content max-content' }}>
+                        {/* <div className='grid inherit' style={{ gridTemplateRows: 'max-content max-content max-content max-content' }}> */}
+                        <div className='flex flex-col inherit'>
 
-                            <label className='h-2 md:hidden'></label>
+                            {/* <label className='h-2 md:hidden'></label> */}
 
-                            <div className='hidden md:flex md:mt-20 mb-2 flex-row gap-4'>
+                            <div className='hidden md:flex md:mt-16 mb-2 flex-row gap-4'>
                                 <div
                                     className='h-16 w-16 bg-yellow-600 rounded-full bottom-4 left-4 cursor-pointer'
                                     onClick={currentList == listId && isPlaying ? (handlePauseClick) : (handlePlayClick)}
@@ -473,6 +507,7 @@ export default function DefaultListPage({ listId, musicData }) {
                             <label className='text-3xl md:text-5xl fade-out-neutral-200 font-bold mt-8 md:mt-0 min-w-0 md:min-h-14 max-w-full'>{musicData.name}</label>
                             <label className='text-xl md:text-2xl fade-out-neutral-400 min-w-0 max-w-full'>{musicData.author}</label>
                             <label className='text-lg md:text-xl fade-out-neutral-400 min-w-0 max-w-full'>Genre{genres.length == 1 ? <></> : <>s</>} | {genres?.join(", ")}</label>
+                            <label className='text-lg md:text-xl fade-out-neutral-400 min-w-0 max-w-full'>{getTotalDuration(musicData.songs)}</label>
                         </div>
                     </div>
 

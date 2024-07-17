@@ -97,7 +97,7 @@ export default function User() {
                 }
                 let song = data.map((song) => { if (song.album == repeatedAlbum[0]) { return song } }).filter((title) => title)[0]
 
-                mostListenedAlbums.push({ cover_url: song.cover_url, artist: song.artist, album: song.album, times_played: repeatedAlbum[1] })
+                mostListenedAlbums.push({ id: song.id, cover_url: song.cover_url, artist: song.artist, album: song.album, times_played: repeatedAlbum[1] })
             }
             console.log(mostListenedAlbums)
             setMostPlayedAlbum(mostListenedAlbums)
@@ -112,10 +112,9 @@ export default function User() {
 
                 let song = data.map((song) => { if (song.id == repeatedSong[0]) { return song } }).filter((title) => title)[0]
 
-                mostListenedSongs.push({ cover_url: song.cover_url, title: song.title, artist: song.artist, album: song.album, times_played: repeatedSong[1] })
+                mostListenedSongs.push({ id: song.id, cover_url: song.cover_url, title: song.title, artist: song.artist, album: song.album, times_played: repeatedSong[1] })
             }
             setMostPlayedSong(mostListenedSongs)
-
             setLastSongsPlayed(out);
         })
     }, [session]);
@@ -148,7 +147,7 @@ export default function User() {
                 <div className="flex flex-col">
                     <label className="block font-bold text-2xl mt-6 ml-4">Most played song</label>
                     {mostPlayedSong?.map((song) =>
-                        <div className="bg-neutral-800 w-10/12 ml-auto mr-auto mt-6 rounded-lg flex flex-col">
+                        <div key={song.id} className="bg-neutral-800 w-10/12 ml-auto mr-auto mt-6 rounded-lg flex flex-col">
                             <Image
                                 src={song.cover_url.replace("_50x50", "")}
                                 width={0}
@@ -167,10 +166,10 @@ export default function User() {
                         </div>)
                     }
                     <label className="block font-bold text-2xl mt-6 ml-4">Most listened album</label>
-                    {mostPlayedAlbum?.map((song) =>
-                        <div className="bg-neutral-800 w-10/12 ml-auto mr-auto mt-6 rounded-lg flex flex-col">
+                    {mostPlayedAlbum?.map((album) =>
+                        <div key={album.id} className="bg-neutral-800 w-10/12 ml-auto mr-auto mt-6 rounded-lg flex flex-col">
                             <Image
-                                src={song.cover_url.replace("_50x50", "")}
+                                src={album.cover_url.replace("_50x50", "")}
                                 width={0}
                                 height={0}
                                 sizes="100vw"
@@ -179,9 +178,9 @@ export default function User() {
                             />
 
                             <div className="mr-4 ml-4 mt-3 mb-3 flex flex-col">
-                                <label className="text-xl font-bold fade-out-white">{song.album}</label>
-                                <label className="fade-out-neutral-50">Artist: <label className="font-bold text-lg">{song.artist}</label></label>
-                                <label className="fade-out-neutral-50">Times listen this album songs: <label className="font-bold text-lg">{song.times_played}</label></label>
+                                <label className="text-xl font-bold fade-out-white">{album.album}</label>
+                                <label className="fade-out-neutral-50">Artist: <label className="font-bold text-lg">{album.artist}</label></label>
+                                <label className="fade-out-neutral-50">Times listen this album songs: <label className="font-bold text-lg">{album.times_played}</label></label>
                             </div>
                         </div>)
                     }

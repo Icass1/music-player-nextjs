@@ -92,7 +92,7 @@ export default function User() {
                 }
                 let song = data.map((song) => { if (song.album == repeatedAlbum[0]) { return song } }).filter((title) => title)[0]
 
-                mostListenedAlbums.push({ cover_url: song.cover_url, artist: song.artist, album: song.album, times_played: repeatedAlbum[1] })
+                mostListenedAlbums.push({ id: song.id, cover_url: song.cover_url, artist: song.artist, album: song.album, times_played: repeatedAlbum[1] })
             }
             setMostPlayedAlbum(mostListenedAlbums)
 
@@ -106,10 +106,9 @@ export default function User() {
 
                 let song = data.map((song) => { if (song.id == repeatedSong[0]) { return song } }).filter((title) => title)[0]
 
-                mostListenedSongs.push({ cover_url: song.cover_url, title: song.title, artist: song.artist, album: song.album, times_played: repeatedSong[1] })
+                mostListenedSongs.push({ id: song.id, cover_url: song.cover_url, title: song.title, artist: song.artist, album: song.album, times_played: repeatedSong[1] })
             }
             setMostPlayedSong(mostListenedSongs)
-
             setLastSongsPlayed(out);
         })
     }, [session]);

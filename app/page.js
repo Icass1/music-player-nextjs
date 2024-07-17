@@ -100,15 +100,12 @@ export default function Home() {
                                 ref={mainRef}
                                 className="overflow-x-hidden"
                             >
-                                {/* <ListWithName musicData={musicData} setMusicData={setMusicData}></ListWithName> */}
-                                {/* <Grid musicData={musicData} setMusicData={setMusicData} ></Grid> */}
                                 {renderView(homeView)}
                             </div>
                     }
                 </>
             }
         </>
-        // <Grid musicData={musicData}></Grid>
     );
 }
 

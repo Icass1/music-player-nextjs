@@ -33,12 +33,38 @@ const AudioProvider = ({ children }) => {
 
     const session = useSession();
 
+    const [innerWidth, setInnerWidth] = useState(null);
+
     const [socket, setSocket] = useState(null);
     const [homeView, setHomeView] = useState({view: 0, numberOfViews: 2});
 
     useEffect(() => {
         setAudio(new Audio());
     }, [])
+
+    useEffect(() => {
+
+        const handleResize = () => {
+            setInnerWidth(window.innerWidth)
+        }
+
+        window.addEventListener('resize', handleResize)
+        setInnerWidth(window.innerWidth)
+
+        return () => {
+            window.removeEventListener("resize", handleResize)
+        }
+    }, [])
+
+    useEffect(() => {
+        if (!innerWidth) {return}
+
+        if (innerWidth < 768) {
+            audio.volume = 1
+            setAudioVolume(1)
+        }
+
+    }, [innerWidth])
 
     useEffect(() => {
 

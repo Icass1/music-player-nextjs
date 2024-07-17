@@ -4,12 +4,13 @@ Add queue view in phone
 Add lyrics in desktop
 Add lyrics in phone
 
-Done - When song ends save info of time played in database
+DONE - When song ends save info of time played in database
 
 When song is added to queue, the list where it comes from is stored to set currentlist
 
-Done - When there is only one genere, it should be 'Genre | Album Rock' instead of 'Genres | Album Rock'
-IN PROGRESS - Store volume in localStorage
+DONE - When there is only one genere, it should be 'Genre | Album Rock' instead of 'Genres | Album Rock'
+DONE - Store volume in database
+Store home view in database
 
 URGENT - Limit to one download at a time and only for users.
 
@@ -21,32 +22,47 @@ Add admin panel
   See, search and edit songs and lists in database
 
 Add user view
-  Done - Show recently played songs
-    Add play to song containers
-  Show most listened song
-  Show most listened genre
-  Equalizer 
+    DONE - Show recently played songs
+        Add play to song containers
+    Show most listened song
+        Cover
+        Title
+        Album
+        Artist
+        Times played
+    Show most listened album
+        Cover
+        Title
+        Artist
+        Times played
+    Show most listened artist
+        Artist
+        Times played
+    Show most listened genre
+        Genre
+        Times played
+    Equalizer 
 
 Song options
-  Play
-  DONE - Download MP3
-  DONE - Download
-  DONE - Add to queue
-  Copy ID
+    DONE - Play
+    DONE - Download MP3
+    DONE - Download
+    DONE - Add to queue
+    DONE - Copy ID
 
 Drop Spotify link anywhere and add list to library
-Add list to database when all songs are downloaded
+DONE - Add list to database when all songs are downloaded
 
 Home
-  Show genres list with all the songs in database of one genre
+    Show genres list with all the songs in database of one genre
 Maybe create library with user stuff
 
-Add total duration to list view 
+DONE - Add total duration to list view 
 Create and rename lists
 
 Make usable when not logged in
 
-Done - User database
+DONE - User database
     id  
     username
     email

@@ -41,7 +41,10 @@ Home
   Show genres list with all the songs in database of one genre
 Maybe create library with user stuff
 
-Add total duration to list view 
+List view
+    Add total duration to list view 
+    Remove - Remastered xxx from songs
+    
 Create and rename lists
 
 Make usable when not logged in

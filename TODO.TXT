@@ -18,6 +18,8 @@ Change icons of home view.
 
 CHECK - The Boys Of Summer in All Out 80s
 
+When search in list view, scroll to top
+
 Add admin panel
   Users view
   Downloads view
@@ -51,6 +53,7 @@ Song options
     DONE - Download
     DONE - Add to queue
     DONE - Copy ID
+    If song is in queue, move song to next position option
 
 Drop Spotify link anywhere and add list to library
 DONE - Add list to database when all songs are downloaded
@@ -60,8 +63,10 @@ Home
 Maybe create library with user stuff
 
 List view
-    Add total duration to list view 
-    Remove - Remastered xxx from songs
+    DONE - Add total duration to list view 
+    Remove ' - Remastered xxx' from songs
+    On mobile, remove genre and album from playlist song container
+    
     
 Create and rename lists
 

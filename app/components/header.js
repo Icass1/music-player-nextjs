@@ -186,7 +186,7 @@ export default function Header({ handleSearch }) {
                     onClick={handleViewChange}
                 />
             ) : (
-                <label></label> //Label to fill max-content when homeViewIndicatorImagePath is null
+                <label className="hidden md:block"></label> //Label to fill max-content when homeViewIndicatorImagePath is null
             )}
             <Image
                 className="hidden md:block invert-[0.8] select-none hover:invert-[0.9] cursor-pointer"

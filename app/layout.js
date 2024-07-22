@@ -74,7 +74,7 @@ export default function RootLayout({ children }) {
                     <body className={inter.className} >
                         <AudioProvider>
                             <ScrollProvider>
-                                <RenderLayout children={children}/>
+                                <RenderLayout>{children}</RenderLayout>
                             </ScrollProvider>
                         </AudioProvider>
                     </body>

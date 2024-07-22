@@ -20,6 +20,16 @@ CHECK - The Boys Of Summer in All Out 80s
 
 When search in list view, scroll to top
 
+Create and rename lists
+
+Make usable when not logged in
+
+Drop Spotify link anywhere and add list to library
+
+DONE - Add list to database when all songs are downloaded
+
+In mobile and song view is open, if click in header, it closes
+
 Add admin panel
   Users view
   Downloads view
@@ -55,9 +65,6 @@ Song options
     DONE - Copy ID
     If song is in queue, move song to next position option
 
-Drop Spotify link anywhere and add list to library
-DONE - Add list to database when all songs are downloaded
-
 Home
     Show genres list with all the songs in database of one genre
 Maybe create library with user stuff
@@ -66,11 +73,6 @@ List view
     DONE - Add total duration to list view 
     Remove ' - Remastered xxx' from songs
     On mobile, remove genre and album from playlist song container
-    
-    
-Create and rename lists
-
-Make usable when not logged in
 
 DONE - User database
     id  

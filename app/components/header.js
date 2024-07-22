@@ -12,6 +12,7 @@ import Slider from "./slider";
 import { MediaPlayerContext } from './audioContext';
 import { usePathname } from "next/navigation";
 import Animation from "./animation";
+import clsx from "clsx";
 
 export default function Header({ handleSearch }) {
 
@@ -21,6 +22,8 @@ export default function Header({ handleSearch }) {
         setAudioVolume,
         randomQueue,
         setRandomQueue,
+        showLyrics,
+        setShowLyrics,
         queueIndex,
         queue,
         setQueue,
@@ -38,6 +41,8 @@ export default function Header({ handleSearch }) {
     const session = useSession();
 
     const searchInputRef = useRef();
+
+    const pathname = usePathname();
 
     const sliderChange = (event) => {
         audio.volume = event.target.value;
@@ -107,6 +112,15 @@ export default function Header({ handleSearch }) {
         }
     }
 
+    const toggleShowLyrics = () => {
+
+        if (showLyrics) {
+            setShowLyrics(false)
+        } else {
+            setShowLyrics(true)
+        }
+    }
+
     const handleViewChange = () => {
 
         setHomeView((value) => {
@@ -148,7 +162,7 @@ export default function Header({ handleSearch }) {
             <Link href="/search">
                 <Image className="md:block invert-[0.8] hover:invert-[0.7] select-none" src='https://api.music.rockhosting.org/images/search.svg' width={30} height={30} alt="Search" />
             </Link>
-            {usePathname() == "/search" ? (
+            {pathname == "/search" ? (
                 <input
                     ref={searchInputRef}
                     placeholder="Type to search..."
@@ -162,7 +176,7 @@ export default function Header({ handleSearch }) {
             }
             <label className="hidden md:block"></label> {/* Empty label to fill 1fr */}
 
-            {homeViewIndicatorImagePath ? (
+            {homeViewIndicatorImagePath && pathname === "/" ? (
                 <Image
                     className="hidden md:block invert-[0.6] select-none hover:invert-[0.7]"
                     src={homeViewIndicatorImagePath}
@@ -172,9 +186,17 @@ export default function Header({ handleSearch }) {
                     onClick={handleViewChange}
                 />
             ) : (
-            <label></label> //Label to fill max-content when homeViewIndicatorImagePath is null
+                <label></label> //Label to fill max-content when homeViewIndicatorImagePath is null
             )}
-            <Image className="hidden md:block invert-[0.8] select-none hover:invert-[0.9]" src='https://api.music.rockhosting.org/images/lyrics.png' width={30} height={30} alt="Toggle lyrics" />
+            <Image
+                className="hidden md:block invert-[0.8] select-none hover:invert-[0.9] cursor-pointer"
+                src='https://api.music.rockhosting.org/images/lyrics.png'
+                style={{ filter: showLyrics ? ('brightness(0) saturate(100%) invert(44%) sepia(91%) saturate(474%) hue-rotate(3deg) brightness(105%) contrast(97%)') : ('') }}
+                width={30}
+                height={30}
+                alt="Toggle lyrics"
+                onClick={toggleShowLyrics}
+            />
             <Image
                 className="md:block invert-[0.6] select-none hover:invert-[0.7] cursor-pointer"
                 style={{ filter: randomQueue ? ('brightness(0) saturate(100%) invert(44%) sepia(91%) saturate(474%) hue-rotate(3deg) brightness(105%) contrast(97%)') : ('') }}

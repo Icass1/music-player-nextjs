@@ -31,6 +31,8 @@ const AudioProvider = ({ children }) => {
     const [queueIndex, setQueueIndex] = useState(null);
     const [randomQueue, setRandomQueue] = useState(null);
 
+    const [showLyrics, setShowLyrics] = useState(null);
+
     const session = useSession();
 
     const [innerWidth, setInnerWidth] = useState(null);
@@ -120,13 +122,14 @@ const AudioProvider = ({ children }) => {
             }
 
             setCurrentList(session.data.user.current_list);
-
-            setQueue(JSON.parse(session.data.user.queue))
-            setQueueIndex(session.data.user.queue_index)
-            setRandomQueue(session.data.user.random_queue)
-            audio.currentTime = session.data.user.current_time
+            
+            setQueue(JSON.parse(session.data.user.queue));
+            setQueueIndex(session.data.user.queue_index);
+            setRandomQueue(session.data.user.random_queue);
+            audio.currentTime = session.data.user.current_time;
             audio.volume = session.data.user.volume;
             setAudioVolume(session.data.user.volume);
+            setShowLyrics(session.data.user.show_lyrics);
 
         } else if (session.status == "unauthenticated") {
             storedCurrentSong = JSON.parse(localStorage.getItem('currentSong'));
@@ -425,9 +428,29 @@ const AudioProvider = ({ children }) => {
 
         if (randomQueue == null) { return }
 
-        localStorage.setItem('randomQueue', JSON.stringify(randomQueue))
+        if (session.status == "authenticated") {
 
-    }, [randomQueue])
+            socket?.emit("set-user-data", { random_queue: randomQueue })
+        } else if (session.status == "unauthenticated") {
+            localStorage.setItem('randomQueue', JSON.stringify(randomQueue))
+        }
+
+
+    }, [randomQueue, session])
+
+    useEffect(() => {
+
+        if (showLyrics == null) { return }
+
+        if (session.status == "authenticated") {
+
+            socket?.emit("set-user-data", { show_lyrics: showLyrics })
+        } else if (session.status == "unauthenticated") {
+            localStorage.setItem('showLyrics', JSON.stringify(showLyrics))
+        }
+
+
+    }, [showLyrics, session])
 
     function getTime(seconds) {
 
@@ -515,6 +538,9 @@ const AudioProvider = ({ children }) => {
 
             randomQueue,
             setRandomQueue,
+
+            showLyrics,
+            setShowLyrics,
 
             audioVolume,
             setAudioVolume,

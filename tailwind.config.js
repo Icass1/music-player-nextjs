@@ -34,6 +34,14 @@ module.exports = {
           'grid-template-rows': '60px 350px 1fr',
           'grid-template-columns': '250px 1fr'
         },
+        ".desktop-layout-lyrics": {
+          "grid-template-areas": `
+            "head head" 
+            "song-info  main" 
+            "queue  lyrics"`,
+          'grid-template-rows': '60px 350px 1fr',
+          'grid-template-columns': '250px 1fr'
+        },
         ".mobile-layout": {
           "grid-template-areas": `
           "main" 

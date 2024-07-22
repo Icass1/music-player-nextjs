@@ -60,6 +60,7 @@ export const authOptions = {
                 session.user.queue_index = data.queue_index
                 session.user.volume = data.volume
                 session.user.random_queue = data.random_queue
+                session.user.show_lyrics = data.show_lyrics
             }
 
             return session

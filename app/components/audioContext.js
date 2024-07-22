@@ -38,7 +38,7 @@ const AudioProvider = ({ children }) => {
     const [innerWidth, setInnerWidth] = useState(null);
 
     const [socket, setSocket] = useState(null);
-    const [homeView, setHomeView] = useState({view: 0, numberOfViews: 2});
+    const [homeView, setHomeView] = useState({ view: 0, numberOfViews: 2 });
 
     useEffect(() => {
         setAudio(new Audio());
@@ -59,14 +59,14 @@ const AudioProvider = ({ children }) => {
     }, [])
 
     useEffect(() => {
-        if (!innerWidth) {return}
+        if (!innerWidth) { return }
 
         if (innerWidth < 768) {
             audio.volume = 1
             setAudioVolume(1)
         }
 
-    }, [innerWidth])
+    }, [innerWidth, audio])
 
     useEffect(() => {
 
@@ -122,7 +122,7 @@ const AudioProvider = ({ children }) => {
             }
 
             setCurrentList(session.data.user.current_list);
-            
+
             setQueue(JSON.parse(session.data.user.queue));
             setQueueIndex(session.data.user.queue_index);
             setRandomQueue(session.data.user.random_queue);
@@ -161,7 +161,7 @@ const AudioProvider = ({ children }) => {
             }
         }
 
-    }, [session]);
+    }, [session, audio]);
 
     useEffect(() => {
 
@@ -208,7 +208,7 @@ const AudioProvider = ({ children }) => {
             });
         }
 
-    }, [currentSong, session, audio]);
+    }, [currentSong, session, audio, socket]);
 
     useEffect(() => {
         if (currentList == '') {
@@ -229,7 +229,7 @@ const AudioProvider = ({ children }) => {
             localStorage.setItem('currentList', JSON.stringify(currentList));
         }
 
-    }, [currentList, session]);
+    }, [currentList, session, socket]);
 
     useEffect(() => {
         if (currentList == '') {
@@ -250,7 +250,7 @@ const AudioProvider = ({ children }) => {
             localStorage.setItem('volume', JSON.stringify(audioVolume));
         }
 
-    }, [audioVolume, session]);
+    }, [audioVolume, session, currentList, socket]);
 
     // const updateCurrentTime = debounce((currentTime, session) => {
     //     console.log("ASDF")
@@ -302,7 +302,7 @@ const AudioProvider = ({ children }) => {
             localStorage.setItem('queue', JSON.stringify(queue));
         }
 
-    }, [queue, session]);
+    }, [queue, session, socket]);
 
     useEffect(() => {
 
@@ -321,7 +321,7 @@ const AudioProvider = ({ children }) => {
         } else if (session.status == "unauthenticated") {
             localStorage.setItem('queueIndex', JSON.stringify(queueIndex));
         }
-    }, [queueIndex, session]);
+    }, [queueIndex, session, socket]);
 
     useEffect(() => {
         if (!(audio instanceof HTMLAudioElement)) { return }
@@ -421,7 +421,7 @@ const AudioProvider = ({ children }) => {
             setQueueIndex(queueIndex + 1);
         }
 
-    }, [audio, queue, queueIndex, session])
+    }, [audio, queue, queueIndex, session, currentSong])
 
 
     useEffect(() => {
@@ -436,7 +436,7 @@ const AudioProvider = ({ children }) => {
         }
 
 
-    }, [randomQueue, session])
+    }, [randomQueue, session, socket])
 
     useEffect(() => {
 
@@ -450,7 +450,7 @@ const AudioProvider = ({ children }) => {
         }
 
 
-    }, [showLyrics, session])
+    }, [showLyrics, session, socket])
 
     function getTime(seconds) {
 
@@ -506,7 +506,7 @@ const AudioProvider = ({ children }) => {
             setCurrentSong(queue[queueIndex + 1]);
             setQueueIndex(queueIndex + 1);
         }
-    }, [audio, currentTime, queueIndex, queue, setCurrentSong, setQueueIndex])
+    }, [audio, currentTime, queueIndex, queue, setCurrentSong, setQueueIndex, audio, currentTime])
 
     return (
         <MediaPlayerContext.Provider value={{

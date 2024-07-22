@@ -16,6 +16,8 @@ URGENT - Limit to one download at a time and only for users.
 
 Change icons of home view.
 
+CHECK - The Boys Of Summer in All Out 80s
+
 Add admin panel
   Users view
   Downloads view

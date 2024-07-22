@@ -1,8 +1,8 @@
 Add videoclip with youtube url
 
 Add queue view in phone
-Add lyrics in desktop
-Add lyrics in phone
+DONE - Add lyrics in desktop
+DONE - Add lyrics in phone
 
 DONE - When song ends save info of time played in database
 

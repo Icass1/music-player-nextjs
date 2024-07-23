@@ -166,13 +166,14 @@ export default function SongInfo() {
             yDown = null;
         };
 
-        return () => {
-            if (!songDataRef.current) { return }
+        const element = songDataRef.current
 
-            songDataRef.current.removeEventListener('touchstart', handleTouchStart);
-            songDataRef.current.removeEventListener('touchmove', handleTouchMove);
+        return () => {
+
+            element.removeEventListener('touchstart', handleTouchStart);
+            element.removeEventListener('touchmove', handleTouchMove);
         }
-    }, [queue, queueIndex, currentTime, songDataRef])
+    }, [queue, queueIndex, currentTime, songDataRef, nextSong, previousSong])
 
     useEffect(() => {
         songDataRef.current.scrollTo(songDataRef.current.offsetWidth * queueIndex, 0)
@@ -211,6 +212,8 @@ export default function SongInfo() {
 
     useEffect(() => {
 
+        const element = songViewScrollRef?.current
+
         const handleScrollEnd = (e) => {
             e?.target?.scrollTo(Math.round(e?.target?.scrollLeft / innerWidth) * innerWidth, 0)
         }
@@ -218,7 +221,7 @@ export default function SongInfo() {
         songViewScrollRef?.current?.addEventListener("scrollend", handleScrollEnd)
 
         return () => {
-            songViewScrollRef?.current?.removeEventListener("scrollend", handleScrollEnd)
+            element.removeEventListener("scrollend", handleScrollEnd)
         }
 
     }, [songViewScrollRef, innerWidth])

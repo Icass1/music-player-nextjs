@@ -31,9 +31,9 @@ DONE - Add list to database when all songs are downloaded
 In mobile and song view is open, if click in header, it closes
 
 Add admin panel
-  Users view
-  Downloads view
-  See, search and edit songs and lists in database
+    Users view
+    Downloads view
+    See, search and edit songs and lists in database
 
 Add user view
     DONE - Show recently played songs

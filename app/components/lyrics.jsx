@@ -16,13 +16,17 @@ function DynamicLyrics(lyrics) {
         )
     }
 
+
+
+    console.log(currentTime)
+
     return (
         <>
             <div className="h-6 list-item"></div>
             {lyrics.lyrics.segments.map((line, index) =>
                 <div key={"line" + index} className="w-fit ml-auto mr-auto">
                     {line.words.map((word, index) =>
-                        <label key={"word" + index} className={clsx("text-center text-neutral-700 ml-1", { 'text-neutral-200': word.start < currentTime })}>{word.text}</label>
+                        <label key={"word" + index} className={clsx("text-center ml-1", { 'text-neutral-100': word.start < currentTime, 'text-neutral-500': word.start > currentTime })}>{word.text}</label>
                     )}
                 </div>
             )}

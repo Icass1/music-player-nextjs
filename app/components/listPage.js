@@ -428,10 +428,10 @@ export default function DefaultListPage({ listId, musicData }) {
                             src={musicData.cover_url ? (musicData.cover_url) : ('https://api.music.rockhosting.org/images/defaultAlbum.png')}
                             width={300}
                             height={300}
-                            onLoad={(e) => {setBackgroundGradient(getImageMeanColor(e.target))}}
+                            onLoad={(e) => { setBackgroundGradient(getImageMeanColor(e.target)) }}
                         />
                         {/* <div className='grid inherit' style={{ gridTemplateRows: 'max-content max-content max-content max-content' }}> */}
-                        <div className='flex flex-col inherit'>
+                        <div className='flex flex-col inherit min-w-0 max-w-full'>
 
                             {/* <label className='h-2 md:hidden'></label> */}
 
@@ -469,7 +469,7 @@ export default function DefaultListPage({ listId, musicData }) {
                                 }
                             </div>
 
-                            <label className='text-3xl md:text-5xl fade-out-neutral-200 font-bold mt-8 md:mt-0 min-w-0 md:min-h-14 max-w-full'>{musicData.name}</label>
+                            <label className='text-3xl md:text-5xl fade-out-neutral-200 font-bold mt-4 md:mt-0 min-w-0 md:min-h-14 max-w-full'>{musicData.name}</label>
                             <label className='text-xl md:text-2xl fade-out-neutral-400 min-w-0 max-w-full'>{musicData.author}</label>
                             <label className='text-lg md:text-xl fade-out-neutral-400 min-w-0 max-w-full'>Genre{genres.length == 1 ? <></> : <>s</>} | {genres?.join(", ")}</label>
                             <label className='text-lg md:text-xl fade-out-neutral-400 min-w-0 max-w-full'>{getTotalDuration(musicData.songs)}</label>

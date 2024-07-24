@@ -10,6 +10,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import Slider from "./slider";
 import { MediaPlayerContext } from './audioContext';
 import { usePathname } from "next/navigation";
+import useWindowWidth from "../hooks/useWindowWidth";
 
 export default function Header({ handleSearch }) {
 
@@ -30,7 +31,7 @@ export default function Header({ handleSearch }) {
 
     const [lastAudioVolume, setLastAudioVolume] = useState(null);
     const [muted, setMuted] = useState(false);
-    const [innerWidth, setInnerWidth] = useState(0);
+    const innerWidth = useWindowWidth();    
 
     const [homeViewIndicatorImagePath, setHomeViewIndicatorImagePath] = useState();
 
@@ -50,7 +51,6 @@ export default function Header({ handleSearch }) {
     };
 
     useEffect(() => {
-        console.log(muted, lastAudioVolume, audio?.volume)
         if (muted && audio.volume != 0) {
             setLastAudioVolume(audio.volume);
             audio.volume = 0;
@@ -59,20 +59,6 @@ export default function Header({ handleSearch }) {
         }
 
     }, [muted, audio])
-
-    useEffect(() => {
-
-        const handleResize = () => {
-            setInnerWidth(window.innerWidth)
-        }
-
-        window.addEventListener('resize', handleResize)
-        setInnerWidth(window.innerWidth)
-
-        return () => {
-            window.removeEventListener("resize", handleResize)
-        }
-    }, [])
 
     let debounceTimer;
     const handleSearchInputChange = (e) => {

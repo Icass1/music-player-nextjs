@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { Link } from 'next-view-transitions'
 import { useEffect, useState } from "react";
+import useWindowWidth from "../hooks/useWindowWidth";
 
 export default function User() {
 
@@ -16,22 +17,8 @@ export default function User() {
     const [mostPlayedGenre, setMostPlayedGenre] = useState(null);
 
     const session = useSession();
-    const [innerWidth, setInnerWidth] = useState(0);
-
-    useEffect(() => {
-
-        const handleResize = () => {
-            setInnerWidth(window.innerWidth)
-        }
-
-        window.addEventListener('resize', handleResize)
-        setInnerWidth(window.innerWidth)
-
-        return () => {
-            window.removeEventListener("resize", handleResize)
-        }
-    }, [])
-
+    const innerWidth = useWindowWidth()
+    
     useEffect(() => {
         if (session?.status != "authenticated") { return }
 

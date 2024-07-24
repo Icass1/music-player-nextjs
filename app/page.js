@@ -290,22 +290,9 @@ function Grid({ musicData, setMusicData }) {
 function ListWithName({ musicData, setMusicData }) {
 
     const { currentList, isPlaying } = useContext(MediaPlayerContext);
-    const [innerWidth, setInnerWidth] = useState(0)
+    const innerWidth = useWindowWidth()
+
     const [downloadProgress, setDownloadProgress] = useState(0);
-
-    useEffect(() => {
-
-        const handleResize = () => {
-            setInnerWidth(window.innerWidth)
-        }
-
-        window.addEventListener('resize', handleResize)
-        setInnerWidth(window.innerWidth)
-
-        return () => {
-            window.removeEventListener("resize", handleResize)
-        }
-    }, [])
 
     let listsByName = {};
     let listsByNameTemp = {};

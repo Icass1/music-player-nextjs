@@ -1,25 +1,13 @@
 import clsx from "clsx";
 import React, { cloneElement, useCallback, useEffect, useRef, useState } from "react";
+import useWindowWidth from "../hooks/useWindowWidth";
 
 export default function ContextMenu({ children, options }) {
 
     const [position, setPosition] = useState([10, 10]);
     const [showing, setShowing] = useState(false);
     const contextMenuRef = useRef();
-    const [innerWidth, setInnerWidth] = useState(0)
-
-    useEffect(() => {
-        const handleResize = () => {
-            setInnerWidth(window.innerWidth)
-        }
-
-        window.addEventListener('resize', handleResize)
-        setInnerWidth(window.innerWidth)
-
-        return () => {
-            window.removeEventListener("resize", handleResize)
-        }
-    }, [])
+    const innerWidth = useWindowWidth();
 
     const close = useCallback((e) => {
         let clientX = innerWidth > 768 ? e.clientX : e.touches[0].clientX

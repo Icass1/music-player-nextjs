@@ -7,6 +7,7 @@ import Slider from './slider';
 import Equalizer from './equalizer';
 import clsx from 'clsx';
 import Lyrics from './lyrics';
+import useWindowWidth from '../hooks/useWindowWidth';
 
 export default function SongInfo() {
     const {
@@ -26,7 +27,7 @@ export default function SongInfo() {
 
     const [sliderValue, setSliderValue] = useState(0);
     const [showingEqualizer, setShowingEqualizer] = useState(false);
-    const [innerWidth, setInnerWidth] = useState(0);
+    const innerWidth = useWindowWidth();
     const [topScrollBarValue, setTopScrollBarValue] = useState(0);
 
     const songDataRef = useRef();
@@ -90,20 +91,6 @@ export default function SongInfo() {
             setQueueIndex(queueIndex + 1);
         }
     }
-
-    useEffect(() => {
-
-        const handleResize = () => {
-            setInnerWidth(window.innerWidth)
-        }
-
-        window.addEventListener('resize', handleResize)
-        setInnerWidth(window.innerWidth)
-
-        return () => {
-            window.removeEventListener("resize", handleResize)
-        }
-    }, [])
 
     useEffect(() => {
 

@@ -5,6 +5,7 @@ import React, { createContext, useState, useEffect, useCallback } from 'react';
 import { apiFetch } from '../utils/apiFetch';
 import { getMusicFile } from '../utils/storage';
 import io from 'socket.io-client';
+import useWindowWidth from '../hooks/useWindowWidth';
 
 const MediaPlayerContext = createContext();
 
@@ -35,27 +36,13 @@ const AudioProvider = ({ children }) => {
 
     const session = useSession();
 
-    const [innerWidth, setInnerWidth] = useState(null);
+    const innerWidth = useWindowWidth()
 
     const [socket, setSocket] = useState(null);
     const [homeView, setHomeView] = useState({ view: 0, numberOfViews: 2 });
 
     useEffect(() => {
         setAudio(new Audio());
-    }, [])
-
-    useEffect(() => {
-
-        const handleResize = () => {
-            setInnerWidth(window.innerWidth)
-        }
-
-        window.addEventListener('resize', handleResize)
-        setInnerWidth(window.innerWidth)
-
-        return () => {
-            window.removeEventListener("resize", handleResize)
-        }
     }, [])
 
     useEffect(() => {

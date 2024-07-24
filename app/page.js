@@ -13,6 +13,8 @@ import ContextMenu from './components/contextMenu';
 import SelectionArea from './components/selectionArea';
 import { useSession } from "next-auth/react";
 import { apiFetch } from './utils/apiFetch';
+import getImageMeanColor from './utils/getImageMeanColor';
+import useWindowWidth from './hooks/useWindowWidth';
 
 export default function Home() {
 
@@ -48,11 +50,11 @@ export default function Home() {
     const renderView = (homeView) => {
         switch (homeView?.view) {
             case 0:
-                return <Grid musicData={musicData} setMusicData={setMusicData} ></Grid>
+                return <GridLayout musicData={musicData} setMusicData={setMusicData} ></GridLayout>
             case 1:
-                return <ListWithName musicData={musicData} setMusicData={setMusicData}></ListWithName>
+                return <ListWithNameLayout musicData={musicData} setMusicData={setMusicData}></ListWithNameLayout>
             default:
-                return <Grid musicData={musicData} setMusicData={setMusicData} ></Grid>
+                return <GridLayout musicData={musicData} setMusicData={setMusicData} ></GridLayout>
         }
     };
 
@@ -259,35 +261,48 @@ function AddContextMenu({ children, item, setDownloadProgress, setMusicData }) {
     )
 }
 
-function Grid({ musicData, setMusicData }) {
+function GridContainer({ item, setMusicData }) {
+    const [downloadProgress, setDownloadProgress] = useState(0);
     const { currentList } = useContext(MediaPlayerContext);
 
-    const [downloadProgress, setDownloadProgress] = useState(0);
+    const [background, setBackground] = useState()
+
+    return (
+        <AddContextMenu item={item} setMusicData={setMusicData} setDownloadProgress={setDownloadProgress}>
+            <Link
+                href={`/list/${item.id}`}
+                className={`rounded-lg grid grid-cols-2 md:bg-neutral-700 md:hover:bg-neutral-600 transition-colors md:shadow-lg`}
+                style={{ gridTemplateColumns: '50px 1fr', backgroundColor: background}}
+            >
+                <Image
+                    src={`https://api.music.rockhosting.org/api/list/image/${item.id}_50x50`}
+                    width={50}
+                    height={50}
+                    className='rounded-lg'
+                    alt={item.name}
+                    // onLoad={(e) => { setBackground(getImageMeanColor(e.target, 16, [64, 64, 64])) }}
+                ></Image>
+                <div className='grid h-[50px]' style={{ gridTemplateRows: 'max-content max-content' }}>
+                    <label className={clsx('pl-3 pr-3 text-lg fade-out-neutral-200 font-bold cursor-pointer h-6 overflow-y-hidden min-w-0 max-w-full', { 'fade-out-yellow-600': item.id == currentList })}>{item.name}</label>
+                    <label className={clsx('pl-3 pr-3 fade-out-neutral-200 cursor-pointer min-w-0 max-w-full', { 'fade-out-yellow-600': item.id == currentList })}>{item.author}</label>
+                </div>
+            </Link>
+        </AddContextMenu>
+    )
+}
+
+function GridLayout({ musicData, setMusicData }) {
 
     return (
         <div className='grid gap-2 p-2' style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))' }}>
             {musicData.map((item) => (
-                <AddContextMenu key={item.id} item={item} setMusicData={setMusicData} setDownloadProgress={setDownloadProgress}>
-
-                    <Link
-                        href={`/list/${item.id}`}
-                        key={item.id}
-                        className='rounded-lg grid grid-cols-2 md:bg-neutral-700 md:hover:bg-neutral-600 transition-colors'
-                        style={{ gridTemplateColumns: '50px 1fr' }}
-                    >
-                        <Image src={`https://api.music.rockhosting.org/api/list/image/${item.id}_50x50`} width={50} height={50} className='rounded-lg' alt={item.name}></Image>
-                        <div className='grid h-[50px]' style={{ gridTemplateRows: 'max-content max-content' }}>
-                            <label className={clsx('pl-3 pr-3 text-lg fade-out-neutral-200 font-bold cursor-pointer h-6 overflow-y-hidden min-w-0 max-w-full', { 'fade-out-yellow-600': item.id == currentList })}>{item.name}</label>
-                            <label className={clsx('pl-3 pr-3 fade-out-neutral-200 cursor-pointer min-w-0 max-w-full', { 'fade-out-yellow-600': item.id == currentList })}>{item.author}</label>
-                        </div>
-                    </Link>
-                </AddContextMenu>
+                <GridContainer key={item.id} item={item} setMusicData={setMusicData} />
             ))}
         </div>
     )
 }
 
-function ListWithName({ musicData, setMusicData }) {
+function ListWithNameLayout({ musicData, setMusicData }) {
 
     const { currentList, isPlaying } = useContext(MediaPlayerContext);
     const innerWidth = useWindowWidth()

@@ -233,7 +233,7 @@ export default function SongInfo() {
                         height={0}
                     /> */}
 
-                    <div className='relative grid max-w-full' style={{ gridTemplateRows: "2fr max-content 40px max-content 60px 60px", height: 'calc(100% - 60px)' }}>
+                    <div className='relative grid max-w-full' style={{ gridTemplateRows: "2fr max-content 1fr max-content 60px 60px", height: 'calc(100% - 60px)' }}>
 
 
                         <label></label>
@@ -263,22 +263,30 @@ export default function SongInfo() {
                         <label></label>
 
                         <div className='flex flex-col ml-4 mr-4 min-w-0'>
-                            <label className='text-3xl fade-out-neutral-200 font-bold'>{currentSong.title}</label>
-                            <label className='text-2xl fade-out-neutral-300 '>{currentSong.artist}</label>
+                            <label className='text-2xl fade-out-neutral-200 font-bold'>{currentSong.title}</label>
+                            <label className='text-1xl fade-out-neutral-300 '>{currentSong.artist}</label>
                         </div>
 
-                        <div className='grid relative gap-1 ml-2 mr-2 items-center justify-items-center' style={{ gridTemplateColumns: '50px 1fr 50px' }}>
+                        <div
+                            className='grid relative gap-1 ml-2 mr-2 items-center justify-items-center scroll-'
+                            onTouchStart={(e) => { e.target.parentNode.parentNode.parentNode.parentNode.style.overflowX = 'hidden' }}
+                            onTouchEnd={(e) => { e.target.parentNode.parentNode.parentNode.parentNode.style.overflowX = '' }}
+                            style={{ gridTemplateColumns: '50px 1fr 50px' }}
+                        >
                             <label className='text-neutral-300'>{getTime(currentTime)}</label>
                             <Slider value={sliderValue} onInput={sliderInput} onChange={sliderChange}></Slider>
                             <label className='text-neutral-300'>{getTime(audioDuration)}</label>
                         </div>
                         <div className='grid items-center justify-items-center ml-auto mr-auto gap-3' style={{ gridTemplateColumns: 'max-content max-content max-content' }}>
                             <Image alt="Previous" className='block invert-[0.8] hover:invert-[0.9] cursor-pointer' src='https://api.music.rockhosting.org/images/previous.svg' width={40} height={40} onClick={(e) => { e.stopPropagation(); handlePrevious() }} />
-                            {isPlaying ?
-                                <Image alt="Puase" className='invert-[0.8] hover:invert-[0.9] cursor-pointer' src='https://api.music.rockhosting.org/images/pause.svg' width={60} height={60} onClick={(e) => { e.stopPropagation(); handlePause() }} />
-                                :
-                                <Image alt="Play" className='invert-[0.8] hover:invert-[0.9] cursor-pointer' src='https://api.music.rockhosting.org/images/play.svg' width={60} height={60} onClick={(e) => { e.stopPropagation(); handlePlay() }} />
-                            }
+
+                            <div className='bg-yellow-600 rounded-full'>
+                                {isPlaying ?
+                                    <Image alt="Puase" className='invert-[0.8] hover:invert-[0.9] cursor-pointer p-3' src='https://api.music.rockhosting.org/images/pause.svg' width={60} height={60} onClick={(e) => { e.stopPropagation(); handlePause() }} />
+                                    :
+                                    <Image alt="Play" className='invert-[0.8] hover:invert-[0.9] cursor-pointer p-3' src='https://api.music.rockhosting.org/images/play.svg' width={60} height={60} onClick={(e) => { e.stopPropagation(); handlePlay() }} />
+                                }
+                            </div>
                             <Image alt="Next" className='block invert-[0.8] hover:invert-[0.9] cursor-pointer' src='https://api.music.rockhosting.org/images/next.svg' width={40} height={40} onClick={(e) => { e.stopPropagation(); handleNext() }} />
                         </div>
                     </div>

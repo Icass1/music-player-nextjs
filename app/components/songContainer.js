@@ -9,6 +9,7 @@ import { Link } from 'next-view-transitions'
 import ContextMenu from "./contextMenu";
 import { useRouter } from "next/router";
 import { downloadAndSaveMusic, getMusicFile } from "../utils/storage";
+import useWindowWidth from "../hooks/useWindowWidth";
 
 export function Song({ type, musicData, checkMusicData, index, song, listId }) {
 
@@ -213,6 +214,10 @@ function AlbumSong({ index, stored, song, listId, downloadProgress, handleDownlo
 function PlaylistSong({ index, stored, song, listId, handleDownloadToDatabase }) {
 
     const { currentSong, isPlaying, currentList } = useContext(MediaPlayerContext);
+
+    const innerWidth = useWindowWidth();
+
+    song.cover_url = song.cover_url.replace("_50x50", innerWidth > 768 ? "_50x50" : "_100x100")
 
     return (
         <div

@@ -18,7 +18,7 @@ Change icons of home view.
 
 CHECK - The Boys Of Summer in All Out 80s
 
-When search in list view, scroll to top
+DONE - When search in list view, scroll to top
 
 Create and rename lists
 
@@ -42,23 +42,23 @@ Add admin panel
 Add user view
     DONE - Show recently played songs
         Add play to song containers
-    Show most listened song
-        Cover
-        Title
-        Album
-        Artist
-        Times played
-    Show most listened album
-        Cover
-        Title
-        Artist
-        Times played
-    Show most listened artist
-        Artist
-        Times played
-    Show most listened genre
-        Genre
-        Times played
+    DONE - Show most listened song
+        DONE - Cover
+        DONE - Title
+        DONE - Album
+        DONE - Artist
+        DONE - Times played
+    DONE - Show most listened album
+        DONE - Cover
+        DONE - Title
+        DONE - Artist
+        DONE - Times played
+    DONE - Show most listened artist
+        DONE - Artist
+        DONE - Times played
+    DONE - Show most listened genre
+        DONE - Genre
+        DONE - Times played
     Equalizer 
 
 Song options
@@ -75,25 +75,25 @@ Maybe create library with user stuff
 
 List view
     DONE - Add total duration to list view 
-    Check list header alignment 
+    DONE - Check list header alignment 
     Remove ' - Remastered xxx' from songs
-    On mobile, remove genre and album from playlist song container
+    DONE - On mobile, remove genre and album from playlist song container
     Download and search button should move when lyrics are shown
     
 
 DONE - User database
-    id  
-    username
-    email
-    picture_url
-    lists  
-    last_played_songs 
-    current_list
-    current_song
-    current_time
-    queue
-    queue_index
-    randomqueue
-    volume
-    admin
-    super_admin
+    DONE - id  
+    DONE - username
+    DONE - email
+    DONE - picture_url
+    DONE - lists  
+    DONE - last_played_songs 
+    DONE - current_list
+    DONE - current_song
+    DONE - current_time
+    DONE - queue
+    DONE - queue_index
+    DONE - randomqueue
+    DONE - volume
+    DONE - admin
+    DONE - super_admin

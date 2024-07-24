@@ -46,7 +46,7 @@ export function Song({ type, musicData, checkMusicData, index, song, listId }) {
             if (randomQueue) {
                 list.sort(() => Math.random() - 0.5)
             }
-            
+
             setQueue([song].concat(list));
             setQueueIndex(0);
             setCurrentSong(song);
@@ -124,7 +124,7 @@ export function Song({ type, musicData, checkMusicData, index, song, listId }) {
             setDownloadProgress(undefined)
         };
     }
-    
+
     const [stored, setStored] = useState(false)
 
     useEffect(() => {
@@ -148,7 +148,7 @@ export function Song({ type, musicData, checkMusicData, index, song, listId }) {
                 "Download MP3": handleDownloadMP3,
                 "Download": handleDownload,
                 "Add to queue": handleAddToQueue,
-                "Copy ID": () => {navigator.clipboard.writeText(song.id)}
+                "Copy ID": () => { navigator.clipboard.writeText(song.id) }
             }}
         >
             <div onClick={handlePlayClick} className="relative ml-3 mr-3 mt-2 mb-2">
@@ -173,7 +173,7 @@ function AlbumSong({ index, stored, song, listId, downloadProgress, handleDownlo
         >
 
             {song.id == currentSong.id && isPlaying && currentList == listId ? (
-                <Equalizer className='w-6 md:w-[50px] h-full top-0' bar_count={innerWidth > 768 ? 10: 5} bar_gap={1} centered={true} toggleCenter={false} />
+                <Equalizer className='w-6 md:w-[50px] h-full top-0' bar_count={innerWidth > 768 ? 10 : 5} bar_gap={1} centered={true} toggleCenter={false} />
             ) : (
                 <label className={clsx('text-xl w-6 md:w-[50px] text-neutral-400 text-center ', { 'text-yellow-600': song.id == currentSong.id && currentList == listId, 'cursor-pointer': song.in_database !== false })}>{index + 1}</label>
             )}
@@ -190,14 +190,14 @@ function AlbumSong({ index, stored, song, listId, downloadProgress, handleDownlo
                 <label></label>
             ) : (
                 <Image
-                    className={clsx("cursor-pointer [filter:invert(29%)_sepia(93%)_saturate(1108%)_hue-rotate(25deg)_brightness(93%)_contrast(98%)]", {"hover:[filter:invert(45%)_sepia(100%)_saturate(412%)_hue-rotate(3deg)_brightness(90%)_contrast(97%)]": !song.in_database})}
+                    className={clsx("cursor-pointer [filter:invert(29%)_sepia(93%)_saturate(1108%)_hue-rotate(25deg)_brightness(93%)_contrast(98%)]", { "hover:[filter:invert(45%)_sepia(100%)_saturate(412%)_hue-rotate(3deg)_brightness(90%)_contrast(97%)]": !song.in_database })}
                     src={song.in_database ? ("https://api.music.rockhosting.org/images/database2.webp") : ("https://api.music.rockhosting.org/images/download.svg")}
                     // style={{ filter: mouse_over ? ('brightness(0) saturate(100%) invert(32%) sepia(57%) saturate(3843%) hue-rotate(39deg) brightness(86%) contrast(98%)') : ("invert(30%) sepia(46%) saturate(2650%) hue-rotate(32deg) brightness(93%) contrast(98%)")}}
                     width={30}
                     height={30}
                     alt={song.in_database ? ("Database logo") : ("Download logo")}
                     title={song.in_database ? ("Song is in database") : ("Click to download song")}
-                    onClick={!song.in_database ? handleDownloadToDatabase : () => {} }
+                    onClick={!song.in_database ? handleDownloadToDatabase : () => { }}
                 />
             )}
             {stored ? (
@@ -217,7 +217,7 @@ function PlaylistSong({ index, stored, song, listId, handleDownloadToDatabase })
     return (
         <div
             className={clsx('grid gap-x-2 rounded-md cursor-pointer items-center transition-colors', { 'hover:bg-neutral-800': song.in_database !== false })}
-            style={{ gridTemplateColumns: innerWidth ? '50px 3fr max-content 60px' :  '50px 3fr 1fr 1fr max-content 60px', gridTemplateRows: '50px' }}
+            style={{ gridTemplateColumns: innerWidth > 768 ? '50px 3fr 1fr 1fr max-content 60px' : '50px 3fr max-content 60px', gridTemplateRows: '50px' }}
         >
 
             <div className='relative h-[50px]'>
@@ -248,14 +248,14 @@ function PlaylistSong({ index, stored, song, listId, handleDownloadToDatabase })
                 <label></label>
             ) : (
                 <Image
-                    className={clsx("cursor-pointer [filter:invert(29%)_sepia(93%)_saturate(1108%)_hue-rotate(25deg)_brightness(93%)_contrast(98%)]", {"hover:[filter:invert(45%)_sepia(100%)_saturate(412%)_hue-rotate(3deg)_brightness(90%)_contrast(97%)]": !song.in_database})}
+                    className={clsx("cursor-pointer [filter:invert(29%)_sepia(93%)_saturate(1108%)_hue-rotate(25deg)_brightness(93%)_contrast(98%)]", { "hover:[filter:invert(45%)_sepia(100%)_saturate(412%)_hue-rotate(3deg)_brightness(90%)_contrast(97%)]": !song.in_database })}
                     src={song.in_database ? ("https://api.music.rockhosting.org/images/database2.webp") : ("https://api.music.rockhosting.org/images/download.svg")}
                     // style={{ filter: mouse_over ? ('brightness(0) saturate(100%) invert(32%) sepia(57%) saturate(3843%) hue-rotate(39deg) brightness(86%) contrast(98%)') : ("invert(30%) sepia(46%) saturate(2650%) hue-rotate(32deg) brightness(93%) contrast(98%)")}}
                     width={30}
                     height={30}
                     alt={song.in_database ? ("Database logo") : ("Download logo")}
                     title={song.in_database ? ("Song is in database") : ("Click to download song")}
-                    onClick={!song.in_database ? handleDownloadToDatabase : () => {} }
+                    onClick={!song.in_database ? handleDownloadToDatabase : () => { }}
                 />
             )}
 

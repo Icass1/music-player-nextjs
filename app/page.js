@@ -335,7 +335,7 @@ function ListWithName({ musicData, setMusicData }) {
                                         <label className={clsx('ml-2 text-lg md:text-2xl pr-3 fade-out-neutral-200 font-bold cursor-pointer min-w-0 max-w-full', { 'fade-out-yellow-600': item.id == currentList })}>{item.name}</label>
 
                                         {item.id == currentList && isPlaying ? (
-                                            <Equalizer className='w-8 md:w-20 h-full p-1' bar_count={innerWidth < 768 ? 6 : 15} bar_gap={1} centered={true} />
+                                            <Equalizer className='w-8 md:w-20 h-full p-1' bar_count={innerWidth > 768 ? 15 : 6} bar_gap={1} centered={true} />
                                         ) : (
                                             <div></div>
                                         )}

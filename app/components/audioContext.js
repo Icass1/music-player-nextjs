@@ -46,9 +46,9 @@ const AudioProvider = ({ children }) => {
     }, [])
 
     useEffect(() => {
-        if (!innerWidth) { return }
+        if (!innerWidth || !audio) { return }
 
-        if (innerWidth < 768) {
+        if (!(innerWidth > 768)) {
             audio.volume = 1
             setAudioVolume(1)
         }

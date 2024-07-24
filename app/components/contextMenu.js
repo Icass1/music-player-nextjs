@@ -48,13 +48,13 @@ export default function ContextMenu({ children, options }) {
                     let x;
                     let y;
 
-                    if (innerWidth < 768) {
-                        x = e.clientX - contextMenuRef.current.offsetWidth;
-                        y = e.clientY - contextMenuRef.current.offsetHeight;
-                    } else {
-
+                    if (innerWidth > 768) {
                         x = e.clientX;
                         y = e.clientY;
+                    } else {
+                        x = e.clientX - contextMenuRef.current.offsetWidth;
+                        y = e.clientY - contextMenuRef.current.offsetHeight;
+
                     }
 
                     if (e.clientX + contextMenuRef.current.offsetWidth > window.innerWidth) {

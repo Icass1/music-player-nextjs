@@ -30,6 +30,10 @@ DONE - Add list to database when all songs are downloaded
 
 In mobile and song view is open, if click in header, it closes
 
+Make volume cuadratic
+
+In home view, slight background color of the cover image and shadow
+
 Add admin panel
     Users view
     Downloads view
@@ -73,6 +77,8 @@ List view
     DONE - Add total duration to list view 
     Remove ' - Remastered xxx' from songs
     On mobile, remove genre and album from playlist song container
+    Download and search button should move when lyrics are shown
+    
 
 DONE - User database
     id  

@@ -32,6 +32,8 @@ In mobile and song view is open, if click in header, it closes
 
 Make volume cuadratic
 
+In dynamic lyrics, move to the next line in every comma
+
 In home view, slight background color of the cover image and shadow
 
 Add admin panel

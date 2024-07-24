@@ -9,6 +9,8 @@ import classNames from 'classnames';
 import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { apiFetch } from '../utils/apiFetch';
+import useWindowWidth from '../hooks/useWindowWidth';
+import getImageMeanColor from '../utils/getImageMeanColor';
 
 
 function CircularProgressBar({ className = "", progress = 50, smooth = true, onClick }) {
@@ -140,7 +142,7 @@ export default function DefaultListPage({ listId, musicData }) {
     const session = useSession();
     const pathname = usePathname()
 
-    const [innerWidth, setInnerWidth] = useState(null)
+    const innerWidth = useWindowWidth()
 
     useEffect(() => {
         if (session.status != "authenticated") { return }
@@ -149,19 +151,7 @@ export default function DefaultListPage({ listId, musicData }) {
         })
     }, [session])
 
-    useEffect(() => {
 
-        const handleResize = () => {
-            setInnerWidth(window.innerWidth)
-        }
-
-        window.addEventListener('resize', handleResize)
-        setInnerWidth(window.innerWidth)
-
-        return () => {
-            window.removeEventListener("resize", handleResize)
-        }
-    }, [])
 
     // Function to calculate total duration
     const getTotalDuration = (songs) => {
@@ -360,41 +350,6 @@ export default function DefaultListPage({ listId, musicData }) {
         }
     };
 
-    function showGradient(e) {
-
-        const image = e.target;
-
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(image, 0, 0);
-        const imageData = ctx.getImageData(0, 0, 640, 640);
-
-        let rSum = 0;
-        let gSum = 0;
-        let bSum = 0;
-
-        function getPixel(imageData, x, y) {
-            let pixelRed = imageData.data[y * (imageData.width * 4) + x * 4 + 0];
-            let pixelGreen = imageData.data[y * (imageData.width * 4) + x * 4 + 1];
-            let pixelBlue = imageData.data[y * (imageData.width * 4) + x * 4 + 2];
-
-            return [pixelRed, pixelGreen, pixelBlue];
-        }
-
-        for (let x = 0; x < image.width; x++) {
-            for (let y = 0; y < image.height; y++) {
-                let pixel = getPixel(imageData, x, y);
-                rSum += pixel[0];
-                gSum += pixel[1];
-                bSum += pixel[2];
-            }
-        }
-
-        let backgroundColor = `rgb(${rSum / (image.width * image.height)}, ${gSum / (image.width * image.height)}, ${bSum / (image.width * image.height)})`;
-
-        setBackgroundGradient(backgroundColor);
-    }
-
     const handleSort = (e) => {
 
         console.log("handleSort");
@@ -473,7 +428,7 @@ export default function DefaultListPage({ listId, musicData }) {
                             src={musicData.cover_url ? (musicData.cover_url) : ('https://api.music.rockhosting.org/images/defaultAlbum.png')}
                             width={300}
                             height={300}
-                            onLoad={showGradient}
+                            onLoad={(e) => {setBackgroundGradient(getImageMeanColor(e.target))}}
                         />
                         {/* <div className='grid inherit' style={{ gridTemplateRows: 'max-content max-content max-content max-content' }}> */}
                         <div className='flex flex-col inherit'>
@@ -565,7 +520,7 @@ export default function DefaultListPage({ listId, musicData }) {
                         </div>
                     ) : (
                         // Playlist column titles
-                        <div className='grid gap-x-2 ml-3 mr-3' style={{ gridTemplateColumns: innerWidth ? '50px 3fr max-content 60px' :  '50px 3fr 1fr 1fr max-content 60px' }}>
+                        <div className='grid gap-x-2 ml-3 mr-3' style={{ gridTemplateColumns: innerWidth > 768 ? '50px 3fr 1fr 1fr max-content 60px' : '50px 3fr max-content 60px' }}>
                             <label></label>
                             <div className='flex gap-1 items-center min-w-0 max-w-full overflow-x-hidden'>
                                 <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Title</label>

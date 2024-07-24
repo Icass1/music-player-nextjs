@@ -6,8 +6,6 @@ import Image from 'next/image';
 import Slider from './slider';
 import Equalizer from './equalizer';
 import clsx from 'clsx';
-import Animation from './animation';
-import { usePathname } from 'next/navigation';
 import Lyrics from './lyrics';
 
 export default function SongInfo() {
@@ -29,14 +27,12 @@ export default function SongInfo() {
     const [sliderValue, setSliderValue] = useState(0);
     const [showingEqualizer, setShowingEqualizer] = useState(false);
     const [innerWidth, setInnerWidth] = useState(0);
-    const [songViewAnimation, toggleSongViewAnimation] = Animation(100, 0, 100, 3, 1);
     const [topScrollBarValue, setTopScrollBarValue] = useState(0);
-    const songViewAnimationRef = useRef();
-    const toggleSongViewAnimationRef = useRef();
 
     const songDataRef = useRef();
 
     const songViewScrollRef = useRef();
+    const [showSongView, setShowSongView] = useState(false);
 
     useEffect(() => {
         if (audioDuration == 0) { return }
@@ -181,37 +177,6 @@ export default function SongInfo() {
 
     useEffect(() => {
 
-        let lastTimeStamp = 0
-
-        const handlePopState = (e) => {
-
-            if (e.timeStamp - lastTimeStamp < 2000) { return }
-
-            if (songViewAnimationRef.current == 0) {
-                lastTimeStamp = e.timeStamp
-                toggleSongViewAnimationRef.current()
-                e.preventDefault()
-                history.go(1)
-            }
-        }
-
-        window.addEventListener("popstate", handlePopState)
-
-        return () => {
-            window.removeEventListener("popstate", handlePopState)
-        }
-
-    }, [songViewAnimationRef, toggleSongViewAnimationRef])
-
-
-    useEffect(() => {
-        songViewAnimationRef.current = songViewAnimation
-        toggleSongViewAnimationRef.current = toggleSongViewAnimation
-    }, [songViewAnimation, toggleSongViewAnimation])
-
-
-    useEffect(() => {
-
         const element = songViewScrollRef?.current
 
         const handleScrollEnd = (e) => {
@@ -228,22 +193,27 @@ export default function SongInfo() {
 
 
     const handleViewScroll = (e) => {
-        setTopScrollBarValue(e?.target?.scrollLeft / innerWidth*100)
+        setTopScrollBarValue(e?.target?.scrollLeft / innerWidth * 100)
     }
+
+
+    const toggleShowSongView = () => {
+        setShowSongView(value => !value)
+    }
+
 
     return (
         <>
             <div
                 id="delte"
                 ref={songViewScrollRef}
-                className='fixed md:hidden flex flex-row bg-neutral-600 top-0 left-0 right-0 overflow-x-scroll bottom-[58px] z-10 scroll-smooth'
-                onClick={toggleSongViewAnimation}
+                className='fixed md:hidden flex flex-row bg-neutral-600 top-0 left-0 right-0 overflow-x-scroll bottom-[58px] z-10 scroll-smooth transition-all'
+                onClick={toggleShowSongView}
                 onScroll={handleViewScroll}
                 // onTouchStart={(e) => { console.log(e) }}
                 // onTouchMove={(e) => { console.log(e) }}
-                style={{ clipPath: `inset(${songViewAnimation}% 0px 0px 0px)` }}
+                style={{ clipPath: showSongView ? `inset(0% 0px 0px 0px)` : `inset(100% 0px 0px 0px)` }}
             >
-
 
                 <Image
                     priority="high"
@@ -361,7 +331,7 @@ export default function SongInfo() {
             <div
                 className='relative grid h-full w-full m-0 top-0 items-center justify-items-start md:justify-items-center'
                 style={{ gridTemplateColumns: '60px 1fr 60px', gridTemplateRows: `${innerWidth > 768 ? '80px' : '60px'} 1fr 40px 40px` }}
-                onClick={toggleSongViewAnimation}
+                onClick={toggleShowSongView}
             >
                 <div ref={songDataRef} className='w-full absolute  flex flex-row scroll-smooth overflow-hidden  row-start-1 row-end-2     col-start-2 col-end-3     md:row-start-1 md:row-end-2    md:col-start-1 md:col-end-4'>
 

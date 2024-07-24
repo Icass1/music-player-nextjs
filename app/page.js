@@ -163,7 +163,7 @@ function AddContextMenu({ children, item, setDownloadProgress, setMusicData }) {
         return () => {
             eventSource.close();
         };
-    }, [downloadingID]);
+    }, [downloadingID, setDownloadProgress]);
 
 
     const handlePlayList = (id) => {
@@ -272,7 +272,7 @@ function Grid({ musicData, setMusicData }) {
                     <Link
                         href={`/list/${item.id}`}
                         key={item.id}
-                        className='rounded-lg grid grid-cols-2 md:bg-neutral-700 md:hover:bg-neutral-600'
+                        className='rounded-lg grid grid-cols-2 md:bg-neutral-700 md:hover:bg-neutral-600 transition-colors'
                         style={{ gridTemplateColumns: '50px 1fr' }}
                     >
                         <Image src={`https://api.music.rockhosting.org/api/list/image/${item.id}_50x50`} width={50} height={50} className='rounded-lg' alt={item.name}></Image>

@@ -3,7 +3,6 @@
 
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
-// import Link from "next/link";
 import { Link } from 'next-view-transitions'
 
 import { useContext, useEffect, useRef, useState } from "react";
@@ -11,8 +10,6 @@ import { useContext, useEffect, useRef, useState } from "react";
 import Slider from "./slider";
 import { MediaPlayerContext } from './audioContext';
 import { usePathname } from "next/navigation";
-import Animation from "./animation";
-import clsx from "clsx";
 
 export default function Header({ handleSearch }) {
 
@@ -31,7 +28,6 @@ export default function Header({ handleSearch }) {
         setHomeView,
     } = useContext(MediaPlayerContext);
 
-    const [muteAnimationValue, toggleMuteAnimation] = Animation(30, 0, 30, 1, 1);
     const [lastAudioVolume, setLastAudioVolume] = useState(null);
     const [muted, setMuted] = useState(false);
     const [innerWidth, setInnerWidth] = useState(0);
@@ -50,26 +46,19 @@ export default function Header({ handleSearch }) {
 
         if (muted) {
             setMuted(false);
-            toggleMuteAnimation();
         }
     };
 
     useEffect(() => {
-        if (muteAnimationValue == 0) {
-            if (!muted) {
-                setLastAudioVolume(audio.volume);
-                setMuted(true);
-                audio.volume = 0;
-            }
-        } else if (muteAnimationValue == 30) {
-            if (muted) {
-                setMuted(false)
-                if (lastAudioVolume) {
-                    audio.volume = lastAudioVolume;
-                }
-            }
+        console.log(muted, lastAudioVolume, audio?.volume)
+        if (muted && audio.volume != 0) {
+            setLastAudioVolume(audio.volume);
+            audio.volume = 0;
+        } else if (lastAudioVolume) {
+            audio.volume = lastAudioVolume
         }
-    }, [audio, muteAnimationValue, lastAudioVolume, muted])
+
+    }, [muted, audio])
 
     useEffect(() => {
 
@@ -189,7 +178,7 @@ export default function Header({ handleSearch }) {
                 <label className="hidden md:block"></label> //Label to fill max-content when homeViewIndicatorImagePath is null
             )}
             <Image
-                className="hidden md:block invert-[0.8] select-none hover:invert-[0.9] cursor-pointer"
+                className="hidden md:block invert-[0.8] select-none hover:invert-[0.9] cursor-pointer transition-all"
                 src='https://api.music.rockhosting.org/images/lyrics.png'
                 style={{ filter: showLyrics ? ('brightness(0) saturate(100%) invert(44%) sepia(91%) saturate(474%) hue-rotate(3deg) brightness(105%) contrast(97%)') : ('') }}
                 width={30}
@@ -198,7 +187,7 @@ export default function Header({ handleSearch }) {
                 onClick={toggleShowLyrics}
             />
             <Image
-                className="md:block invert-[0.6] select-none hover:invert-[0.7] cursor-pointer"
+                className="md:block invert-[0.6] select-none hover:invert-[0.7] cursor-pointer transition-all"
                 style={{ filter: randomQueue ? ('brightness(0) saturate(100%) invert(44%) sepia(91%) saturate(474%) hue-rotate(3deg) brightness(105%) contrast(97%)') : ('') }}
                 src='https://api.music.rockhosting.org/images/random.svg'
                 width={30}
@@ -209,25 +198,25 @@ export default function Header({ handleSearch }) {
 
             <div className="hidden md:block relative h-[30px] w-[30px]">
                 <Image
-                    className="absolute invert-[0.6] select-none cursor-pointer hover:invert-[0.7]"
+                    className="absolute invert-[0.6] select-none cursor-pointer hover:invert-[0.7] transition-all"
                     src='https://api.music.rockhosting.org/images/volumeMuted.png'
                     width={30}
                     height={30}
                     priority={true}
                     alt=""
-                    style={{ clipPath: `inset(0px ${muteAnimationValue}px 0px 0px)` }}
-                    onClick={toggleMuteAnimation}
+                    style={{ clipPath: muted ? `inset(0px 0px 0px 0px)` : `inset(0px 30px 0px 0px)` }}
+                    onClick={() => setMuted(value => !value)}
                 />
 
                 <Image
-                    className="absolute invert-[0.6] select-none cursor-pointer hover:invert-[0.7]"
+                    className="absolute invert-[0.6] select-none cursor-pointer hover:invert-[0.7] transition-all"
                     src='https://api.music.rockhosting.org/images/volume.svg'
                     width={30}
                     height={30}
                     alt=""
                     priority={true}
-                    style={{ clipPath: `inset(0px 0px 0px ${30 - muteAnimationValue}px)` }}
-                    onClick={toggleMuteAnimation}
+                    style={{ clipPath: muted ? `inset(0px 0px 0px 30px)` : `inset(0px 0px 0px 0px)` }}
+                    onClick={() => setMuted(value => !value)}
                 />
 
             </div>

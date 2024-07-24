@@ -8,6 +8,8 @@ const useWindowWidth = () => {
             setWidth(window.innerWidth);
         };
 
+        setWidth(window.innerWidth)
+
         window.addEventListener('resize', handleResize);
 
         // Clean up event listener on unmount

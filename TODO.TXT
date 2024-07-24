@@ -75,6 +75,7 @@ Maybe create library with user stuff
 
 List view
     DONE - Add total duration to list view 
+    Check list header alignment 
     Remove ' - Remastered xxx' from songs
     On mobile, remove genre and album from playlist song container
     Download and search button should move when lyrics are shown

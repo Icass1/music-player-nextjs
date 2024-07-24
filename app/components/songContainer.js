@@ -135,7 +135,7 @@ export function Song({ type, musicData, checkMusicData, index, song, listId }) {
                 setStored(true)
             }
         })
-    }, [])
+    }, [song])
 
     return (
         <ContextMenu
@@ -168,7 +168,7 @@ function AlbumSong({ index, stored, song, listId, downloadProgress, handleDownlo
 
     return (
         <div
-            className={clsx('grid items-center rounded-md h-9 md:h-12 gap-2', { 'md:hover:bg-neutral-800 cursor-pointer': song.in_database !== false })}
+            className={clsx('grid items-center rounded-md h-9 md:h-12 gap-2 transition-colors', { 'md:hover:bg-neutral-800 cursor-pointer': song.in_database !== false })}
             style={{ gridTemplateColumns: 'max-content 1fr max-content max-content max-content max-content', gridTemplateRows: '50px' }}
         >
 
@@ -216,8 +216,8 @@ function PlaylistSong({ index, stored, song, listId, handleDownloadToDatabase })
 
     return (
         <div
-            className={clsx('grid gap-x-2 rounded-md cursor-pointer items-center', { 'hover:bg-neutral-800': song.in_database !== false })}
-            style={{ gridTemplateColumns: '50px 3fr 1fr 1fr max-content 60px', gridTemplateRows: '50px' }}
+            className={clsx('grid gap-x-2 rounded-md cursor-pointer items-center transition-colors', { 'hover:bg-neutral-800': song.in_database !== false })}
+            style={{ gridTemplateColumns: innerWidth ? '50px 3fr max-content 60px' :  '50px 3fr 1fr 1fr max-content 60px', gridTemplateRows: '50px' }}
         >
 
             <div className='relative h-[50px]'>
@@ -235,12 +235,12 @@ function PlaylistSong({ index, stored, song, listId, handleDownloadToDatabase })
                 <label className={clsx('cursor-pointer text-xl fade-out-neutral-200 min-w-0 max-w-full', { 'fade-out-yellow-500': song.id == currentSong.id && listId == currentList })}>{song.title}</label>
                 <label className={clsx('cursor-pointer fade-out-neutral-300 min-w-0 max-w-full', { 'fade-out-yellow-600': song.id == currentSong.id && listId == currentList })}>{song.artist}</label>
             </div>
-            <label className={clsx('fade-out-neutral-200 min-w-0 max-w-full', { 'fade-out-yellow-500': song.id == currentSong.id && listId == currentList })} title={song.genre}>{song.genre}</label>
+            <label className={clsx('hidden md:block fade-out-neutral-200 min-w-0 max-w-full', { 'fade-out-yellow-500': song.id == currentSong.id && listId == currentList })} title={song.genre}>{song.genre}</label>
             <Link
                 href={`/s/album/${song?.album_url?.replace("https://open.spotify.com/album/", '')}`}
                 onClick={(e) => e.stopPropagation()}
 
-                className={clsx('fade-out-neutral-200 min-w-0 max-w-full hover:fade-out-neutral-400', { 'fade-out-yellow-500 hover:fade-out-yellow-700': song.id == currentSong.id && listId == currentList })}
+                className={clsx('hidden md:block fade-out-neutral-200 min-w-0 max-w-full hover:fade-out-neutral-400', { 'fade-out-yellow-500 hover:fade-out-yellow-700': song.id == currentSong.id && listId == currentList })}
                 title={song.album}>{song.album}
             </Link>
 

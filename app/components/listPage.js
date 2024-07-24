@@ -4,7 +4,6 @@ import React, { useState, useEffect, useContext, useRef, useCallback } from 'rea
 import Image from 'next/image';
 import { MediaPlayerContext } from '@/app/components/audioContext';
 import { Song } from '@/app/components/songContainer';
-import Animation from './animation';
 import { debounce } from 'lodash';
 import classNames from 'classnames';
 import { usePathname } from 'next/navigation';
@@ -125,14 +124,12 @@ export default function DefaultListPage({ listId, musicData }) {
         cover_url: '',
     });
 
-    const [searchResult, setSearchResult] = useState([]);
+    const [searchResult, setSearchResult] = useState(null);
     const searchBox = useRef();
 
     const [backgroundGradient, setBackgroundGradient] = useState('');
     const [genres, setGenres] = useState([]);
     const [sortingBy, setSortingBy] = useState({ 'filter': 'artist', 'direction': 1 });
-
-    const [animationValue, toggleAnimation] = Animation(56, 56, 200, 10);
 
     const [downloadingURL, setdownloadingURL] = useState('');
     const [downloadProgress, setDownloadProgress] = useState(undefined);
@@ -143,12 +140,28 @@ export default function DefaultListPage({ listId, musicData }) {
     const session = useSession();
     const pathname = usePathname()
 
+    const [innerWidth, setInnerWidth] = useState(null)
+
     useEffect(() => {
         if (session.status != "authenticated") { return }
         apiFetch(`https://api.music.rockhosting.org/api/user/get-lists`, session).then(response => response.json()).then(data => {
             setUserLists(data.map(list => list.id))
         })
     }, [session])
+
+    useEffect(() => {
+
+        const handleResize = () => {
+            setInnerWidth(window.innerWidth)
+        }
+
+        window.addEventListener('resize', handleResize)
+        setInnerWidth(window.innerWidth)
+
+        return () => {
+            window.removeEventListener("resize", handleResize)
+        }
+    }, [])
 
     // Function to calculate total duration
     const getTotalDuration = (songs) => {
@@ -160,14 +173,14 @@ export default function DefaultListPage({ listId, musicData }) {
         });
 
         const totalHours = Math.floor(totalSeconds / 3600);
-        const remainingMinutes = Math.floor((totalSeconds - 3600*totalHours)/60);
+        const remainingMinutes = Math.floor((totalSeconds - 3600 * totalHours) / 60);
         let out = ""
 
         if (totalHours == 0) {
-           
+
         } else if (totalHours == 1) {
             out += "1 hour"
-            
+
         } else {
             out += `${totalHours} hours`
         }
@@ -176,7 +189,7 @@ export default function DefaultListPage({ listId, musicData }) {
         }
 
         if (remainingMinutes == 0) {
-           
+
         } else if (remainingMinutes == 1) {
             out += "1 minute"
         } else {
@@ -215,9 +228,7 @@ export default function DefaultListPage({ listId, musicData }) {
 
     }, [musicData, sortingBy]);
 
-    useEffect(() => {
-        checkMusicData();
-    }, [musicData])
+
 
     const checkMusicData = useCallback(() => {
 
@@ -245,6 +256,10 @@ export default function DefaultListPage({ listId, musicData }) {
             }
         }
     }, [musicData, session])
+
+    useEffect(() => {
+        checkMusicData();
+    }, [musicData, checkMusicData])
 
     useEffect(() => {
 
@@ -419,8 +434,10 @@ export default function DefaultListPage({ listId, musicData }) {
 
     const handleSearch = debounce((e) => {
 
+        e.target.parentNode.parentNode.scrollTo(0, 0)
+
         if (e.target.value == "") {
-            setSearchResult([]);
+            setSearchResult(null);
             return;
         }
 
@@ -445,13 +462,6 @@ export default function DefaultListPage({ listId, musicData }) {
             console.log(data.map(list => list.id))
         })
     }
-
-    useEffect(() => {
-        if (animationValue == 200) {
-            searchBox.current.focus();
-        }
-    }, [animationValue]);
-
     return (
         <>
             <div className='relative h-full'>
@@ -555,49 +565,57 @@ export default function DefaultListPage({ listId, musicData }) {
                         </div>
                     ) : (
                         // Playlist column titles
-                        <div className='grid gap-x-2 ml-3 mr-3' style={{ gridTemplateColumns: '50px 3fr 1fr 1fr max-content 60px' }}>
+                        <div className='grid gap-x-2 ml-3 mr-3' style={{ gridTemplateColumns: innerWidth ? '50px 3fr max-content 60px' :  '50px 3fr 1fr 1fr max-content 60px' }}>
                             <label></label>
-                            <div className='flex gap-1 items-center'>
+                            <div className='flex gap-1 items-center min-w-0 max-w-full overflow-x-hidden'>
                                 <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Title</label>
                                 <label className='font-bold text-sm text-neutral-300 select-none'>/</label>
                                 <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Artist</label>
                             </div>
-                            <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Genre</label>
-                            <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Album</label>
+                            <label className='hidden md:block font-bold text-lg fade-out-neutral-200 min-w-0 max-w-full cursor-pointer select-none hover:underline ' onClick={handleSort}>Genre</label>
+                            <label className='hidden md:block font-bold text-lg fade-out-neutral-200 min-w-0 max-w-full cursor-pointer select-none hover:underline ' onClick={handleSort}>Album</label>
                             {/* <label className={clsx({ 'w-[30px]': usePathname("/s/") })}></label> */}
                             <label className={pathname.includes("/s/") ? "w-[30px]" : ""}></label>
-                            <label className='font-bold text-lg text-neutral-300 cursor-pointer select-none hover:underline w-fit' onClick={handleSort}>Time</label>
+                            <label className='font-bold text-lg fade-out-neutral-200 min-w-0 max-w-full cursor-pointer select-none hover:underline' onClick={handleSort}>Time</label>
                         </div>
                     )}
+                    {searchResult ?
+                        <>
+                            {showingMusicData.songs.filter(x => searchResult.includes(x)).map((item, index) => (
+                                <Song key={index + "search"} type={musicData.type} musicData={musicData} checkMusicData={checkMusicData} listId={listId} song={item} index={index} />
+                            ))}
 
-                    {showingMusicData.songs.filter(x => searchResult.includes(x)).map((item, index) => (
-                        <Song key={index + "searchresult"} type={musicData.type} musicData={musicData} checkMusicData={checkMusicData} listId={listId} song={item} index={index} />
-                    ))}
-
-                    {searchResult.length != 0 ? (
-                        <div className='grid ml-5 mr-5 items-center' style={{ gridTemplateColumns: '1fr max-content 1fr' }}>
-                            <div className='h-2 bg-yellow-600 rounded-lg'></div>
-                            <label className='text-center ml-2 mr-3 font-bold'>End of search results</label>
-                            <div className='h-2 bg-yellow-600 rounded-lg'></div>
-                        </div>
-                    ) : (
+                            {searchResult.length != 0 ? (
+                                <div className='grid ml-5 mr-5 items-center' style={{ gridTemplateColumns: '1fr max-content 1fr' }}>
+                                    <div className='h-2 bg-yellow-600 rounded-lg'></div>
+                                    <label className='text-center ml-2 mr-3 font-bold text-neutral-500'>End of search results</label>
+                                    <div className='h-2 bg-yellow-600 rounded-lg'></div>
+                                </div>
+                            ) : (
+                                <div className='grid ml-5 mr-5 items-center' style={{ gridTemplateColumns: '1fr max-content 1fr' }}>
+                                    <div className='h-2 bg-yellow-600 rounded-lg'></div>
+                                    <label className='text-center ml-2 mr-3 font-bold text-neutral-200'>No results found</label>
+                                    <div className='h-2 bg-yellow-600 rounded-lg'></div>
+                                </div>
+                            )}
+                        </>
+                        :
                         <></>
-                    )}
+                    }
 
-                    {showingMusicData.songs.filter(x => !searchResult.includes(x)).map((item, index) => (
+                    {showingMusicData.songs.filter(x => !searchResult?.includes(x)).map((item, index) => (
                         <Song key={index} type={musicData.type} musicData={musicData} checkMusicData={checkMusicData} listId={listId} song={item} index={index} />
                     ))}
                     <div className='hidden md:h-20 md:block' />
                 </div>
 
             </div>
-            <div className='hidden md:flex fixed flex-row h-14 bg-yellow-600 rounded-full bottom-5 right-6' style={{ width: animationValue }}>
+            <div className='hidden md:flex fixed flex-row h-14 w-14 hover:w-52 bg-yellow-600 rounded-full bottom-5 right-6 transition-all'>
                 <Image
                     src="https://api.music.rockhosting.org/images/search.svg"
                     width={35}
                     height={35}
                     className='relative top-1/2 -translate-y-1/2 left-[28px] -translate-x-1/2 select-none cursor-pointer w-[35px] h-[35px]'
-                    onClick={toggleAnimation}
                     alt=''
                     title='Click to search in list'
                 />

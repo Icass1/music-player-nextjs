@@ -54,7 +54,10 @@ function NormalLyrics(lyrics) {
         <>
             <div className="h-6 list-item"></div>
             {lyrics.lyrics.split("\n").map((line, index) =>
-                <label key={index} className="text-center text-neutral-200">{line}</label>
+                line == "" ?
+                    <div key={index} className="min-h-4"></div>
+                    :
+                    <label key={index} className="text-center text-neutral-200">{line}</label>
             )}
             <div className="h-6 list-item"></div>
         </>

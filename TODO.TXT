@@ -27,6 +27,21 @@ Cache next song
 Remove user circles in mobile and add proper 
 
 Make usable when not logged in
+    Table of list
+        ID
+        List name
+        List author
+        Cover blob
+        Songs IDS
+    Table of songs
+        ID
+        Title
+        Artist
+        Album
+        File blob
+        Genre
+        Lyrics
+        Duration
 
 Drop Spotify link anywhere and add list to library
 

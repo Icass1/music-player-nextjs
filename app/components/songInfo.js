@@ -183,11 +183,9 @@ export default function SongInfo() {
         setTopScrollBarValue(e?.target?.scrollLeft / innerWidth * 100)
     }
 
-
     const toggleShowSongView = () => {
         setShowSongView(value => !value)
     }
-
 
     return (
         <>
@@ -212,15 +210,14 @@ export default function SongInfo() {
                     height={0}
                 />
 
-                <div className='fixed top-4 left-1/2 -translate-x-1/2'>
+                <div className='fixed top-4 left-1/2 -translate-x-1/2 z-50'>
                     <div className='absolute bg-[#8b8b8b7c] rounded-full w-24 h-[40px]' style={{ left: `calc((100% - 192px)/2 + ${topScrollBarValue}/100*192px/2)` }}></div>
 
                     <div className='bg-[#8b8b8b7c] w-48 rounded-full ml-auto mr-auto grid items-center h-[40px]' style={{ gridTemplateColumns: '1fr 1fr' }}>
-                        <label className='text-center text-sm z-10'>COVER</label>
-                        <label className='text-center text-sm z-10'>LYRICS</label>
+                        <label className='text-center text-xs text- z-10' onClick={(e) => {e.stopPropagation(); e.target.parentNode.parentNode.parentNode.scrollTo(0, 0)}}>COVER</label>
+                        <label className='text-center text-xs z-10' onClick={(e) => {e.stopPropagation(); e.target.parentNode.parentNode.parentNode.scrollTo(innerWidth, 0)}}>LYRICS</label>
                     </div>
                 </div>
-
 
                 <div className=' h-full flex-shrink-0 w-full relative overflow-x-hidden'>
                     {/* <Image

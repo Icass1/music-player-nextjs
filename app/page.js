@@ -15,6 +15,9 @@ import { useSession } from "next-auth/react";
 import { apiFetch } from './utils/apiFetch';
 import getImageMeanColor from './utils/getImageMeanColor';
 import useWindowWidth from './hooks/useWindowWidth';
+// import { addList } from './utils/storage';
+
+// addList("gK5eJjv9BRoysWh8")
 
 export default function Home() {
 
@@ -28,10 +31,18 @@ export default function Home() {
     useEffect(() => {
         if (session?.status != "authenticated") { return }
 
-        apiFetch(`https://api.music.rockhosting.org/api/user/get-lists`, session).then(response => response.json()).then(data => {
-            setMusicData(data);
-        })
+        apiFetch(`https://api.music.rockhosting.org/api/user/get-lists`, session).then(response => {
 
+            if (response.status !== 200) {
+                setMusicData({ status: response.status })
+                return
+            }
+            return response.json()
+        }).then(data => {
+            if (data) {
+                setMusicData(data);
+            }
+        })
     }, [session]);
 
 
@@ -46,7 +57,6 @@ export default function Home() {
         }
     }, [mainRef, setScrollValue, scrollValue, scrollRestored])
 
-
     const renderView = (homeView) => {
         switch (homeView?.view) {
             case 0:
@@ -58,11 +68,10 @@ export default function Home() {
         }
     };
 
-
     return (
         <>
             <div className='flex flex-row md:hidden mt-3 ml-3 gap-4'>
-                <Link className='relative block md:hidden bg-yellow-600 w-12 h-12 rounded-full' href='/login'>
+                <Link className='relative block md:hidden bg-yellow-600 w-12 h-12 rounded-full' href='/user'>
                     <Image
                         className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full'
                         src={session.status == "authenticated" ? session?.data?.user?.image : 'https://api.music.rockhosting.org/images/user.svg'}
@@ -71,42 +80,46 @@ export default function Home() {
                         alt='User icon'
                     />
                 </Link>
-
-                <Link className='relative block md:hidden bg-white w-12 h-12 rounded-full ' href='/user'>
-                    <div className='w-10 h-10 block relative bg-black rounded-full left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'>
-                        <label className='block relative bg-black rounded-full text-center text-2xl font-bold left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'>U</label>
-                    </div>
-                </Link>
-
             </div>
 
-            {session?.status == "loading" || musicData == null ?
-                // {session?.status ?
-                <div className='relative text-3xl font-bold top-1/2 left-1/2 w-fit -translate-x-1/2 -translate-y-1/2'>Loading your lists...</div>
-                :
-                <>
-                    {
-                        musicData.length == 0 ?
-                            <div className='relative w-fit top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>
-                                <div className='w-auto text-center text-3xl font-bold'>It feels lonely here...</div>
-                                <div className='flex md:flex-row flex-col gap-2'>
-                                    <div className='w-auto text-center text-xl font-bold ml-2 mr-2'>Click in the search button to add lists to your library</div>
-                                    <Link className="block relative left-1/2 -translate-x-1/2 md:left-0 md:-translate-x-0 w-fit" href="/search">
-                                        <Image className="block invert-[0.8] hover:invert-[0.7] select-none" src='https://api.music.rockhosting.org/images/search.svg' width={30} height={30} alt="Search" />
-                                    </Link>
-                                </div>
-                            </div>
-                            :
-
-                            <div
-                                ref={mainRef}
-                                className="overflow-x-hidden"
-                            >
-                                {renderView(homeView)}
-                            </div>
-                    }
-                </>
-            }
+            {function () {
+                if (session.status == "unauthenticated") {
+                    return (
+                        <div className="block relative top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96">
+                            <label className="block relative text-xl text-center">You are not loged in.</label>
+                            <Link className="block relative font-bold text-2xl text-green-600 text-center" href="/login">Login</Link>
+                        </div>
+                    )
+                } else if (session?.status == "loading" || musicData == null) {
+                    return <div className='relative text-3xl font-bold top-1/2 left-1/2 w-fit -translate-x-1/2 -translate-y-1/2'>Loading your lists...</div>
+                } else if (musicData.length == 0) {
+                    return (<div className='relative w-fit top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>
+                        <div className='w-auto text-center text-3xl font-bold'>It feels lonely here...</div>
+                        <div className='flex md:flex-row flex-col gap-2'>
+                            <div className='w-auto text-center text-xl font-bold ml-2 mr-2'>Click in the search button to add lists to your library</div>
+                            <Link className="block relative left-1/2 -translate-x-1/2 md:left-0 md:-translate-x-0 w-fit" href="/search">
+                                <Image className="block invert-[0.8] hover:invert-[0.7] select-none" src='https://api.music.rockhosting.org/images/search.svg' width={30} height={30} alt="Search" />
+                            </Link>
+                        </div>
+                    </div>)
+                } else if (musicData.status) {
+                    return (
+                        <div className='relative text-3xl font-bold top-1/2 left-1/2 w-fit text-center -translate-x-1/2 -translate-y-1/2 flex flex-col'>
+                            <label>Unable to load your lists</label>
+                            <label className='text-neutral-600 text-lg'>Error: {musicData.status}</label>
+                        </div>
+                    )
+                } else {
+                    return (
+                        <div
+                            ref={mainRef}
+                            className="overflow-x-hidden"
+                        >
+                            {renderView(homeView)}
+                        </div>
+                    )
+                }
+            }()}
         </>
     );
 }
@@ -272,7 +285,7 @@ function GridContainer({ item, setMusicData }) {
             <Link
                 href={`/list/${item.id}`}
                 className={`rounded-lg grid grid-cols-2 md:bg-neutral-700 md:hover:bg-neutral-600 transition-colors md:shadow-lg`}
-                style={{ gridTemplateColumns: '50px 1fr', backgroundColor: background}}
+                style={{ gridTemplateColumns: '50px 1fr', backgroundColor: background }}
             >
                 <Image
                     src={`https://api.music.rockhosting.org/api/list/image/${item.id}_50x50`}
@@ -280,7 +293,7 @@ function GridContainer({ item, setMusicData }) {
                     height={50}
                     className='rounded-lg'
                     alt={item.name}
-                    // onLoad={(e) => { setBackground(getImageMeanColor(e.target, 16, [64, 64, 64])) }}
+                // onLoad={(e) => { setBackground(getImageMeanColor(e.target, 16, [64, 64, 64])) }}
                 ></Image>
                 <div className='grid h-[50px]' style={{ gridTemplateRows: 'max-content max-content' }}>
                     <label className={clsx('pl-3 pr-3 text-lg fade-out-neutral-200 font-bold cursor-pointer h-6 overflow-y-hidden min-w-0 max-w-full', { 'fade-out-yellow-600': item.id == currentList })}>{item.name}</label>

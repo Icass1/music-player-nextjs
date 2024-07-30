@@ -2,19 +2,43 @@ import { openDB } from 'idb';
 
 const DB_NAME = 'musicDB';
 const DB_VERSION = 1;
-const STORE_NAME = 'musicFiles';
+const LIST_TABLE = 'list';
+const SONG_TABLE = 'song';
 
 const initDB = async () => {
     return openDB(DB_NAME, DB_VERSION, {
         upgrade(db) {
-            db.createObjectStore(STORE_NAME);
+            db.createObjectStore(LIST_TABLE);
+            // db.createObjectStore(SONG_TABLE);
         },
     });
 };
 
+// export function addList(id) {
+
+//     const db = await initDB();
+//     fetch(`https://api.music.rockhosting.org/api/list/${id}`).then(data => data.json()).then(data => {
+//         console.log(data)
+//         initDB().then(db => {
+//             db.put(LIST_TABLE, { "tsert": "asfd" }, "Key 1")
+//             console.log(db)
+//         })
+//         // initDB().then(db => db.put(LIST_TABLE, { name: data.name}, "TEST"))
+//     })
+// }
+
+
+export const addList = async (id) => {
+    const db = await initDB();
+    const response = await fetch(`https://api.music.rockhosting.org/api/list/${id}`)
+    const data = await response.json()
+    await db.put(LIST_TABLE, { name: "ASDF", fileBlob: "a" }, "B");
+    console.log("PUT")
+};
+
 export const saveMusicFile = async (fileName, fileBlob) => {
     const db = await initDB();
-    await db.put(STORE_NAME, {name: "ASDF", fileBlob: fileBlob}, fileName);
+    await db.put(STORE_NAME, { name: "ASDF", fileBlob: fileBlob }, fileName);
 };
 
 export const getMusicFile = async (fileName) => {

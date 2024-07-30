@@ -26,6 +26,13 @@ module.exports = {
     // nextui(),
     plugin(function ({ addUtilities }) {
       addUtilities({
+        ".fade-out-default": {
+          'white-space': 'nowrap',
+          'background': `linear-gradient(90deg, #9DE2B0 0%, #9DE2B0 80%, transparent 100%)`,
+          'background-clip': 'text',
+          '-webkit-text-fill-color': 'transparent',
+          'overflow-x': 'hidden',
+        },
         ".desktop-layout": {
           "grid-template-areas": `
             "head head" 

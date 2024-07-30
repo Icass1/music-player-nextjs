@@ -215,7 +215,7 @@ function ResultContent({ list }) {
             <label className="text-xl fade-out-neutral-100 min-w-0 max-w-full m-2 mt-0" title={list.artists.map((artist) => (artist.name)).join("/")}>{list.artists.map((artist) => (artist.name)).join(" /")}</label>
 
             <div
-                className={clsx("absolute right-3 bottom-24 h-12 w-12 bg-yellow-600 rounded-full", { "hover:bg-yellow-500": !list.in_database })}
+                className={clsx("absolute right-3 bottom-24 h-12 w-12 bg-[#9DE2B0] rounded-full", { "hover:bg-[#9DE2B0]": !list.in_database })}
                 onClick={(e) => { e.preventDefault(); console.log(e) }}
             >
                 <Image
@@ -246,7 +246,7 @@ function Result1({ list }) {
             />
 
             <div
-                className={clsx("absolute right-2 bottom-20 h-12 w-12 bg-yellow-600  rounded-full", { "hover:bg-yellow-500": !list.in_database })}
+                className={clsx("absolute right-2 bottom-20 h-12 w-12 bg-[#9DE2B0]  rounded-full", { "hover:bg-[#9DE2B0]": !list.in_database })}
                 onClick={(e) => { e.preventDefault(); console.log(e) }}
             >
                 <Image

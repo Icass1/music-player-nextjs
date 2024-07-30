@@ -43,9 +43,9 @@ export default function Equalizer({ className, bar_count = 20, bar_gap = 1, cent
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        const r = 202;
-        const g = 129;
-        const b = 4;
+        const r = 157;
+        const g = 226;
+        const b = 176;
         const a = 0.8;
 
         fbc_array = fbc_array.slice(0, 675)

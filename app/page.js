@@ -62,7 +62,7 @@ export default function Home() {
     return (
         <>
             <div className='flex flex-row md:hidden mt-3 ml-3 gap-4'>
-                <Link className='relative block md:hidden bg-yellow-600 w-12 h-12 rounded-full' href='/login'>
+                <Link className='relative block md:hidden bg-[#9DE2B0] w-12 h-12 rounded-full' href='/login'>
                     <Image
                         className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full'
                         src={session.status == "authenticated" ? session?.data?.user?.image : 'https://api.music.rockhosting.org/images/user.svg'}

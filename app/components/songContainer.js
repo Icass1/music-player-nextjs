@@ -176,10 +176,17 @@ function AlbumSong({ index, stored, song, listId, downloadProgress, handleDownlo
             {song.id == currentSong.id && isPlaying && currentList == listId ? (
                 <Equalizer className='w-6 md:w-[50px] h-full top-0' bar_count={innerWidth > 768 ? 10 : 5} bar_gap={1} centered={true} toggleCenter={false} />
             ) : (
-                <label className={clsx('text-xl w-6 md:w-[50px] text-neutral-400 text-center ', { 'text-yellow-600': song.id == currentSong.id && currentList == listId, 'cursor-pointer': song.in_database !== false })}>{index + 1}</label>
+                <label className={clsx('text-xl w-6 md:w-[50px] text-center ', {
+                    'text-[#9DE2B0]': song.id == currentSong.id && currentList == listId,
+                    "text-neutral-400": !(song.id == currentSong.id && currentList == listId),
+                    'cursor-pointer': song.in_database !== false
+                })}
+                >
+                    {index + 1}
+                </label>
             )}
 
-            <label className={clsx('relative text-xl md:text-2xl fade-out-neutral-300 min-w-0 max-w-full', { 'fade-out-yellow-600': song.id == currentSong.id && currentList == listId, 'cursor-pointer': song.in_database !== false })}>{song.title}</label>
+            <label className={clsx('relative text-xl md:text-2xl fade-out-neutral-300 min-w-0 max-w-full', { 'fade-out-default': song.id == currentSong.id && currentList == listId, 'cursor-pointer': song.in_database !== false })}>{song.title}</label>
 
             {downloadProgress != undefined ? (
                 <label>{downloadProgress}%</label>
@@ -206,7 +213,14 @@ function AlbumSong({ index, stored, song, listId, downloadProgress, handleDownlo
             ) : (
                 <label></label>
             )}
-            <label className={clsx('md:text-xl w-[35px] md:w-[60px] text-neutral-400', { 'text-yellow-600': song.id == currentSong.id && currentList == listId, 'cursor-pointer': song.in_database !== false })}>{song.duration}</label>
+            <label className={clsx('md:text-xl w-[35px] md:w-[60px]', {
+                'text-[#9DE2B0]': song.id == currentSong.id && currentList == listId,
+                "text-neutral-400": !(song.id == currentSong.id && currentList == listId),
+                'cursor-pointer': song.in_database !== false
+            })}
+            >
+                {song.duration}
+            </label>
         </div>
     )
 }
@@ -238,7 +252,7 @@ function PlaylistSong({ index, stored, song, listId, handleDownloadToDatabase })
 
             <div className='flex flex-col cursor-pointer min-w-0 max-w-full'>
                 <label className={clsx('cursor-pointer text-xl fade-out-neutral-200 min-w-0 max-w-full', { 'fade-out-yellow-500': song.id == currentSong.id && listId == currentList })}>{song.title}</label>
-                <label className={clsx('cursor-pointer fade-out-neutral-300 min-w-0 max-w-full', { 'fade-out-yellow-600': song.id == currentSong.id && listId == currentList })}>{song.artist}</label>
+                <label className={clsx('cursor-pointer fade-out-neutral-300 min-w-0 max-w-full', { 'fade-out-default': song.id == currentSong.id && listId == currentList })}>{song.artist}</label>
             </div>
             <label className={clsx('hidden md:block fade-out-neutral-200 min-w-0 max-w-full', { 'fade-out-yellow-500': song.id == currentSong.id && listId == currentList })} title={song.genre}>{song.genre}</label>
             <Link
@@ -264,7 +278,7 @@ function PlaylistSong({ index, stored, song, listId, handleDownloadToDatabase })
                 />
             )}
 
-            <label className={clsx('fade-out-neutral-100 text-xl min-w-0 max-w-full text-center', { 'fade-out-yellow-500': song.id == currentSong.id && listId == currentList })} title={song.duration}>{song.duration}</label>
+            <label className={clsx('fade-out-neutral-100 text-xl min-w-0 max-w-full text-center', { 'fade-out-default': song.id == currentSong.id && listId == currentList })} title={song.duration}>{song.duration}</label>
         </div>
     )
 }

@@ -194,7 +194,7 @@ export default function SongInfo() {
             <div
                 id="delte"
                 ref={songViewScrollRef}
-                className='fixed md:hidden flex flex-row bg-neutral-600 top-0 left-0 right-0 overflow-x-scroll bottom-[58px] z-10 scroll-smooth transition-all'
+                className='fixed md:hidden flex flex-row bg-neutral-500 top-0 left-0 right-0 overflow-x-scroll bottom-[58px] z-10 scroll-smooth transition-all'
                 onClick={toggleShowSongView}
                 onScroll={handleViewScroll}
                 // onTouchStart={(e) => { console.log(e) }}
@@ -204,7 +204,7 @@ export default function SongInfo() {
 
                 <Image
                     priority="high"
-                    className='fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-full w-auto md:w-auto max-w-none blur-sm opacity-60 brightness-[.2] select-none'
+                    className='fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-full w-auto md:w-auto max-w-none blur-lg opacity-60 brightness-[.2] select-none'
                     alt="Current Song"
                     sizes="100vw"
                     src={`https://api.music.rockhosting.org/api/song/image/${currentSong.id == "" ? ("_") : (currentSong.id)}`}
@@ -249,7 +249,7 @@ export default function SongInfo() {
                             </div>
                             <Image
                                 priority="high"
-                                className={clsx('w-full rounded-xl', { 'opacity-40': showingEqualizer })}
+                                className={clsx('w-full rounded-xl', { 'opacity-70': showingEqualizer })}
                                 // className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-full w-auto md:w-auto max-w-none blur-sm opacity-60 brightness-50 select-none'
                                 alt="Current Song"
                                 sizes='100%'
@@ -277,14 +277,14 @@ export default function SongInfo() {
                             <Slider value={sliderValue} onInput={sliderInput} onChange={sliderChange}></Slider>
                             <label className='text-neutral-300'>{getTime(audioDuration)}</label>
                         </div>
-                        <div className='grid items-center justify-items-center ml-auto mr-auto gap-3' style={{ gridTemplateColumns: 'max-content max-content max-content' }}>
+                        <div className='grid items-center justify-items-center ml-auto mr-auto gap-8' style={{ gridTemplateColumns: 'max-content max-content max-content' }}>
                             <Image alt="Previous" className='block invert-[0.8] hover:invert-[0.9] cursor-pointer' src='https://api.music.rockhosting.org/images/previous.svg' width={40} height={40} onClick={(e) => { e.stopPropagation(); handlePrevious() }} />
 
-                            <div className='bg-yellow-600 rounded-full'>
+                            <div className='abg-[#9DE2B0] rounded-full'>
                                 {isPlaying ?
-                                    <Image alt="Puase" className='invert-[0.8] hover:invert-[0.9] cursor-pointer p-3' src='https://api.music.rockhosting.org/images/pause.svg' width={60} height={60} onClick={(e) => { e.stopPropagation(); handlePause() }} />
+                                    <Image alt="Puase" className='invert-[0.8] hover:invert-[0.9] cursor-pointer ap-3' src='https://api.music.rockhosting.org/images/pause.svg' width={60} height={60} onClick={(e) => { e.stopPropagation(); handlePause() }} />
                                     :
-                                    <Image alt="Play" className='invert-[0.8] hover:invert-[0.9] cursor-pointer p-3' src='https://api.music.rockhosting.org/images/play.svg' width={60} height={60} onClick={(e) => { e.stopPropagation(); handlePlay() }} />
+                                    <Image alt="Play" className='invert-[0.8] hover:invert-[0.9] cursor-pointer ap-3' src='https://api.music.rockhosting.org/images/play.svg' width={60} height={60} onClick={(e) => { e.stopPropagation(); handlePlay() }} />
                                 }
                             </div>
                             <Image alt="Next" className='block invert-[0.8] hover:invert-[0.9] cursor-pointer' src='https://api.music.rockhosting.org/images/next.svg' width={40} height={40} onClick={(e) => { e.stopPropagation(); handleNext() }} />
@@ -315,7 +315,7 @@ export default function SongInfo() {
 
             <Image
                 priority="high"
-                className=' md:block absolute top-1/2 md:left-1/2 -translate-y-1/2 md:-translate-x-1/2 h-auto md:h-full w-full md:w-auto max-w-none blur-sm opacity-60 brightness-50 select-none'
+                className=' md:block absolute top-1/2 md:left-1/2 -translate-y-1/2 md:-translate-x-1/2 h-auto md:h-full w-full md:w-auto max-w-none blur-xl opacity-60 brightness-50 select-none'
                 alt="Current Song"
                 sizes="100vw"
                 src={`https://api.music.rockhosting.org/api/song/image/${currentSong.id == "" ? ("_") : (currentSong.id)}`}

@@ -437,7 +437,7 @@ export default function DefaultListPage({ listId, musicData }) {
 
                             <div className='hidden md:flex md:mt-16 mb-2 flex-row gap-4'>
                                 <div
-                                    className='h-16 w-16 bg-yellow-600 rounded-full bottom-4 left-4 cursor-pointer'
+                                    className='h-16 w-16 bg-[#9DE2B0] rounded-full bottom-4 left-4 cursor-pointer'
                                     onClick={currentList == listId && isPlaying ? (handlePauseClick) : (handlePlayClick)}
                                 >
                                     <Image
@@ -452,7 +452,7 @@ export default function DefaultListPage({ listId, musicData }) {
                                 {
                                     !userLists.includes(listId) && musicData.id ?
                                         <div
-                                            className='h-16 w-16 bg-yellow-600 rounded-full bottom-4 left-4 cursor-pointer'
+                                            className='h-16 w-16 bg-[#9DE2B0] rounded-full bottom-4 left-4 cursor-pointer'
                                             onClick={handleAddListToLibrary}
                                         >
                                             <Image
@@ -470,9 +470,9 @@ export default function DefaultListPage({ listId, musicData }) {
                             </div>
 
                             <label className='text-3xl md:text-5xl fade-out-neutral-200 font-bold mt-4 md:mt-0 min-w-0 md:min-h-14 max-w-full'>{musicData.name}</label>
-                            <label className='text-xl md:text-2xl fade-out-neutral-400 min-w-0 max-w-full'>{musicData.author}</label>
-                            <label className='text-lg md:text-xl fade-out-neutral-400 min-w-0 max-w-full'>Genre{genres.length == 1 ? <></> : <>s</>} | {genres?.join(", ")}</label>
-                            <label className='text-lg md:text-xl fade-out-neutral-400 min-w-0 max-w-full'>{getTotalDuration(musicData.songs)}</label>
+                            <label className='text-xl md:text-3xl fade-out-neutral-400 min-w-0 max-w-full'>{musicData.author}</label>
+                            {/* <label className='text-lg md:text-xl fade-out-neutral-400 min-w-0 max-w-full'>Genre{genres.length == 1 ? <></> : <>s</>} | {genres?.join(", ")}</label> */}
+                            {/* <label className='text-lg md:text-xl fade-out-neutral-400 min-w-0 max-w-full'>{getTotalDuration(musicData.songs)}</label> */}
                         </div>
                     </div>
 
@@ -542,15 +542,15 @@ export default function DefaultListPage({ listId, musicData }) {
 
                             {searchResult.length != 0 ? (
                                 <div className='grid ml-5 mr-5 items-center' style={{ gridTemplateColumns: '1fr max-content 1fr' }}>
-                                    <div className='h-2 bg-yellow-600 rounded-lg'></div>
+                                    <div className='h-2 bg-[#9DE2B0] rounded-lg'></div>
                                     <label className='text-center ml-2 mr-3 font-bold text-neutral-500'>End of search results</label>
-                                    <div className='h-2 bg-yellow-600 rounded-lg'></div>
+                                    <div className='h-2 bg-[#9DE2B0] rounded-lg'></div>
                                 </div>
                             ) : (
                                 <div className='grid ml-5 mr-5 items-center' style={{ gridTemplateColumns: '1fr max-content 1fr' }}>
-                                    <div className='h-2 bg-yellow-600 rounded-lg'></div>
+                                    <div className='h-2 bg-[#9DE2B0] rounded-lg'></div>
                                     <label className='text-center ml-2 mr-3 font-bold text-neutral-200'>No results found</label>
-                                    <div className='h-2 bg-yellow-600 rounded-lg'></div>
+                                    <div className='h-2 bg-[#9DE2B0] rounded-lg'></div>
                                 </div>
                             )}
                         </>
@@ -561,11 +561,19 @@ export default function DefaultListPage({ listId, musicData }) {
                     {showingMusicData.songs.filter(x => !searchResult?.includes(x)).map((item, index) => (
                         <Song key={index} type={musicData.type} musicData={musicData} checkMusicData={checkMusicData} listId={listId} song={item} index={index} />
                     ))}
-                    <div className='hidden md:h-20 md:block' />
+                    <div className='hidden md:h-20 md:block relative'>
+
+                        {/* <div className='relative left-1/2 -translate-x-1/2 w-fit flex flex-row gap-7 text-neutral-400'> */}
+                            <label className='absolute left-[30%] -translate-x-1/2 top-1/2 -translate-y-1/2 w-fit text-neutral-400'>Genre{genres.length == 1 ? <></> : <>s</>} | {genres?.join(", ")}</label>
+                            <label className='absolute left-[50%] -translate-x-1/2 top-1/2 -translate-y-1/2 w-fit text-neutral-400'>{getTotalDuration(musicData.songs)}</label>
+                            <label className='absolute left-[70%] -translate-x-1/2 top-1/2 -translate-y-1/2 w-fit text-neutral-400'>{musicData.songs.length} Song{musicData.songs.length == 1 ? <></> : <>s</>} </label>
+                        {/* </div> */}
+
+                    </div>
                 </div>
 
             </div>
-            <div className='hidden md:flex fixed flex-row h-14 w-14 hover:w-52 bg-yellow-600 rounded-full bottom-5 right-6 transition-all'>
+            <div className='hidden md:flex fixed flex-row h-14 w-14 hover:w-52 bg-[#9DE2B0] rounded-full bottom-5 right-6 transition-all'>
                 <Image
                     src="https://api.music.rockhosting.org/images/search.svg"
                     width={35}
@@ -586,7 +594,7 @@ export default function DefaultListPage({ listId, musicData }) {
                 <></>
                 :
                 <div
-                    className='hidden md:block fixed h-14 w-14 bg-yellow-600 rounded-full bottom-5 cursor-pointer ml-2'
+                    className='hidden md:block fixed h-14 w-14 bg-[#9DE2B0] rounded-full bottom-5 cursor-pointer ml-2'
                     onClick={
                         // () => { setdownloadingURL(`http://12.12.12.3:1234/api/compress-list/${listId}`) }
                         () => { setdownloadingURL(`https://api.music.rockhosting.org/api/compress-list/${listId}`) }
@@ -596,7 +604,7 @@ export default function DefaultListPage({ listId, musicData }) {
                         <></>
                     ) : (
                         <CircularProgressBar
-                            className='absolute h-14 w-14 bg-yellow-600 rounded-full cursor-pointer'
+                            className='absolute h-14 w-14 bg-[#9DE2B0] rounded-full cursor-pointer'
                             progress={downloadProgress}
                             smooth={downloadSmooth}
                         />

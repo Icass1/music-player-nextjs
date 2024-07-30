@@ -22,6 +22,10 @@ DONE - When search in list view, scroll to top
 
 Create and rename lists
 
+Cache next song
+
+Remove user circles in mobile and add proper 
+
 Make usable when not logged in
 
 Drop Spotify link anywhere and add list to library
@@ -30,11 +34,15 @@ DONE - Add list to database when all songs are downloaded
 
 In mobile and song view is open, if click in header, it closes
 
+Fix onplayend when playing list from search
+
 Make volume cuadratic
 
 In dynamic lyrics, move to the next line in every comma
 
-In home view, slight background color of the cover image and shadow
+DONE,FAIL - In home view, slight background color of the cover image and shadow
+
+rgb(98 141 154), #77ADDE, (222, 107, 72), #9DE2B0
 
 Add admin panel
     Users view

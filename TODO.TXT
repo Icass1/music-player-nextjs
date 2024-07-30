@@ -23,6 +23,21 @@ DONE - When search in list view, scroll to top
 Create and rename lists
 
 Make usable when not logged in
+    Table of list
+        ID
+        List name
+        List author
+        Cover blob
+        Songs IDS
+    Table of songs
+        ID
+        Title
+        Artist
+        Album
+        File blob
+        Genre
+        Lyrics
+        Duration
 
 Drop Spotify link anywhere and add list to library
 

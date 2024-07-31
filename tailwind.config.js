@@ -26,9 +26,43 @@ module.exports = {
     // nextui(),
     plugin(function ({ addUtilities }) {
       addUtilities({
-        ".fade-out-default": {
+        ".fade-out-fg-1": {
           'white-space': 'nowrap',
           'background': `linear-gradient(90deg, #9DE2B0 0%, #9DE2B0 80%, transparent 100%)`,
+          'background-clip': 'text',
+          '-webkit-text-fill-color': 'transparent',
+          'overflow-x': 'hidden',
+        },
+        ".bg-1": {
+          '--tw-bg-opacity': '1',
+          'background-color': 'rgb(var(--background-1) / var(--tw-bg-opacity))',
+        },  
+        ".bg-2": {
+          '--tw-bg-opacity': '1',
+          'background-color': 'rgb(var(--background-2) / var(--tw-bg-opacity))',
+        },  
+        ".bg-3": {
+          '--tw-bg-opacity': '1',
+          'background-color': 'rgb(var(--background-3) / var(--tw-bg-opacity))',
+        },
+        ".fg-1": {
+          '--tw-bg-opacity': '1',
+          'background-color': 'rgb(var(--foreground-1) / var(--tw-bg-opacity))',
+        },
+        ".fg-2": {
+          '--tw-bg-opacity': '1',
+          'background-color': 'rgb(var(--foreground-2) / var(--tw-bg-opacity))',
+        },
+        ".fade-out-fg-1": {
+          'white-space': 'nowrap',
+          'background': `linear-gradient(90deg, rgb(var(--foreground-1)) 0%, rgb(var(--foreground-1)) 80%, transparent 100%)`,
+          'background-clip': 'text',
+          '-webkit-text-fill-color': 'transparent',
+          'overflow-x': 'hidden',
+        },
+        ".fade-out-fg-2": {
+          'white-space': 'nowrap',
+          'background': `linear-gradient(90deg, rgb(var(--foreground-2)) 0%, rgb(var(--foreground-2)) 80%, transparent 100%)`,
           'background-clip': 'text',
           '-webkit-text-fill-color': 'transparent',
           'overflow-x': 'hidden',

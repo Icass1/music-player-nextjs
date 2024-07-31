@@ -18,8 +18,6 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({ children }) {
 
-
-
     return (
         <ViewTransitions>
 
@@ -28,7 +26,6 @@ export default function RootLayout({ children }) {
                     <head>
                         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
                         <link rel="manifest" href="/manifest.json" id="manifest" />
-
 
                         <link rel="apple-touch-icon" href="icons/apple-icon-180.png" />
 

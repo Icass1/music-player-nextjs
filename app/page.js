@@ -71,7 +71,7 @@ export default function Home() {
     return (
         <>
             <div className='flex flex-row md:hidden mt-3 ml-3 gap-4'>
-                <Link className='relative block md:hidden bg-[#9DE2B0] w-12 h-12 rounded-full' href='/user'>
+                <Link className='relative block md:hidden fg-1 w-12 h-12 rounded-full' href='/user'>
                     <Image
                         className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full'
                         src={session.status == "authenticated" ? session?.data?.user?.image : 'https://api.music.rockhosting.org/images/user.svg'}
@@ -284,7 +284,7 @@ function GridContainer({ item, setMusicData }) {
         <AddContextMenu item={item} setMusicData={setMusicData} setDownloadProgress={setDownloadProgress}>
             <Link
                 href={`/list/${item.id}`}
-                className={`rounded-lg grid grid-cols-2 md:bg-neutral-700 md:hover:bg-neutral-600 transition-colors md:shadow-lg`}
+                className={`rounded-lg grid grid-cols-2 md:bg-3 md:hover:brightness-110 transition-all md:shadow-lg`}
                 style={{ gridTemplateColumns: '50px 1fr', backgroundColor: background }}
             >
                 <Image
@@ -296,8 +296,8 @@ function GridContainer({ item, setMusicData }) {
                 // onLoad={(e) => { setBackground(getImageMeanColor(e.target, 16, [64, 64, 64])) }}
                 ></Image>
                 <div className='grid h-[50px]' style={{ gridTemplateRows: 'max-content max-content' }}>
-                    <label className={clsx('pl-3 pr-3 text-lg fade-out-neutral-200 font-bold cursor-pointer h-6 overflow-y-hidden min-w-0 max-w-full', { 'fade-out-yellow-600': item.id == currentList })}>{item.name}</label>
-                    <label className={clsx('pl-3 pr-3 fade-out-neutral-200 cursor-pointer min-w-0 max-w-full', { 'fade-out-yellow-600': item.id == currentList })}>{item.author}</label>
+                    <label className={clsx('pl-3 pr-3 text-lg fade-out-neutral-200 font-bold cursor-pointer h-6 overflow-y-hidden min-w-0 max-w-full', { 'fade-out-fg-1': item.id == currentList })}>{item.name}</label>
+                    <label className={clsx('pl-3 pr-3 fade-out-neutral-200 cursor-pointer min-w-0 max-w-full', { 'fade-out-fg-2': item.id == currentList })}>{item.author}</label>
                 </div>
             </Link>
         </AddContextMenu>
@@ -350,7 +350,7 @@ function ListWithNameLayout({ musicData, setMusicData }) {
                                     <Link
                                         href={`/list/${item.id}`}
                                         className={
-                                            clsx('rounded-lg grid grid-cols-2 bg-neutral-700 md:hover:bg-neutral-600 items-center shadow-lg h-12 md:h-[50px]')
+                                            clsx('rounded-lg grid grid-cols-2 bg-3 md:hover:brightness-110 transition-all items-center shadow-lg h-12 md:h-[50px]')
                                         }
                                         style={{
                                             gridTemplateColumns: 'max-content 1fr min-content',
@@ -360,7 +360,7 @@ function ListWithNameLayout({ musicData, setMusicData }) {
                                     >
 
                                         <Image src={`https://api.music.rockhosting.org/api/list/image/${item.id}_50x50`} width={50} height={50} className='rounded-lg w-12 h-12 md:w-[50px] md:h-[50px]' alt={item.name}></Image>
-                                        <label className={clsx('ml-2 text-lg md:text-2xl pr-3 fade-out-neutral-200 font-bold cursor-pointer min-w-0 max-w-full', { 'fade-out-yellow-600': item.id == currentList })}>{item.name}</label>
+                                        <label className={clsx('ml-2 text-lg md:text-2xl pr-3 fade-out-neutral-200 font-bold cursor-pointer min-w-0 max-w-full', { 'fade-out-fg-1': item.id == currentList })}>{item.name}</label>
 
                                         {item.id == currentList && isPlaying ? (
                                             <Equalizer className='w-8 md:w-20 h-full p-1' bar_count={innerWidth > 768 ? 15 : 6} bar_gap={1} centered={true} />

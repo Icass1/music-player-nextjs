@@ -202,7 +202,7 @@ function ResultContextMenu({ children, list }) {
 
 function ResultContent({ list }) {
     return (
-        <div className="relative flex flex-col w-[220px] h-[290px] bg-neutral-700 hover:bg-neutral-600 rounded-lg">
+        <div className="relative flex flex-col w-[220px] h-[290px] bg-3 hover:brightness-110 transition-all rounded-lg">
             <Image
                 className='ml-auto mr-auto mt-2 rounded-md'
                 src={list.image_url}
@@ -235,7 +235,7 @@ function ResultContent({ list }) {
 function Result1({ list }) {
     return (
 
-        <Link className={clsx("relative flex flex-col w-[220px] h-[290px] bg-neutral-700 rounded-lg")} href={`/s/${list.type}/${list.id}`}>
+        <Link className={clsx("relative flex flex-col w-[220px] h-[290px] bg-3 rounded-lg")} href={`/s/${list.type}/${list.id}`}>
             <Image
                 className='rounded-lg'
                 src={list.image_url}

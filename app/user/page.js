@@ -149,7 +149,6 @@ export default function User() {
             <div className="block relative top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96">
                 <label className="block relative text-xl text-center">You are not loged in.</label>
                 <Link className="block relative font-bold text-2xl text-green-600 text-center" href="/login">Login</Link>
-                {/* <Link className="hidden md:block relative w-20 pl-2 pr-2 left-1/2 -translate-x-1/2 text-center bg-neutral-700 text-lg font-bold rounded-lg hover:bg-green-600" href='/login'>Login</Link> */}
             </div>
         )
     }
@@ -291,7 +290,7 @@ function MobileView({ lastSongsPlayed }) {
     return (
         Object.keys(lastSongsPlayed).map((timeAgo, index) => (
             <div key={index}>
-                <label className="block ml-4 mr-4 font-bold text-base text-neutral-400 text-left sticky top-0 bg-neutral-900">{timeAgo}</label>
+                <label className="block ml-4 mr-4 font-bold text-base text-neutral-400 text-left sticky top-0 bg-2">{timeAgo}</label>
                 {lastSongsPlayed[timeAgo].map((song, index) => (
                     <div key={index} className="ml-4 mr-4 mt-2 mb-2 flex gap-2 items-center">
                         <Image className="rounded" src={song.cover_url} width={50} height={50} alt={`${song.title} - ${song.artist}`} />

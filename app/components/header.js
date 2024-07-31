@@ -31,7 +31,7 @@ export default function Header({ handleSearch }) {
 
     const [lastAudioVolume, setLastAudioVolume] = useState(null);
     const [muted, setMuted] = useState(false);
-    const innerWidth = useWindowWidth();    
+    const innerWidth = useWindowWidth();
 
     const [homeViewIndicatorImagePath, setHomeViewIndicatorImagePath] = useState();
 
@@ -58,7 +58,7 @@ export default function Header({ handleSearch }) {
             audio.volume = lastAudioVolume
         }
 
-    }, [muted, audio])
+    }, [muted, audio]) // Do not add lastAudioVolume as a dependency.
 
     let debounceTimer;
     const handleSearchInputChange = (e) => {
@@ -75,17 +75,17 @@ export default function Header({ handleSearch }) {
         }, 1000);
     };
 
-    const toggleRandomQueue = () => {
+    // const toggleRandomQueue = () => {
 
-        if (randomQueue) {
-            setRandomQueue(false)
-        } else {
-            setRandomQueue(true)
-            let newQueue = queue.slice(queueIndex + 1)
-            newQueue.sort(() => Math.random() - 0.5)
-            setQueue(queue.slice(0, queueIndex + 1).concat(newQueue))
-        }
-    }
+    //     if (randomQueue) {
+    //         setRandomQueue(false)
+    //     } else {
+    //         setRandomQueue(true)
+    //         let newQueue = queue.slice(queueIndex + 1)
+    //         newQueue.sort(() => Math.random() - 0.5)
+    //         setQueue(queue.slice(0, queueIndex + 1).concat(newQueue))
+    //     }
+    // }
 
     const toggleShowLyrics = () => {
 
@@ -127,10 +127,16 @@ export default function Header({ handleSearch }) {
         let params = new URL(document.location).searchParams;
         handleSearch(params.get("q"));
         searchInputRef.current.value = params.get("q");
-    }, [])
+    }, [handleSearch])
 
     return (
-        <div className="grid h-full items-center ml-auto mr-auto w-min md:w-auto md:ml-5 md:mr-5 gap-10 md:gap-4" style={{ gridTemplateColumns: innerWidth > 768 ? '30px 30px min-content 1fr max-content 30px 30px 30px 150px min-content' : '30px 30px 30px', gridTemplateRows: '100%' }}>
+        <div
+            className="grid h-full items-center ml-auto mr-auto w-min md:w-auto md:ml-5 md:mr-5 gap-10 md:gap-4"
+            style={{
+                gridTemplateColumns: innerWidth > 768 ? '30px 30px min-content 1fr max-content 30px 30px 150px min-content' : '30px 30px 30px',
+                gridTemplateRows: '100%'
+            }}
+        >
             <Link href="/">
                 <Image className="md:block invert-[0.8] hover:invert-[0.7] select-none" src='https://api.music.rockhosting.org/images/home.svg' width={30} height={30} alt="Search" />
             </Link>
@@ -172,7 +178,7 @@ export default function Header({ handleSearch }) {
                 alt="Toggle lyrics"
                 onClick={toggleShowLyrics}
             />
-            <Image
+            {/* <Image
                 className="md:block invert-[0.6] select-none hover:invert-[0.7] cursor-pointer transition-all"
                 style={{ filter: randomQueue ? ('brightness(0) saturate(100%) invert(44%) sepia(91%) saturate(474%) hue-rotate(3deg) brightness(105%) contrast(97%)') : ('') }}
                 src='https://api.music.rockhosting.org/images/random.svg'
@@ -180,7 +186,7 @@ export default function Header({ handleSearch }) {
                 height={30}
                 alt="Toggle random queue"
                 onClick={toggleRandomQueue}
-            />
+            /> */}
 
             <div className="hidden md:block relative h-[30px] w-[30px]">
                 <Image
@@ -217,10 +223,10 @@ export default function Header({ handleSearch }) {
                     <Link href='/user'>
                         <Image className="rounded-full" src={session?.data?.user?.image} width={40} height={40} alt="" />
                     </Link>
-                    <button className="bg-neutral-700 pl-2 pr-2 rounded-lg hover:bg-red-600" onClick={() => signOut()}>Logout</button>
+                    <button className="bg-3 pl-2 pr-2 rounded-lg hover:bg-red-600" onClick={() => signOut()}>Logout</button>
                 </div>
             ) : (
-                <Link className="hidden md:block bg-neutral-700 pl-2 pr-2 rounded-lg hover:bg-green-600" href='/login'>Login</Link>
+                <Link className="hidden md:block bg-3 pl-2 pr-2 rounded-lg hover:bg-green-600" href='/login'>Login</Link>
             )}
         </div>
     )

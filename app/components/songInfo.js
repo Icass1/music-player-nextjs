@@ -9,6 +9,9 @@ import clsx from 'clsx';
 import Lyrics from './lyrics';
 import useWindowWidth from '../hooks/useWindowWidth';
 
+import playSVG from '../../public/next.svg';
+import SVG from '../utils/renderSVG';
+
 export default function SongInfo() {
     const {
         audio,
@@ -18,11 +21,14 @@ export default function SongInfo() {
         currentTime,
         audioDuration,
         queue,
+        randomQueue,
+        setRandomQueue,
         queueIndex,
         setCurrentSong,
         setQueueIndex,
         nextSong,
         previousSong,
+        setQueue,
     } = useContext(MediaPlayerContext);
 
     const [sliderValue, setSliderValue] = useState(0);
@@ -187,6 +193,18 @@ export default function SongInfo() {
         setShowSongView(value => !value)
     }
 
+    const toggleRandomQueue = () => {
+
+        if (randomQueue) {
+            setRandomQueue(false)
+        } else {
+            setRandomQueue(true)
+            let newQueue = queue.slice(queueIndex + 1)
+            newQueue.sort(() => Math.random() - 0.5)
+            setQueue(queue.slice(0, queueIndex + 1).concat(newQueue))
+        }
+    }
+
     return (
         <>
             <div
@@ -214,8 +232,8 @@ export default function SongInfo() {
                     <div className='absolute bg-[#8b8b8b7c] rounded-full w-24 h-[40px]' style={{ left: `calc((100% - 192px)/2 + ${topScrollBarValue}/100*192px/2)` }}></div>
 
                     <div className='bg-[#8b8b8b7c] w-48 rounded-full ml-auto mr-auto grid items-center h-[40px]' style={{ gridTemplateColumns: '1fr 1fr' }}>
-                        <label className='text-center text-xs text- z-10' onClick={(e) => {e.stopPropagation(); e.target.parentNode.parentNode.parentNode.scrollTo(0, 0)}}>COVER</label>
-                        <label className='text-center text-xs z-10' onClick={(e) => {e.stopPropagation(); e.target.parentNode.parentNode.parentNode.scrollTo(innerWidth, 0)}}>LYRICS</label>
+                        <label className='text-center text-xs text- z-10' onClick={(e) => { e.stopPropagation(); e.target.parentNode.parentNode.parentNode.scrollTo(0, 0) }}>COVER</label>
+                        <label className='text-center text-xs z-10' onClick={(e) => { e.stopPropagation(); e.target.parentNode.parentNode.parentNode.scrollTo(innerWidth, 0) }}>LYRICS</label>
                     </div>
                 </div>
 
@@ -349,14 +367,24 @@ export default function SongInfo() {
                 </div>
 
                 <div className='bottom-1     row-start-1 row-end-2    col-start-3 col-end-4     md:row-start-3 md:row-end-4    md:col-start-1 md:col-end-4'>
-                    <div className='grid items-center justify-items-center ml-auto mr-auto' style={{ gridTemplateColumns: innerWidth > 768 ? '30px 60px 30px' : '60px' }}>
-                        <Image alt="Previous" className='hidden md:block invert-[0.8] hover:invert-[0.9] cursor-pointer' src='https://api.music.rockhosting.org/images/previous.svg' width={30} height={30} onClick={handlePrevious} />
+                    <div className='grid items-center justify-items-center ml-auto mr-auto' style={{ gridTemplateColumns: innerWidth > 768 ? '50px 30px 60px 30px 50px' : '60px' }}>
+                        <label />
+                        <SVG color='rgb(204, 204, 204)' className='hidden md:block cursor-pointer hover:brightness-110' src='https://api.music.rockhosting.org/images/previous.svg' width={30} height={30} onClick={handlePrevious} />
                         {isPlaying ?
-                            <Image alt="Puase" className='invert-[0.8] hover:invert-[0.9] cursor-pointer' src='https://api.music.rockhosting.org/images/pause.svg' width={40} height={40} onClick={(e) => { e.stopPropagation(); handlePause() }} />
+                            <SVG color='rgb(204, 204, 204)' className='md:block cursor-pointer hover:brightness-110' src='https://api.music.rockhosting.org/images/pause.svg' width={40} height={40} onClick={(e) => { e.stopPropagation(); handlePause() }} />
                             :
-                            <Image alt="Play" className='invert-[0.8] hover:invert-[0.9] cursor-pointer' src='https://api.music.rockhosting.org/images/play.svg' width={40} height={40} onClick={(e) => { e.stopPropagation(); handlePlay() }} />
+                            <SVG color='rgb(204, 204, 204)' className='md:block cursor-pointer hover:brightness-110' src='https://api.music.rockhosting.org/images/play.svg' width={40} height={40} onClick={(e) => { e.stopPropagation(); handlePlay() }} />
                         }
-                        <Image alt="Next" className='hidden md:block invert-[0.8] hover:invert-[0.9] cursor-pointer' src='https://api.music.rockhosting.org/images/next.svg' width={30} height={30} onClick={handleNext} />
+                        <SVG color='rgb(204, 204, 204)' className='hidden md:block cursor-pointer hover:brightness-110' src='https://api.music.rockhosting.org/images/next.svg' width={30} height={30} onClick={handleNext} />
+                        <SVG
+                            className="hidden md:block select-none cursor-pointer transition-all hover:brightness-110"
+                            color={randomQueue ? `rgb(${getComputedStyle(document.body).getPropertyValue("--foreground-1")})` : 'rgb(204 204 204)'}
+                            src='https://api.music.rockhosting.org/images/random.svg'
+                            width={25}
+                            height={25}
+                            alt="Toggle random queue"
+                            onClick={toggleRandomQueue}
+                        />
                     </div>
                 </div>
 
@@ -369,24 +397,6 @@ export default function SongInfo() {
                 </div>
             </div>
             <div className='fixed block md:hidden h-1 left-0 bottom-[58px] bg-neutral-200 rounded-bl-full rounded-br-full' style={{ right: (currentTime == null ? 100 : 100 - 100 * currentTime / audioDuration) + "%" }}></div>
-        </>
-    )
-}
-
-
-function MobileSongView({ showingEqualizer, sliderValue, sliderInput }) {
-
-    const {
-        currentSong,
-        getTime,
-        currentTime,
-
-    } = useContext(MediaPlayerContext)
-
-    return (
-        <>
-
-
         </>
     )
 }

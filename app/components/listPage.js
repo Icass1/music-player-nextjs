@@ -437,7 +437,7 @@ export default function DefaultListPage({ listId, musicData }) {
 
                             <div className='hidden md:flex md:mt-16 mb-2 flex-row gap-4'>
                                 <div
-                                    className='h-16 w-16 bg-[#9DE2B0] rounded-full bottom-4 left-4 cursor-pointer'
+                                    className='h-16 w-16 fg-1 rounded-full bottom-4 left-4 cursor-pointer'
                                     onClick={currentList == listId && isPlaying ? (handlePauseClick) : (handlePlayClick)}
                                 >
                                     <Image
@@ -452,7 +452,7 @@ export default function DefaultListPage({ listId, musicData }) {
                                 {
                                     !userLists.includes(listId) && musicData.id ?
                                         <div
-                                            className='h-16 w-16 bg-[#9DE2B0] rounded-full bottom-4 left-4 cursor-pointer'
+                                            className='h-16 w-16 fg-1 rounded-full bottom-4 left-4 cursor-pointer'
                                             onClick={handleAddListToLibrary}
                                         >
                                             <Image
@@ -542,15 +542,15 @@ export default function DefaultListPage({ listId, musicData }) {
 
                             {searchResult.length != 0 ? (
                                 <div className='grid ml-5 mr-5 items-center' style={{ gridTemplateColumns: '1fr max-content 1fr' }}>
-                                    <div className='h-2 bg-[#9DE2B0] rounded-lg'></div>
+                                    <div className='h-2 fg-1 rounded-lg'></div>
                                     <label className='text-center ml-2 mr-3 font-bold text-neutral-500'>End of search results</label>
-                                    <div className='h-2 bg-[#9DE2B0] rounded-lg'></div>
+                                    <div className='h-2 fg-1 rounded-lg'></div>
                                 </div>
                             ) : (
                                 <div className='grid ml-5 mr-5 items-center' style={{ gridTemplateColumns: '1fr max-content 1fr' }}>
-                                    <div className='h-2 bg-[#9DE2B0] rounded-lg'></div>
+                                    <div className='h-2 fg-1 rounded-lg'></div>
                                     <label className='text-center ml-2 mr-3 font-bold text-neutral-200'>No results found</label>
-                                    <div className='h-2 bg-[#9DE2B0] rounded-lg'></div>
+                                    <div className='h-2 fg-1 rounded-lg'></div>
                                 </div>
                             )}
                         </>
@@ -573,7 +573,7 @@ export default function DefaultListPage({ listId, musicData }) {
                 </div>
 
             </div>
-            <div className='hidden md:flex fixed flex-row h-14 w-14 hover:w-52 bg-[#9DE2B0] rounded-full bottom-5 right-6 transition-all'>
+            <div className='hidden md:flex fixed flex-row h-14 w-14 hover:w-52 fg-1 rounded-full bottom-5 right-6 transition-all'>
                 <Image
                     src="https://api.music.rockhosting.org/images/search.svg"
                     width={35}
@@ -594,7 +594,7 @@ export default function DefaultListPage({ listId, musicData }) {
                 <></>
                 :
                 <div
-                    className='hidden md:block fixed h-14 w-14 bg-[#9DE2B0] rounded-full bottom-5 cursor-pointer ml-2'
+                    className='hidden md:block fixed h-14 w-14 fg-1 rounded-full bottom-5 cursor-pointer ml-2'
                     onClick={
                         // () => { setdownloadingURL(`http://12.12.12.3:1234/api/compress-list/${listId}`) }
                         () => { setdownloadingURL(`https://api.music.rockhosting.org/api/compress-list/${listId}`) }
@@ -604,7 +604,7 @@ export default function DefaultListPage({ listId, musicData }) {
                         <></>
                     ) : (
                         <CircularProgressBar
-                            className='absolute h-14 w-14 bg-[#9DE2B0] rounded-full cursor-pointer'
+                            className='absolute h-14 w-14 fg-1 rounded-full cursor-pointer'
                             progress={downloadProgress}
                             smooth={downloadSmooth}
                         />

@@ -42,7 +42,7 @@ export default function Login() {
                     onClick={googleLogin}
                 />
 
-                <div className="flex flex-row ml-auto mr-auto mt-6 w-[250px] h-[60px] bg-neutral-700 rounded-lg mb-4 cursor-pointer" onClick={githubLogin}>
+                <div className="flex flex-row ml-auto mr-auto mt-6 w-[250px] h-[60px] bg-3 rounded-lg mb-4 cursor-pointer" onClick={githubLogin}>
                     <Image
                         alt="Github logo"
                         className="mt-auto mb-auto ml-4 cursor-pointer select-none"

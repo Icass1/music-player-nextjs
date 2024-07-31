@@ -43,9 +43,11 @@ export default function Equalizer({ className, bar_count = 20, bar_gap = 1, cent
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        const r = 157;
-        const g = 226;
-        const b = 176;
+        const foreground = getComputedStyle(document.body).getPropertyValue("--foreground-1").split(" ")
+
+        const r = Number(foreground[0]);
+        const g = Number(foreground[1]);
+        const b = Number(foreground[2]);
         const a = 0.8;
 
         fbc_array = fbc_array.slice(0, 675)

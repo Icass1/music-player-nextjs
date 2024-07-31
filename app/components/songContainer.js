@@ -8,7 +8,7 @@ import { Link } from 'next-view-transitions'
 
 import ContextMenu from "./contextMenu";
 import { useRouter } from "next/router";
-import { downloadAndSaveMusic, getMusicFile } from "../utils/storage";
+// import { downloadAndSaveMusic, getMusicFile } from "../utils/storage";
 import useWindowWidth from "../hooks/useWindowWidth";
 
 export function Song({ type, musicData, checkMusicData, index, song, listId }) {
@@ -73,6 +73,8 @@ export function Song({ type, musicData, checkMusicData, index, song, listId }) {
 
     const handleDownload = () => {
 
+        return;
+
         downloadAndSaveMusic(`https://api.music.rockhosting.org/api/song/${song.id}`, song.id)
         setStored(true)
     }
@@ -128,15 +130,15 @@ export function Song({ type, musicData, checkMusicData, index, song, listId }) {
 
     const [stored, setStored] = useState(false)
 
-    useEffect(() => {
-        getMusicFile(song.id).then(data => {
-            if (data == undefined) {
-                setStored(false)
-            } else {
-                setStored(true)
-            }
-        })
-    }, [song])
+    // useEffect(() => {
+    //     getMusicFile(song.id).then(data => {
+    //         if (data == undefined) {
+    //             setStored(false)
+    //         } else {
+    //             setStored(true)
+    //         }
+    //     })
+    // }, [song])
 
     return (
         <ContextMenu
@@ -147,7 +149,7 @@ export function Song({ type, musicData, checkMusicData, index, song, listId }) {
             } : {
                 "Play": handlePlayClick,
                 "Download MP3": handleDownloadMP3,
-                "Download": handleDownload,
+                "TODO Download": handleDownload,
                 "Add to queue": handleAddToQueue,
                 "Copy ID": () => { navigator.clipboard.writeText(song.id) }
             }}
@@ -186,7 +188,7 @@ function AlbumSong({ index, stored, song, listId, downloadProgress, handleDownlo
                 </label>
             )}
 
-            <label className={clsx('relative text-xl md:text-2xl fade-out-neutral-300 min-w-0 max-w-full', { 'fade-out-default': song.id == currentSong.id && currentList == listId, 'cursor-pointer': song.in_database !== false })}>{song.title}</label>
+            <label className={clsx('relative text-xl md:text-2xl fade-out-neutral-300 min-w-0 max-w-full', { 'fade-out-fg-1': song.id == currentSong.id && currentList == listId, 'cursor-pointer': song.in_database !== false })}>{song.title}</label>
 
             {downloadProgress != undefined ? (
                 <label>{downloadProgress}%</label>
@@ -251,15 +253,15 @@ function PlaylistSong({ index, stored, song, listId, handleDownloadToDatabase })
             </div>
 
             <div className='flex flex-col cursor-pointer min-w-0 max-w-full'>
-                <label className={clsx('cursor-pointer text-xl fade-out-neutral-200 min-w-0 max-w-full', { 'fade-out-yellow-500': song.id == currentSong.id && listId == currentList })}>{song.title}</label>
-                <label className={clsx('cursor-pointer fade-out-neutral-300 min-w-0 max-w-full', { 'fade-out-default': song.id == currentSong.id && listId == currentList })}>{song.artist}</label>
+                <label className={clsx('cursor-pointer text-xl fade-out-neutral-200 min-w-0 max-w-full', { 'fade-out-fg-1': song.id == currentSong.id && listId == currentList })}>{song.title}</label>
+                <label className={clsx('cursor-pointer fade-out-neutral-300 min-w-0 max-w-full', { 'fade-out-fg-2': song.id == currentSong.id && listId == currentList })}>{song.artist}</label>
             </div>
-            <label className={clsx('hidden md:block fade-out-neutral-200 min-w-0 max-w-full', { 'fade-out-yellow-500': song.id == currentSong.id && listId == currentList })} title={song.genre}>{song.genre}</label>
+            <label className={clsx('hidden md:block fade-out-neutral-200 min-w-0 max-w-full', { 'fade-out-fg-2': song.id == currentSong.id && listId == currentList })} title={song.genre}>{song.genre}</label>
             <Link
                 href={`/s/album/${song?.album_url?.replace("https://open.spotify.com/album/", '')}`}
                 onClick={(e) => e.stopPropagation()}
 
-                className={clsx('hidden md:block fade-out-neutral-200 min-w-0 max-w-full hover:fade-out-neutral-400', { 'fade-out-yellow-500 hover:fade-out-yellow-700': song.id == currentSong.id && listId == currentList })}
+                className={clsx('hidden md:block fade-out-neutral-200 min-w-0 max-w-full hover:fade-out-neutral-400', { 'fade-out-fg-2 hover:fade-out-fg-1': song.id == currentSong.id && listId == currentList })}
                 title={song.album}>{song.album}
             </Link>
 
@@ -278,7 +280,7 @@ function PlaylistSong({ index, stored, song, listId, handleDownloadToDatabase })
                 />
             )}
 
-            <label className={clsx('fade-out-neutral-100 text-xl min-w-0 max-w-full text-center', { 'fade-out-default': song.id == currentSong.id && listId == currentList })} title={song.duration}>{song.duration}</label>
+            <label className={clsx('fade-out-neutral-100 text-xl min-w-0 max-w-full text-center', { 'fade-out-fg-1': song.id == currentSong.id && listId == currentList })} title={song.duration}>{song.duration}</label>
         </div>
     )
 }

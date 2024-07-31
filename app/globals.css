@@ -9,9 +9,14 @@ body, html {
 } */
 
 :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    --background-1: 0 0 0;
+    --background-2: 23 23 23;
+    --background-3: 64 64 64;
+    /* --foreground-1: rgb(157, 226, 176);
+    --foreground-2: rgb(103, 163, 120); */
+    --foreground-1: 226 157 157;
+    --foreground-2: 163 103 103;
+
 }
 
 @media screen and (max-width: 768px) {
@@ -21,38 +26,14 @@ body, html {
 }
 
 
-/* @media (prefers-color-scheme: dark) {
-    :root {
-        --foreground-rgb: 255, 255, 255;
-        --background-start-rgb: 0, 0, 0;
-        --background-end-rgb: 0, 0, 0;
-    }
-} */
-
 body,
 html {
-    color: rgb(var(--foreground-rgb));
-    background: linear-gradient(to bottom,
-            transparent,
-            rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
+    color: rgb(200, 200, 200);
+    background: rgb(var(--background-1));
     height: 100%;
     width: 100%;
     position: absolute;
-    /* min-width: 700px; */
     overflow-x: hidden;
-
-    /* height: 100%;
-    width: 100%;
-    position: absolute;
-    display: block;
-    left: 0px;
-    right: 0px;
-    margin: 0px;
-    background-color: rgb(0, 0, 0);
-    overflow: hidden; */
-
-
-
 }
 
 @layer utilities {
@@ -71,8 +52,10 @@ html {
 }
 
 ::-webkit-scrollbar {
-    width: 10px; /* For vertical slider*/
-    height: 10px; /* For horizontal slider*/
+    width: 10px;
+    /* For vertical slider*/
+    height: 10px;
+    /* For horizontal slider*/
 }
 
 @media screen and (max-width: 768px) {

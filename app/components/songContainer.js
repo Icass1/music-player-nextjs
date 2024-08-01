@@ -10,6 +10,7 @@ import ContextMenu from "./contextMenu";
 import { useRouter } from "next/router";
 // import { downloadAndSaveMusic, getMusicFile } from "../utils/storage";
 import useWindowWidth from "../hooks/useWindowWidth";
+import SVG from "../utils/renderSVG";
 
 export function Song({ type, musicData, checkMusicData, index, song, listId }) {
 
@@ -199,10 +200,10 @@ function AlbumSong({ index, stored, song, listId, downloadProgress, handleDownlo
             {song.in_database == undefined ? (
                 <label></label>
             ) : (
-                <Image
-                    className={clsx("cursor-pointer [filter:invert(29%)_sepia(93%)_saturate(1108%)_hue-rotate(25deg)_brightness(93%)_contrast(98%)]", { "hover:[filter:invert(45%)_sepia(100%)_saturate(412%)_hue-rotate(3deg)_brightness(90%)_contrast(97%)]": !song.in_database })}
-                    src={song.in_database ? ("https://api.music.rockhosting.org/images/database2.webp") : ("https://api.music.rockhosting.org/images/download.svg")}
-                    // style={{ filter: mouse_over ? ('brightness(0) saturate(100%) invert(32%) sepia(57%) saturate(3843%) hue-rotate(39deg) brightness(86%) contrast(98%)') : ("invert(30%) sepia(46%) saturate(2650%) hue-rotate(32deg) brightness(93%) contrast(98%)")}}
+                <SVG
+                    color={`rgb(${getComputedStyle(document.body).getPropertyValue("--foreground-1")})`}
+                    // className={clsx("cursor-pointer [filter:invert(29%)_sepia(93%)_saturate(1108%)_hue-rotate(25deg)_brightness(93%)_contrast(98%)]", { "hover:[filter:invert(45%)_sepia(100%)_saturate(412%)_hue-rotate(3deg)_brightness(90%)_contrast(97%)]": !song.in_database })}
+                    src={song.in_database ? ("https://api.music.rockhosting.org/images/tick.svg") : ("https://api.music.rockhosting.org/images/download.svg")}
                     width={30}
                     height={30}
                     alt={song.in_database ? ("Database logo") : ("Download logo")}
@@ -268,10 +269,11 @@ function PlaylistSong({ index, stored, song, listId, handleDownloadToDatabase })
             {song.in_database == undefined ? (
                 <label></label>
             ) : (
-                <Image
-                    className={clsx("cursor-pointer [filter:invert(29%)_sepia(93%)_saturate(1108%)_hue-rotate(25deg)_brightness(93%)_contrast(98%)]", { "hover:[filter:invert(45%)_sepia(100%)_saturate(412%)_hue-rotate(3deg)_brightness(90%)_contrast(97%)]": !song.in_database })}
-                    src={song.in_database ? ("https://api.music.rockhosting.org/images/database2.webp") : ("https://api.music.rockhosting.org/images/download.svg")}
-                    // style={{ filter: mouse_over ? ('brightness(0) saturate(100%) invert(32%) sepia(57%) saturate(3843%) hue-rotate(39deg) brightness(86%) contrast(98%)') : ("invert(30%) sepia(46%) saturate(2650%) hue-rotate(32deg) brightness(93%) contrast(98%)")}}
+                <SVG
+                    color={`rgb(${getComputedStyle(document.body).getPropertyValue("--foreground-1")})`}
+
+                    // className={clsx("cursor-pointer [filter:invert(29%)_sepia(93%)_saturate(1108%)_hue-rotate(25deg)_brightness(93%)_contrast(98%)]", { "hover:[filter:invert(45%)_sepia(100%)_saturate(412%)_hue-rotate(3deg)_brightness(90%)_contrast(97%)]": !song.in_database })}
+                    src={song.in_database ? ("https://api.music.rockhosting.org/images/tick.svg") : ("https://api.music.rockhosting.org/images/download.svg")}
                     width={30}
                     height={30}
                     alt={song.in_database ? ("Database logo") : ("Download logo")}

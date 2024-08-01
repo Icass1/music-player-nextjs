@@ -2,7 +2,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 
-export default function SVG({ src, height, width, color, className, onClick }) {
+export default function SVG({ src, height, width, color, className, onClick, title }) {
 
     const [svgContent, setSvgContent] = useState('');
 
@@ -16,7 +16,12 @@ export default function SVG({ src, height, width, color, className, onClick }) {
 
     useEffect(() => {
 
-        const updatedSvgText = data.replace(/#000000/g, color);
+        let updatedSvgText;
+        if (color == undefined) {
+            updatedSvgText = data;
+        } else {
+            updatedSvgText = data.replace(/#000000/g, color);
+        }
 
         const parser = new DOMParser();
         const svgDoc = parser.parseFromString(updatedSvgText, 'image/svg+xml');
@@ -31,6 +36,6 @@ export default function SVG({ src, height, width, color, className, onClick }) {
     }, [width, height, color, data])
 
     return (
-        <div className={className} dangerouslySetInnerHTML={{ __html: svgContent }} style={{ height: height, width: width }} onClick={onClick} />
+        <div className={className} title={title} dangerouslySetInnerHTML={{ __html: svgContent }} style={{ height: height, width: width }} onClick={onClick} />
     )
 }

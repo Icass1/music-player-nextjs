@@ -131,9 +131,9 @@ export default function Header({ handleSearch }) {
 
     return (
         <div
-            className="grid h-full items-center ml-auto mr-auto w-min md:w-auto md:ml-5 md:mr-5 gap-10 md:gap-4"
+            className="grid h-full items-center ml-auto mr-auto w-min md:w-auto md:ml-5 md:mr-5 gap-14 md:gap-4"
             style={{
-                gridTemplateColumns: innerWidth > 768 ? '30px 30px min-content 1fr max-content 30px 30px 150px min-content' : '30px 30px 30px',
+                gridTemplateColumns: innerWidth > 768 ? '30px 30px min-content 1fr max-content 30px 30px 150px min-content' : '30px 30px',
                 gridTemplateRows: '100%'
             }}
         >

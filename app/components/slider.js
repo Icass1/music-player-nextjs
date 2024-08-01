@@ -53,7 +53,7 @@ export default function Slider({ value, onInput, onChange, className }) {
                 type='range'
                 className={classNames(className, 'custom-slider min-w-0 w-full h-[0.4rem] rounded-full appearance-none')}
                 {...(mouseOver ? {
-                    style: { background: `linear-gradient(90deg, #ca8a04 0%, #ca8a04 calc(0.2rem + (100% - 0.4rem)*${value}), black calc(0.2rem + (100% - 0.4rem)*${value}), black 100%)` }
+                    style: { background: `linear-gradient(90deg, rgb(${getComputedStyle(document.body).getPropertyValue("--foreground-1")}) 0%, rgb(${getComputedStyle(document.body).getPropertyValue("--foreground-2")}) calc(0.2rem + (100% - 0.4rem)*${value}), black calc(0.2rem + (100% - 0.4rem)*${value}), black 100%)` }
                 } : {
                     style: { background: `linear-gradient(90deg, rgb(150, 150, 150) 0%, rgb(150, 150, 150) calc(0.2rem + (100% - 0.4rem)*${value}), black calc(0.2rem + (100% - 0.4rem)*${value}), black 100%)` }
                 })}

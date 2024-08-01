@@ -26,13 +26,6 @@ module.exports = {
     // nextui(),
     plugin(function ({ addUtilities }) {
       addUtilities({
-        ".fade-out-fg-1": {
-          'white-space': 'nowrap',
-          'background': `linear-gradient(90deg, #9DE2B0 0%, #9DE2B0 80%, transparent 100%)`,
-          'background-clip': 'text',
-          '-webkit-text-fill-color': 'transparent',
-          'overflow-x': 'hidden',
-        },
         ".bg-1": {
           '--tw-bg-opacity': '1',
           'background-color': 'rgb(var(--background-1) / var(--tw-bg-opacity))',
@@ -66,6 +59,14 @@ module.exports = {
           'background-clip': 'text',
           '-webkit-text-fill-color': 'transparent',
           'overflow-x': 'hidden',
+        },
+        ".text-fg-1": {
+          '--tw-text-opacity': '1',
+          'color': 'rgb(var(--foreground-1) / var(--tw-text-opacity))',
+        },
+        ".text-fg-2": {
+          '--tw-text-opacity': '1',
+          'color': 'rgb(var(--foreground-2) / var(--tw-text-opacity))',
         },
         ".desktop-layout": {
           "grid-template-areas": `

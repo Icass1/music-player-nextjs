@@ -9,7 +9,6 @@ import clsx from 'clsx';
 import Lyrics from './lyrics';
 import useWindowWidth from '../hooks/useWindowWidth';
 
-import playSVG from '../../public/next.svg';
 import SVG from '../utils/renderSVG';
 
 export default function SongInfo() {

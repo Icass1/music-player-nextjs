@@ -179,7 +179,7 @@ function AlbumSong({ index, stored, song, listId, downloadProgress, handleDownlo
                 <Equalizer className='w-6 md:w-[50px] h-full top-0' bar_count={innerWidth > 768 ? 10 : 5} bar_gap={1} centered={true} toggleCenter={false} />
             ) : (
                 <label className={clsx('text-xl w-6 md:w-[50px] text-center ', {
-                    'text-[#9DE2B0]': song.id == currentSong.id && currentList == listId,
+                    'text-fg-1': song.id == currentSong.id && currentList == listId,
                     "text-neutral-400": !(song.id == currentSong.id && currentList == listId),
                     'cursor-pointer': song.in_database !== false
                 })}
@@ -216,7 +216,7 @@ function AlbumSong({ index, stored, song, listId, downloadProgress, handleDownlo
                 <label></label>
             )}
             <label className={clsx('md:text-xl w-[35px] md:w-[60px]', {
-                'text-[#9DE2B0]': song.id == currentSong.id && currentList == listId,
+                'text-fg-1': song.id == currentSong.id && currentList == listId,
                 "text-neutral-400": !(song.id == currentSong.id && currentList == listId),
                 'cursor-pointer': song.in_database !== false
             })}

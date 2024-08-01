@@ -22,7 +22,6 @@ function DynamicLyrics(lyrics) {
 
     return (
         <>
-            <div className="h-6 list-item"></div>
             {lyrics.lyrics.segments.map((line, index) =>
                 <div key={"line" + index} className="w-fit ml-auto mr-auto">
                     {line.words.map((word, index) =>
@@ -30,7 +29,6 @@ function DynamicLyrics(lyrics) {
                     )}
                 </div>
             )}
-            <div className="h-6 list-item"></div>
         </>
     )
 }
@@ -52,14 +50,12 @@ function NormalLyrics(lyrics) {
 
     return (
         <>
-            <div className="h-6 list-item"></div>
             {lyrics.lyrics.split("\n").map((line, index) =>
                 line == "" ?
                     <div key={index} className="min-h-4"></div>
                     :
                     <label key={index} className="text-center text-neutral-200">{line}</label>
             )}
-            <div className="h-6 list-item"></div>
         </>
     )
 }
@@ -95,7 +91,9 @@ export default function Lyrics() {
 
     return (
         <div className="flex flex-col h-full text-lg">
+            <div className="min-h-6 list-item"></div>
             {dynamicLyrics ? <DynamicLyrics lyrics={lyrics} /> : <NormalLyrics lyrics={lyrics} />}
+            <div className="min-h-20 list-item"></div>
         </div>
     )
 }

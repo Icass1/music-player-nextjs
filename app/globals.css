@@ -12,9 +12,9 @@ body, html {
     --background-1: 0 0 0;
     --background-2: 23 23 23;
     --background-3: 64 64 64;
-    /* --foreground-1: 157 226 176; */
+    --foreground-1: 157 226 176;
     --foreground-2: 103 163 120;
-    --foreground-1: 226 157 157;
+    /* --foreground-1: 226 157 157; */
     /* --foreground-2: 163 103 103; */
 }
 

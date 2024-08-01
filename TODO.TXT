@@ -1,6 +1,6 @@
 Add videoclip with youtube url
 
-Add queue view in phone
+DONE - Add queue view in phone
 DONE - Add lyrics in desktop
 DONE - Add lyrics in phone
 
@@ -10,7 +10,7 @@ When song is added to queue, the list where it comes from is stored to set curre
 
 DONE - When there is only one genere, it should be 'Genre | Album Rock' instead of 'Genres | Album Rock'
 DONE - Store volume in database
-Store home view in database
+Store home view index in database
 
 URGENT - Limit to one download at a time and only for users.
 
@@ -24,7 +24,7 @@ Create and rename lists
 
 Cache next song
 
-Remove user circles in mobile and add proper 
+DONE - Remove user circles in mobile and add proper user menu
 
 Make usable when not logged in
     Table of list
@@ -47,9 +47,9 @@ Drop Spotify link anywhere and add list to library
 
 DONE - Add list to database when all songs are downloaded
 
-In mobile and song view is open, if click in header, it closes
+In mobile and song view is open, if click in header, it should closes
 
-Fix onplayend when playing list from search
+TO CHECK - Fix onplayend when playing list from search
 
 Make volume cuadratic
 
@@ -57,7 +57,7 @@ In dynamic lyrics, move to the next line in every comma
 
 DONE,FAILED - In home view, slight background color of the cover image and shadow
 
-rgb(98 141 154), #77ADDE, (222, 107, 72), #9DE2B0
+DONE - rgb(98 141 154), #77ADDE, (222, 107, 72), #9DE2B0
 
 Add admin panel
     Users view

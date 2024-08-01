@@ -12,6 +12,22 @@ import useWindowWidth from '../hooks/useWindowWidth';
 import SVG from '../utils/renderSVG';
 import Queue from './queue';
 
+const handleDownloadMP3 = (song) => {
+    fetch(`https://api.music.rockhosting.org/api/song/${song.id}`)
+        .then(response => response.blob())
+        .then(blob => {
+            let url = window.URL.createObjectURL(blob);
+            let link = document.createElement("a");
+            link.href = url;
+            link.download = `${song.title} - ${song.artist}.mp3`;  // Assign a meaningful filename
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        })
+        .catch(error => console.error('Download failed:', error));
+}
+
 export default function SongInfo() {
     const {
         audio,
@@ -208,6 +224,8 @@ export default function SongInfo() {
         }
     }
 
+
+
     return (
         <>
             <div
@@ -309,7 +327,15 @@ export default function SongInfo() {
                             <label className='text-neutral-300'>{getTime(audioDuration)}</label>
                         </div>
                         <div className='grid items-center justify-items-center ml-auto mr-auto gap-8' style={{ gridTemplateColumns: '30px max-content max-content max-content 30px' }}>
-                            <label />
+                            <SVG
+                                className="select-none cursor-pointer transition-all"
+                                color='rgb(204 204 204)'
+                                src='https://api.music.rockhosting.org/images/download.svg'
+                                width={30}
+                                height={30}
+                                title="Download MP3"
+                                onClick={(e) => {e.stopPropagation(); handleDownloadMP3(currentSong) }}
+                            />
                             <SVG alt="Previous" color='rgb(204 204 204)' className='cursor-pointer' src='https://api.music.rockhosting.org/images/previous.svg' width={40} height={40} onClick={(e) => { e.stopPropagation(); handlePrevious() }} />
 
                             <div className='abg-[#9DE2B0] rounded-full'>
@@ -321,7 +347,7 @@ export default function SongInfo() {
                             </div>
                             <SVG alt="Next" color='rgb(204 204 204)' className='cursor-pointer' src='https://api.music.rockhosting.org/images/next.svg' width={40} height={40} onClick={(e) => { e.stopPropagation(); handleNext() }} />
                             <SVG
-                                className="select-none cursor-pointer transition-all hover:brightness-110"
+                                className="select-none cursor-pointer transition-all"
                                 color={randomQueue ? `rgb(${getComputedStyle(document.body).getPropertyValue("--foreground-1")})` : 'rgb(204 204 204)'}
                                 src='https://api.music.rockhosting.org/images/random.svg'
                                 width={30}
@@ -331,9 +357,6 @@ export default function SongInfo() {
                             />
                         </div>
                     </div>
-
-
-
                 </div>
                 <div className='h-full flex-shrink-0 w-full relative overflow-x-hidden'>
                     <div className='absolute overflow-y-hidden h-full w-full z-10'>
@@ -373,76 +396,6 @@ export default function SongInfo() {
                 sliderInput={sliderInput}
                 sliderChange={sliderChange}
             />
-
-            {/* <Image
-                priority="high"
-                className=' md:block absolute top-1/2 md:left-1/2 -translate-y-1/2 md:-translate-x-1/2 h-auto md:h-full w-full md:w-auto max-w-none blur-xl opacity-60 brightness-50 select-none'
-                alt="Current Song"
-                sizes="100vw"
-                src={`https://api.music.rockhosting.org/api/song/image/${currentSong.id == "" ? ("_") : (currentSong.id)}`}
-                width={0}
-                height={0}
-            />
-
-            <div
-                className='relative grid h-full w-full m-0 top-0 items-center justify-items-start md:justify-items-center'
-                style={{ gridTemplateColumns: '60px 1fr 60px', gridTemplateRows: `${innerWidth > 768 ? '80px' : '60px'} 1fr 40px 40px` }}
-                onClick={toggleShowSongView}
-            >
-                <div ref={songDataRef} className='w-full absolute  flex flex-row scroll-smooth overflow-hidden  row-start-1 row-end-2     col-start-2 col-end-3     md:row-start-1 md:row-end-2    md:col-start-1 md:col-end-4'>
-
-                    {queue.map((item, index) => (
-                        <div key={index} className="flex-shrink-0 w-full">
-                            <label className='block text-lg md:text-3xl ml-2 mt-1 md:mt-2 mr-2 fade-out-neutral-200 h-6 md:h-auto md:min-h-9 font-bold'>{item.title}</label>
-                            <label className='block text-base md:text-2xl fade-out-neutral-300 ml-2 mr-2 mb-2 md:min-h-8'>{item.artist}</label>
-                        </div>
-                    ))}
-                    <label className="flex-shrink-0 w-full block text-xl md:text-3xl ml-2 mt-2 mr-2 fade-out-neutral-200 md:min-h-9 font-bold">{currentTime}</label>
-                    <label className="flex-shrink-0 w-full block text-xl md:text-3xl ml-2 mt-2 mr-2 fade-out-neutral-200 md:min-h-9 font-bold">{audioDuration}</label>
-                </div>
-
-                <div className='realtive   row-start-1 row-end-2     col-start-1 col-end-2    md:row-start-2 md:row-end-3     md:col-start-1 md:col-end-4    p-1 md:p-0  h-full md:w-[180px] md:h-[180px] flex cursor-pointer' onClick={(e) => { e.stopPropagation(); setShowingEqualizer((prevState) => !prevState) }}>
-
-                    <Image priority="high" className={clsx('realtive select-none h-full w-auto rounded-lg md:rounded-none', { "opacity-40": showingEqualizer })} alt="Current Song" src={`https://api.music.rockhosting.org/api/song/image/${currentSong.id == "" ? ("_") : (currentSong.id)}`} width={180} height={180} />
-
-                    {showingEqualizer ? (
-                        <Equalizer bar_gap={0} bar_count={innerWidth > 768 ? 180 : 52} toggleCenter={false} centered={true} className='select-none w-[52px] h-[52px] absolute md:w-[180px] md:h-[180px]' />
-                    ) : (
-                        <></>
-                    )}
-                </div>
-
-                <div className='bottom-1     row-start-1 row-end-2    col-start-3 col-end-4     md:row-start-3 md:row-end-4    md:col-start-1 md:col-end-4'>
-                    <div className='grid items-center justify-items-center ml-auto mr-auto' style={{ gridTemplateColumns: innerWidth > 768 ? '50px 30px 60px 30px 50px' : '60px' }}>
-                        <label />
-                        <SVG color='rgb(204, 204, 204)' className='hidden md:block cursor-pointer hover:brightness-110' src='https://api.music.rockhosting.org/images/previous.svg' width={30} height={30} onClick={handlePrevious} />
-                        {isPlaying ?
-                            <SVG color='rgb(204, 204, 204)' className='md:block cursor-pointer hover:brightness-110' src='https://api.music.rockhosting.org/images/pause.svg' width={40} height={40} onClick={(e) => { e.stopPropagation(); handlePause() }} />
-                            :
-                            <SVG color='rgb(204, 204, 204)' className='md:block cursor-pointer hover:brightness-110' src='https://api.music.rockhosting.org/images/play.svg' width={40} height={40} onClick={(e) => { e.stopPropagation(); handlePlay() }} />
-                        }
-                        <SVG color='rgb(204, 204, 204)' className='hidden md:block cursor-pointer hover:brightness-110' src='https://api.music.rockhosting.org/images/next.svg' width={30} height={30} onClick={handleNext} />
-                        <SVG
-                            className="hidden md:block select-none cursor-pointer transition-all hover:brightness-110"
-                            color={randomQueue ? `rgb(${getComputedStyle(document.body).getPropertyValue("--foreground-1")})` : 'rgb(204 204 204)'}
-                            src='https://api.music.rockhosting.org/images/random.svg'
-                            width={25}
-                            height={25}
-                            alt="Toggle random queue"
-                            onClick={toggleRandomQueue}
-                        />
-                    </div>
-                </div>
-
-                <div className='hidden md:block    md:row-start-4 md:row-end-5   md:col-start-1 md:col-end-4'>
-                    <div className='hidden md:grid relative gap-1 ml-2 mr-2 items-center justify-items-center' style={{ gridTemplateColumns: '50px 1fr 50px' }}>
-                        <label>{getTime(currentTime)}</label>
-                        <Slider value={sliderValue} onInput={sliderInput} onChange={sliderChange}></Slider>
-                        <label>{getTime(audioDuration)}</label>
-                    </div>
-                </div>
-            </div>
-            <div className='fixed block md:hidden h-1 left-0 bottom-[58px] bg-neutral-200 rounded-bl-full rounded-br-full' style={{ right: (currentTime == null ? 100 : 100 - 100 * currentTime / audioDuration) + "%" }}></div> */}
         </>
     )
 }
@@ -474,6 +427,9 @@ function SongInfoMenu({
     } = useContext(MediaPlayerContext);
 
     const innerWidth = useWindowWidth();
+
+
+
 
     return (
         <>
@@ -516,8 +472,16 @@ function SongInfoMenu({
                 </div>
 
                 <div className='bottom-1     row-start-1 row-end-2    col-start-3 col-end-4     md:row-start-3 md:row-end-4    md:col-start-1 md:col-end-4'>
-                    <div className='grid items-center justify-items-center ml-auto mr-auto' style={{ gridTemplateColumns: innerWidth > 768 ? '50px 30px 60px 30px 50px' : '60px' }}>
-                        <label />
+                    <div className='grid items-center justify-items-center ml-auto mr-auto' style={{ gridTemplateColumns: innerWidth > 768 ? '60px 30px 60px 30px 60px' : '60px' }}>
+                        <SVG
+                            className="hidden md:block select-none cursor-pointer transition-all hover:brightness-110"
+                            color='rgb(204 204 204)'
+                            src='https://api.music.rockhosting.org/images/download.svg'
+                            width={25}
+                            height={25}
+                            title="Download MP3"
+                            onClick={() => { handleDownloadMP3(currentSong) }}
+                        />
                         <SVG color='rgb(204, 204, 204)' className='hidden md:block cursor-pointer hover:brightness-110' src='https://api.music.rockhosting.org/images/previous.svg' width={30} height={30} onClick={handlePrevious} />
                         {isPlaying ?
                             <SVG color='rgb(204, 204, 204)' className='md:block cursor-pointer hover:brightness-110' src='https://api.music.rockhosting.org/images/pause.svg' width={40} height={40} onClick={(e) => { e.stopPropagation(); handlePause() }} />
@@ -531,7 +495,7 @@ function SongInfoMenu({
                             src='https://api.music.rockhosting.org/images/random.svg'
                             width={25}
                             height={25}
-                            alt="Toggle random queue"
+                            title="Toggle random queue"
                             onClick={toggleRandomQueue}
                         />
                     </div>

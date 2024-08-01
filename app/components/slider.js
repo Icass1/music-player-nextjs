@@ -4,24 +4,24 @@ import { createGlobalStyle } from 'styled-components';
 import classNames from 'classnames';
 
 const GlobalStyles = createGlobalStyle`
-.custom-slider[mouseover]::-webkit-slider-thumb {
+.default-slider[mouseover]::-webkit-slider-thumb {
     height: 8px;
     width: 8px;
 }
 
-.custom-slider[mouseover]::-moz-range-thumb {
+.default-slider[mouseover]::-moz-range-thumb {
     height: 8px;
     width: 8px;
 }
 
-.custom-slider::-webkit-slider-thumb {
+.default-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     background-color: rgb(150 150 150);
     height: 0.4rem;
     width: 0.4rem;
     border-radius: 100%;
 }
-.custom-slider::-moz-range-thumb {
+.default-slider::-moz-range-thumb {
     -webkit-appearance: none;
     appearance: none;
 
@@ -30,7 +30,6 @@ const GlobalStyles = createGlobalStyle`
     width: 0.3rem;
     border-radius: 100%;
 }
-
 `;
 
 export default function Slider({ value, onInput, onChange, className }) {
@@ -51,7 +50,7 @@ export default function Slider({ value, onInput, onChange, className }) {
                 {...mouseOver && { mouseover: '' }}
                 // id={id}
                 type='range'
-                className={classNames(className, 'custom-slider min-w-0 w-full h-[0.4rem] rounded-full appearance-none')}
+                className={classNames(className, 'default-slider min-w-0 w-full h-[0.4rem] rounded-full appearance-none')}
                 {...(mouseOver ? {
                     style: { background: `linear-gradient(90deg, rgb(${getComputedStyle(document.body).getPropertyValue("--foreground-1")}) 0%, rgb(${getComputedStyle(document.body).getPropertyValue("--foreground-2")}) calc(0.2rem + (100% - 0.4rem)*${value}), black calc(0.2rem + (100% - 0.4rem)*${value}), black 100%)` }
                 } : {

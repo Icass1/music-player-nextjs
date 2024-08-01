@@ -275,6 +275,7 @@ export default function SongInfo() {
                                     sliderValue={sliderValue}
                                     sliderInput={sliderInput}
                                     sliderChange={sliderChange}
+                                    setShowingEqualizer={setShowingEqualizer}
                                 />
                             </div>
                         </div>
@@ -377,7 +378,8 @@ export default function SongInfo() {
                                 sliderValue={sliderValue}
                                 sliderInput={sliderInput}
                                 sliderChange={sliderChange}
-                            />
+                                setShowingEqualizer={setShowingEqualizer}
+                                />
                         </div>
                     </div>
                 </div>
@@ -395,7 +397,8 @@ export default function SongInfo() {
                 sliderValue={sliderValue}
                 sliderInput={sliderInput}
                 sliderChange={sliderChange}
-            />
+                setShowingEqualizer={setShowingEqualizer}
+                />
         </>
     )
 }
@@ -412,7 +415,8 @@ function SongInfoMenu({
     toggleRandomQueue,
     sliderValue,
     sliderInput,
-    sliderChange
+    sliderChange,
+    setShowingEqualizer
 }) {
 
     const {
@@ -462,7 +466,7 @@ function SongInfoMenu({
 
                 <div className='realtive   row-start-1 row-end-2     col-start-1 col-end-2    md:row-start-2 md:row-end-3     md:col-start-1 md:col-end-4    p-1 md:p-0  h-full md:w-[180px] md:h-[180px] flex cursor-pointer' onClick={(e) => { e.stopPropagation(); setShowingEqualizer((prevState) => !prevState) }}>
 
-                    <Image priority="high" className={clsx('realtive select-none h-full w-auto rounded-lg md:rounded-none', { "opacity-40": showingEqualizer })} alt="Current Song" src={`https://api.music.rockhosting.org/api/song/image/${currentSong.id == "" ? ("_") : (currentSong.id)}`} width={180} height={180} />
+                    <Image priority="high" className={clsx('realtive select-none h-full w-auto rounded-lg md:rounded-none', { "opacity-70": showingEqualizer })} alt="Current Song" src={`https://api.music.rockhosting.org/api/song/image/${currentSong.id == "" ? ("_") : (currentSong.id)}`} width={180} height={180} />
 
                     {showingEqualizer ? (
                         <Equalizer bar_gap={0} bar_count={innerWidth > 768 ? 180 : 52} toggleCenter={false} centered={true} className='select-none w-[52px] h-[52px] absolute md:w-[180px] md:h-[180px]' />
@@ -502,10 +506,10 @@ function SongInfoMenu({
                 </div>
 
                 <div className='hidden md:block    md:row-start-4 md:row-end-5   md:col-start-1 md:col-end-4'>
-                    <div className='hidden md:grid relative gap-1 ml-2 mr-2 items-center justify-items-center' style={{ gridTemplateColumns: '50px 1fr 50px' }}>
-                        <label>{getTime(currentTime)}</label>
+                    <div className='hidden md:grid relative gap-1 ml-2 mr-2 items-center justify-items-center' style={{ gridTemplateColumns: '40px 1fr 40px' }}>
+                        <label className='text-sm'>{getTime(currentTime)}</label>
                         <Slider value={sliderValue} onInput={sliderInput} onChange={sliderChange}></Slider>
-                        <label>{getTime(audioDuration)}</label>
+                        <label className='text-sm'>{getTime(audioDuration)}</label>
                     </div>
                 </div>
             </div>

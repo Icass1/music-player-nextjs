@@ -215,14 +215,14 @@ function ResultContent({ list }) {
             <label className="text-xl fade-out-neutral-100 min-w-0 max-w-full m-2 mt-0" title={list.artists.map((artist) => (artist.name)).join("/")}>{list.artists.map((artist) => (artist.name)).join(" /")}</label>
 
             <div
-                className={clsx("absolute right-3 bottom-24 h-12 w-12 bg-[#9DE2B0] rounded-full", { "hover:bg-[#9DE2B0]": !list.in_database })}
+                className={clsx("absolute right-3 bottom-24 h-12 w-12 fg-1 rounded-full", { "hover:brightness-110": !list.in_database })}
                 onClick={(e) => { e.preventDefault(); console.log(e) }}
             >
                 <Image
                     className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-                    src={list.in_database ? ("https://api.music.rockhosting.org/images/database2.webp") : ("https://api.music.rockhosting.org/images/download.svg")}
-                    width={30}
-                    height={30}
+                    src={list.in_database ? ("https://api.music.rockhosting.org/images/tick.svg") : ("https://api.music.rockhosting.org/images/download.svg")}
+                    width={list.in_database ? 48 : 30}
+                    height={list.in_database ? 48 : 30}
                     alt={list.in_database ? ("Database logo") : ("Download logo")}
                     title={list.in_database ? ("Song is in database") : ("Click to download song")}
                 />

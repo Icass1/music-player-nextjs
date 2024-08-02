@@ -84,8 +84,6 @@ export default function SongInfo() {
                 return
             }
             else {
-                // audio.src = `https://api.music.rockhosting.org/api/song/${queue[queueIndex - 1].id}`;
-                // audio.play();
 
                 setCurrentSong(queue[queueIndex - 1]);
                 setQueueIndex(queueIndex - 1);
@@ -97,15 +95,11 @@ export default function SongInfo() {
 
         if (queueIndex >= queue.length - 1) {
 
-            // audio.src = `https://api.music.rockhosting.org/api/song/${queue[0].id}`;
-            // audio.play();
 
             setCurrentSong(queue[0]);
             setQueueIndex(0);
 
         } else {
-            // audio.src = `https://api.music.rockhosting.org/api/song/${queue[queueIndex + 1].id}`;
-            // audio.play();
 
             setCurrentSong(queue[queueIndex + 1]);
             setQueueIndex(queueIndex + 1);

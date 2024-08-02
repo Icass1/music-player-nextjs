@@ -136,6 +136,7 @@ export default function Lyrics() {
             let segment = lyrics.segments[segmentIndex];
 
             if (segment.start < currentTime && segment.end > currentTime) {
+
                 let scroll = document.querySelector("#segment-id-" + segment.id).offsetTop - mainRef.current.parentNode.offsetTop
 
                 mainRef.current.parentNode.scrollTo(0, scroll - mainRef.current.parentNode.offsetHeight / 2)

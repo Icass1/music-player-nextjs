@@ -273,10 +273,7 @@ export default function Custom() {
             <div className="flex flex-col items-center gap-4 mt-4  mb-4">
                 <label>Foreground 1</label>
                 <Sliders initialColor={foreground1} setColor={setForeground1} />
-                <div className="flex flex-row gap-3">
-
-
-
+                <div className="flex flex-col md:flex-row gap-3">
                     <div className="relative w-96 h-52 rounded-md" style={{ background: `rgb(${background1[0]}, ${background1[1]}, ${background1[2]})` }}>
                         <div
                             className="absolute rounded-sm"

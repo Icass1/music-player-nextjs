@@ -53,7 +53,7 @@ TO CHECK - Fix onplayend when playing list from search
 
 Make volume cuadratic
 
-In dynamic lyrics, move to the next line in every comma
+DONE - In dynamic lyrics, move to the next line in every comma
 
 DONE,FAILED - In home view, slight background color of the cover image and shadow
 
@@ -104,7 +104,6 @@ List view
     Remove ' - Remastered xxx' from songs
     DONE - On mobile, remove genre and album from playlist song container
     Download and search button should move when lyrics are shown
-    
 
 DONE - User database
     DONE - id  

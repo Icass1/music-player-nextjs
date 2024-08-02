@@ -42,8 +42,7 @@ export default function SongInfo() {
         queueIndex,
         setCurrentSong,
         setQueueIndex,
-        nextSong,
-        previousSong,
+
         setQueue,
     } = useContext(MediaPlayerContext);
 
@@ -52,7 +51,6 @@ export default function SongInfo() {
     const innerWidth = useWindowWidth();
     const [topScrollBarValue, setTopScrollBarValue] = useState(1);
 
-    const songDataRef = useRef();
 
     const songViewScrollRef = useRef();
     const [showSongView, setShowSongView] = useState(false);
@@ -113,6 +111,275 @@ export default function SongInfo() {
             setQueueIndex(queueIndex + 1);
         }
     }
+
+
+
+
+
+    useEffect(() => {
+
+        if (innerWidth > 768) {
+            return
+        }
+        const element = songViewScrollRef?.current
+
+        const handleScrollEnd = (e) => {
+            e?.target?.scrollTo(Math.round(e?.target?.scrollLeft / innerWidth) * innerWidth, 0)
+        }
+
+        element.scrollTo(topScrollBarValue * innerWidth, 0)
+
+        songViewScrollRef?.current?.addEventListener("scrollend", handleScrollEnd)
+
+        return () => {
+            element.removeEventListener("scrollend", handleScrollEnd)
+        }
+
+    }, [songViewScrollRef, innerWidth])
+
+    const handleViewScroll = (e) => {
+        setTopScrollBarValue(e?.target?.scrollLeft / innerWidth * 100)
+    }
+
+    const toggleShowSongView = () => {
+        setShowSongView(value => !value)
+    }
+
+    const toggleRandomQueue = () => {
+
+        if (randomQueue) {
+            setRandomQueue(false)
+        } else {
+            setRandomQueue(true)
+            let newQueue = queue.slice(queueIndex + 1)
+            newQueue.sort(() => Math.random() - 0.5)
+            setQueue(queue.slice(0, queueIndex + 1).concat(newQueue))
+        }
+    }
+
+
+
+    return (
+        <>
+
+            {innerWidth > 768 ?
+                <></>
+                :
+                <div
+                    id="delte"
+                    ref={songViewScrollRef}
+                    className='fixed md:hidden flex flex-row bg-neutral-500 top-0 left-0 right-0 overflow-x-scroll bottom-[58px] z-10 scroll-smooth transition-all'
+                    onClick={toggleShowSongView}
+                    onScroll={handleViewScroll}
+                    style={{ clipPath: showSongView ? `inset(0% 0px 0px 0px)` : `inset(100% 0px 0px 0px)` }}
+
+                >
+
+                    <Image
+                        priority="high"
+                        className='fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-full w-auto md:w-auto max-w-none blur-lg opacity-60 brightness-[.2] select-none'
+                        alt="Current Song"
+                        sizes="100vw"
+                        src={`https://api.music.rockhosting.org/api/song/image/${currentSong.id == "" ? ("_") : (currentSong.id)}`}
+                        width={0}
+                        height={0}
+                    />
+
+                    <div className='fixed top-4 left-1/2 -translate-x-1/2 z-50'>
+                        <div className='absolute bg-[#8b8b8b7c] rounded-full w-[80px] h-[40px]' style={{ left: `calc((100% - 240px)/3 + ${topScrollBarValue}/100*240px/3)` }}></div>
+
+                        <div className='bg-[#8b8b8b7c] w-[240px] rounded-full ml-auto mr-auto grid items-center h-[40px]' style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
+                            <label className='text-center text-xs z-10' onClick={(e) => { e.stopPropagation(); e.target.parentNode.parentNode.parentNode.scrollTo(0, 0) }}>QUEUE</label>
+                            <label className='text-center text-xs z-10' onClick={(e) => { e.stopPropagation(); e.target.parentNode.parentNode.parentNode.scrollTo(innerWidth, 0) }}>COVER</label>
+                            <label className='text-center text-xs z-10' onClick={(e) => { e.stopPropagation(); e.target.parentNode.parentNode.parentNode.scrollTo(innerWidth * 2, 0) }}>LYRICS</label>
+                        </div>
+                    </div>
+
+                    <div className='h-full flex-shrink-0 w-full relative overflow-x-hidden'>
+                        <div className='absolute overflow-y-hidden h-full w-full z-10'>
+                            <div className='absolute top-16 bottom-0 left-2 right-2 overflow-y-auto'>
+                                <Queue />
+                                <div
+                                    className='h-[60px] left-1 right-1 bottom-3 overflow-hidden absolute rounded-lg'
+                                    onTouchStart={(e) => { songViewScrollRef.current.style.overflowX = 'hidden' }}
+                                    onTouchEnd={(e) => { songViewScrollRef.current.style.overflowX = '' }}
+                                >
+                                    <SongInfoMenu
+                                        toggleShowSongView={toggleShowSongView}
+                                        showingEqualizer={showingEqualizer}
+                                        handlePrevious={handlePrevious}
+                                        handleNext={handleNext}
+                                        handlePause={handlePause}
+                                        handlePlay={handlePlay}
+                                        toggleRandomQueue={toggleRandomQueue}
+                                        sliderValue={sliderValue}
+                                        sliderInput={sliderInput}
+                                        sliderChange={sliderChange}
+                                        setShowingEqualizer={setShowingEqualizer}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className=' h-full flex-shrink-0 w-full relative overflow-x-hidden'>
+                        <div className='relative grid max-w-full' style={{ gridTemplateRows: "2fr max-content 1fr max-content 60px 60px", height: 'calc(100% - 60px)' }}>
+
+
+                            <label></label>
+
+                            <div className='w-11/12 h-0 pb-[91.666667%] ml-auto mr-auto' onClick={(e) => { e.stopPropagation(); setShowingEqualizer((prevState) => !prevState) }}>
+
+                                <div className='z-10 relative w-full h-0 pb-[100%] mb-[-100%]'>
+                                    {showingEqualizer ? (
+                                        <Equalizer bar_gap={0} bar_count={innerWidth > 768 ? 180 : 52} toggleCenter={false} centered={true} className='w-full h-full absolute' />
+                                    ) : (
+                                        <></>
+                                    )}
+                                </div>
+                                <Image
+                                    priority="high"
+                                    className={clsx('w-full rounded-xl', { 'opacity-70': showingEqualizer })}
+                                    // className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-full w-auto md:w-auto max-w-none blur-sm opacity-60 brightness-50 select-none'
+                                    alt="Current Song"
+                                    sizes='100%'
+                                    src={`https://api.music.rockhosting.org/api/song/image/${currentSong.id == "" ? ("_") : (currentSong.id)}`}
+                                    width={0}
+                                    height={0}
+                                />
+
+                            </div>
+
+                            <label></label>
+
+                            <div className='flex flex-col ml-4 mr-4 min-w-0'>
+                                <label className='text-2xl fade-out-neutral-200 font-bold'>{currentSong.title}</label>
+                                <label className='text-1xl fade-out-neutral-300 '>{currentSong.artist}</label>
+                            </div>
+
+                            <div
+                                className='grid relative gap-1 ml-2 mr-2 items-center justify-items-center scroll-'
+                                onTouchStart={(e) => { songViewScrollRef.current.style.overflowX = 'hidden' }}
+                                onTouchEnd={(e) => { songViewScrollRef.current.style.overflowX = '' }}
+                                style={{ gridTemplateColumns: '50px 1fr 50px' }}
+                            >
+                                <label className='text-neutral-300'>{getTime(currentTime)}</label>
+                                <Slider value={sliderValue} onInput={sliderInput} onChange={sliderChange}></Slider>
+                                <label className='text-neutral-300'>{getTime(audioDuration)}</label>
+                            </div>
+                            <div className='grid items-center justify-items-center ml-auto mr-auto gap-8' style={{ gridTemplateColumns: '30px max-content max-content max-content 30px' }}>
+                                <SVG
+                                    className="select-none cursor-pointer transition-all"
+                                    color='rgb(204 204 204)'
+                                    src='https://api.music.rockhosting.org/images/download.svg'
+                                    width={30}
+                                    height={30}
+                                    title="Download MP3"
+                                    onClick={(e) => { e.stopPropagation(); handleDownloadMP3(currentSong) }}
+                                />
+                                <SVG alt="Previous" color='rgb(204 204 204)' className='cursor-pointer' src='https://api.music.rockhosting.org/images/previous.svg' width={40} height={40} onClick={(e) => { e.stopPropagation(); handlePrevious() }} />
+
+                                <div className='abg-[#9DE2B0] rounded-full'>
+                                    {isPlaying ?
+                                        <SVG alt="Puase" color='rgb(204 204 204)' className='cursor-pointer' src='https://api.music.rockhosting.org/images/pause.svg' width={60} height={60} onClick={(e) => { e.stopPropagation(); handlePause() }} />
+                                        :
+                                        <SVG alt="Play" color='rgb(204 204 204)' className='icursor-pointer' src='https://api.music.rockhosting.org/images/play.svg' width={60} height={60} onClick={(e) => { e.stopPropagation(); handlePlay() }} />
+                                    }
+                                </div>
+                                <SVG alt="Next" color='rgb(204 204 204)' className='cursor-pointer' src='https://api.music.rockhosting.org/images/next.svg' width={40} height={40} onClick={(e) => { e.stopPropagation(); handleNext() }} />
+                                <SVG
+                                    className="select-none cursor-pointer transition-all"
+                                    color={randomQueue ? `rgb(${getComputedStyle(document.body).getPropertyValue("--foreground-1")})` : 'rgb(204 204 204)'}
+                                    src='https://api.music.rockhosting.org/images/random.svg'
+                                    width={30}
+                                    height={30}
+                                    alt="Toggle random queue"
+                                    onClick={toggleRandomQueue}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div className='h-full flex-shrink-0 w-full relative overflow-x-hidden'>
+                        <div className='absolute overflow-y-hidden h-full w-full z-10'>
+                            <div className='absolute top-16 bottom-0 w-full overflow-y-auto scroll-smooth'>
+                                <Lyrics />
+                            </div>
+                            <div
+                                className='absolute h-[60px] left-3 right-3 bottom-3 overflow-hidden rounded-lg bg-[#525151b6]'
+                                onTouchStart={(e) => { songViewScrollRef.current.style.overflowX = 'hidden' }}
+                                onTouchEnd={(e) => { songViewScrollRef.current.style.overflowX = '' }}
+                            >
+                                <SongInfoMenu
+                                    toggleShowSongView={toggleShowSongView}
+                                    showingEqualizer={showingEqualizer}
+                                    handlePrevious={handlePrevious}
+                                    handleNext={handleNext}
+                                    handlePause={handlePause}
+                                    handlePlay={handlePlay}
+                                    toggleRandomQueue={toggleRandomQueue}
+                                    sliderValue={sliderValue}
+                                    sliderInput={sliderInput}
+                                    sliderChange={sliderChange}
+                                    setShowingEqualizer={setShowingEqualizer}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            }
+
+            <SongInfoMenu
+                toggleShowSongView={toggleShowSongView}
+                showingEqualizer={showingEqualizer}
+                handlePrevious={handlePrevious}
+                handleNext={handleNext}
+                handlePause={handlePause}
+                handlePlay={handlePlay}
+                toggleRandomQueue={toggleRandomQueue}
+                sliderValue={sliderValue}
+                sliderInput={sliderInput}
+                sliderChange={sliderChange}
+                setShowingEqualizer={setShowingEqualizer}
+            />
+        </>
+    )
+}
+
+
+function SongInfoMenu({
+    toggleShowSongView,
+    showingEqualizer,
+    handlePrevious,
+    handleNext,
+    handlePause,
+    handlePlay,
+    toggleRandomQueue,
+    sliderValue,
+    sliderInput,
+    sliderChange,
+    setShowingEqualizer
+}) {
+
+    const {
+        nextSong,
+        previousSong,
+        getTime,
+        currentSong,
+        isPlaying,
+        currentTime,
+        audioDuration,
+        queue,
+        randomQueue,
+        queueIndex
+    } = useContext(MediaPlayerContext);
+
+    const songDataRef = useRef();
+    const innerWidth = useWindowWidth();
+
+    useEffect(() => {
+        songDataRef.current.scrollTo(songDataRef.current.offsetWidth * queueIndex, 0)
+    }, [queue, queueIndex, songDataRef, innerWidth])
 
     useEffect(() => {
 
@@ -179,261 +446,6 @@ export default function SongInfo() {
             element.removeEventListener('touchmove', handleTouchMove);
         }
     }, [queue, queueIndex, currentTime, songDataRef, nextSong, previousSong])
-
-    useEffect(() => {
-        songDataRef.current.scrollTo(songDataRef.current.offsetWidth * queueIndex, 0)
-    }, [queue, queueIndex, songDataRef, innerWidth])
-
-    useEffect(() => {
-
-        const element = songViewScrollRef?.current
-
-        const handleScrollEnd = (e) => {
-            e?.target?.scrollTo(Math.round(e?.target?.scrollLeft / innerWidth) * innerWidth, 0)
-        }
-
-        element.scrollTo(topScrollBarValue * innerWidth, 0)
-
-        songViewScrollRef?.current?.addEventListener("scrollend", handleScrollEnd)
-
-        return () => {
-            element.removeEventListener("scrollend", handleScrollEnd)
-        }
-
-    }, [songViewScrollRef, innerWidth])
-
-
-
-    const handleViewScroll = (e) => {
-        setTopScrollBarValue(e?.target?.scrollLeft / innerWidth * 100)
-    }
-
-    const toggleShowSongView = () => {
-        setShowSongView(value => !value)
-    }
-
-    const toggleRandomQueue = () => {
-
-        if (randomQueue) {
-            setRandomQueue(false)
-        } else {
-            setRandomQueue(true)
-            let newQueue = queue.slice(queueIndex + 1)
-            newQueue.sort(() => Math.random() - 0.5)
-            setQueue(queue.slice(0, queueIndex + 1).concat(newQueue))
-        }
-    }
-
-
-
-    return (
-        <>
-            <div
-                id="delte"
-                ref={songViewScrollRef}
-                className='fixed md:hidden flex flex-row bg-neutral-500 top-0 left-0 right-0 overflow-x-scroll bottom-[58px] z-10 scroll-smooth transition-all'
-                onClick={toggleShowSongView}
-                onScroll={handleViewScroll}
-                style={{ clipPath: showSongView ? `inset(0% 0px 0px 0px)` : `inset(100% 0px 0px 0px)` }}
-
-            >
-
-                <Image
-                    priority="high"
-                    className='fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-full w-auto md:w-auto max-w-none blur-lg opacity-60 brightness-[.2] select-none'
-                    alt="Current Song"
-                    sizes="100vw"
-                    src={`https://api.music.rockhosting.org/api/song/image/${currentSong.id == "" ? ("_") : (currentSong.id)}`}
-                    width={0}
-                    height={0}
-                />
-
-                <div className='fixed top-4 left-1/2 -translate-x-1/2 z-50'>
-                    <div className='absolute bg-[#8b8b8b7c] rounded-full w-[80px] h-[40px]' style={{ left: `calc((100% - 240px)/3 + ${topScrollBarValue}/100*240px/3)` }}></div>
-
-                    <div className='bg-[#8b8b8b7c] w-[240px] rounded-full ml-auto mr-auto grid items-center h-[40px]' style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
-                        <label className='text-center text-xs z-10' onClick={(e) => { e.stopPropagation(); e.target.parentNode.parentNode.parentNode.scrollTo(0, 0) }}>QUEUE</label>
-                        <label className='text-center text-xs z-10' onClick={(e) => { e.stopPropagation(); e.target.parentNode.parentNode.parentNode.scrollTo(innerWidth, 0) }}>COVER</label>
-                        <label className='text-center text-xs z-10' onClick={(e) => { e.stopPropagation(); e.target.parentNode.parentNode.parentNode.scrollTo(innerWidth * 2, 0) }}>LYRICS</label>
-                    </div>
-                </div>
-
-                <div className='h-full flex-shrink-0 w-full relative overflow-x-hidden'>
-                    <div className='absolute overflow-y-hidden h-full w-full z-10'>
-                        <div className='absolute top-16 bottom-0 left-2 right-2 overflow-y-auto'>
-                            <Queue />
-                            <div className='h-[60px] left-1 right-1 bottom-3 overflow-hidden absolute rounded-lg'>
-                                <SongInfoMenu
-                                    toggleShowSongView={toggleShowSongView}
-                                    songDataRef={songDataRef}
-                                    showingEqualizer={showingEqualizer}
-                                    handlePrevious={handlePrevious}
-                                    handleNext={handleNext}
-                                    handlePause={handlePause}
-                                    handlePlay={handlePlay}
-                                    toggleRandomQueue={toggleRandomQueue}
-                                    sliderValue={sliderValue}
-                                    sliderInput={sliderInput}
-                                    sliderChange={sliderChange}
-                                    setShowingEqualizer={setShowingEqualizer}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className=' h-full flex-shrink-0 w-full relative overflow-x-hidden'>
-                    <div className='relative grid max-w-full' style={{ gridTemplateRows: "2fr max-content 1fr max-content 60px 60px", height: 'calc(100% - 60px)' }}>
-
-
-                        <label></label>
-
-                        <div className='w-11/12 h-0 pb-[91.666667%] ml-auto mr-auto' onClick={(e) => { e.stopPropagation(); setShowingEqualizer((prevState) => !prevState) }}>
-
-                            <div className='z-10 relative w-full h-0 pb-[100%] mb-[-100%]'>
-                                {showingEqualizer ? (
-                                    <Equalizer bar_gap={0} bar_count={innerWidth > 768 ? 180 : 52} toggleCenter={false} centered={true} className='w-full h-full absolute' />
-                                ) : (
-                                    <></>
-                                )}
-                            </div>
-                            <Image
-                                priority="high"
-                                className={clsx('w-full rounded-xl', { 'opacity-70': showingEqualizer })}
-                                // className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-full w-auto md:w-auto max-w-none blur-sm opacity-60 brightness-50 select-none'
-                                alt="Current Song"
-                                sizes='100%'
-                                src={`https://api.music.rockhosting.org/api/song/image/${currentSong.id == "" ? ("_") : (currentSong.id)}`}
-                                width={0}
-                                height={0}
-                            />
-
-                        </div>
-
-                        <label></label>
-
-                        <div className='flex flex-col ml-4 mr-4 min-w-0'>
-                            <label className='text-2xl fade-out-neutral-200 font-bold'>{currentSong.title}</label>
-                            <label className='text-1xl fade-out-neutral-300 '>{currentSong.artist}</label>
-                        </div>
-
-                        <div
-                            className='grid relative gap-1 ml-2 mr-2 items-center justify-items-center scroll-'
-                            onTouchStart={(e) => { e.target.parentNode.parentNode.parentNode.parentNode.style.overflowX = 'hidden' }}
-                            onTouchEnd={(e) => { e.target.parentNode.parentNode.parentNode.parentNode.style.overflowX = '' }}
-                            style={{ gridTemplateColumns: '50px 1fr 50px' }}
-                        >
-                            <label className='text-neutral-300'>{getTime(currentTime)}</label>
-                            <Slider value={sliderValue} onInput={sliderInput} onChange={sliderChange}></Slider>
-                            <label className='text-neutral-300'>{getTime(audioDuration)}</label>
-                        </div>
-                        <div className='grid items-center justify-items-center ml-auto mr-auto gap-8' style={{ gridTemplateColumns: '30px max-content max-content max-content 30px' }}>
-                            <SVG
-                                className="select-none cursor-pointer transition-all"
-                                color='rgb(204 204 204)'
-                                src='https://api.music.rockhosting.org/images/download.svg'
-                                width={30}
-                                height={30}
-                                title="Download MP3"
-                                onClick={(e) => {e.stopPropagation(); handleDownloadMP3(currentSong) }}
-                            />
-                            <SVG alt="Previous" color='rgb(204 204 204)' className='cursor-pointer' src='https://api.music.rockhosting.org/images/previous.svg' width={40} height={40} onClick={(e) => { e.stopPropagation(); handlePrevious() }} />
-
-                            <div className='abg-[#9DE2B0] rounded-full'>
-                                {isPlaying ?
-                                    <SVG alt="Puase" color='rgb(204 204 204)' className='cursor-pointer' src='https://api.music.rockhosting.org/images/pause.svg' width={60} height={60} onClick={(e) => { e.stopPropagation(); handlePause() }} />
-                                    :
-                                    <SVG alt="Play" color='rgb(204 204 204)' className='icursor-pointer' src='https://api.music.rockhosting.org/images/play.svg' width={60} height={60} onClick={(e) => { e.stopPropagation(); handlePlay() }} />
-                                }
-                            </div>
-                            <SVG alt="Next" color='rgb(204 204 204)' className='cursor-pointer' src='https://api.music.rockhosting.org/images/next.svg' width={40} height={40} onClick={(e) => { e.stopPropagation(); handleNext() }} />
-                            <SVG
-                                className="select-none cursor-pointer transition-all"
-                                color={randomQueue ? `rgb(${getComputedStyle(document.body).getPropertyValue("--foreground-1")})` : 'rgb(204 204 204)'}
-                                src='https://api.music.rockhosting.org/images/random.svg'
-                                width={30}
-                                height={30}
-                                alt="Toggle random queue"
-                                onClick={toggleRandomQueue}
-                            />
-                        </div>
-                    </div>
-                </div>
-                <div className='h-full flex-shrink-0 w-full relative overflow-x-hidden'>
-                    <div className='absolute overflow-y-hidden h-full w-full z-10'>
-                        <div className='absolute top-16 bottom-0 w-full overflow-y-auto'>
-                            <Lyrics />
-                        </div>
-                        <div className='absolute h-[60px] left-3 right-3 bottom-3 overflow-hidden rounded-lg bg-[#525151b6]'>
-
-                            <SongInfoMenu
-                                toggleShowSongView={toggleShowSongView}
-                                songDataRef={songDataRef}
-                                showingEqualizer={showingEqualizer}
-                                handlePrevious={handlePrevious}
-                                handleNext={handleNext}
-                                handlePause={handlePause}
-                                handlePlay={handlePlay}
-                                toggleRandomQueue={toggleRandomQueue}
-                                sliderValue={sliderValue}
-                                sliderInput={sliderInput}
-                                sliderChange={sliderChange}
-                                setShowingEqualizer={setShowingEqualizer}
-                                />
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <SongInfoMenu
-                toggleShowSongView={toggleShowSongView}
-                songDataRef={songDataRef}
-                showingEqualizer={showingEqualizer}
-                handlePrevious={handlePrevious}
-                handleNext={handleNext}
-                handlePause={handlePause}
-                handlePlay={handlePlay}
-                toggleRandomQueue={toggleRandomQueue}
-                sliderValue={sliderValue}
-                sliderInput={sliderInput}
-                sliderChange={sliderChange}
-                setShowingEqualizer={setShowingEqualizer}
-                />
-        </>
-    )
-}
-
-
-function SongInfoMenu({
-    toggleShowSongView,
-    songDataRef,
-    showingEqualizer,
-    handlePrevious,
-    handleNext,
-    handlePause,
-    handlePlay,
-    toggleRandomQueue,
-    sliderValue,
-    sliderInput,
-    sliderChange,
-    setShowingEqualizer
-}) {
-
-    const {
-        audio,
-        getTime,
-        currentSong,
-        isPlaying,
-        currentTime,
-        audioDuration,
-        queue,
-        randomQueue,
-    } = useContext(MediaPlayerContext);
-
-    const innerWidth = useWindowWidth();
-
-
-
 
     return (
         <>

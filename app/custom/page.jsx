@@ -132,6 +132,18 @@ export default function Custom() {
         document.documentElement.style.setProperty('--foreground-2', foreground2.join(" "))
     }, [background1, background2, background3, foreground1, foreground2])
 
+    const handleCopy = useCallback(() => {
+        navigator.clipboard.writeText(
+            `
+            --background-1: ${background1.join(' ')};
+            --background-2: ${background2.join(' ')};
+            --background-3: ${background3.join(' ')};
+            --foreground-1: ${foreground1.join(' ')};
+            --foreground-2: ${foreground2.join(' ')};
+            `
+        )
+    }, [background1, background2, background3, foreground1, foreground2])
+   
     return (
         <>
             <GlobalStyles />
@@ -631,13 +643,19 @@ export default function Custom() {
                     />
                 </div>
             </div>
+
             <button className="relative block ml-auto mr-auto mt-4 mb-4 bg-neutral-800 p-3 pl-6 pr-6 rounded-lg text-green-300" onClick={handleApply}>Apply</button>
-            <div className="flex flex-col ml-auto mr-auto w-fit gap-1 mt-20 mb-4 bg-neutral-800 p-3 rounded-lg">
-                <label>--background-1: <label style={{ color: 'rgb(180, 133, 137)' }}>{background1.join(' ')}</label>;</label>
-                <label>--background-2: <label style={{ color: 'rgb(180, 133, 137)' }}>{background2.join(' ')}</label>;</label>
-                <label>--background-3: <label style={{ color: 'rgb(180, 133, 137)' }}>{background3.join(' ')}</label>;</label>
-                <label>--foreground-1: <label style={{ color: 'rgb(180, 133, 137)' }}>{foreground1.join(' ')}</label>;</label>
-                <label>--foreground-2: <label style={{ color: 'rgb(180, 133, 137)' }}>{foreground2.join(' ')}</label>;</label>
+
+            <div className="flex flex-col ml-auto mr-auto w-fit gap-1 mt-20 mb-4 pb-2 bg-neutral-800 rounded-lg">
+                <div className="relative bg-neutral-700 rounded-t-lg pt-1 pb-1">
+                    <label className="ml-3 text-sm">CSS</label>
+                    <button className="absolute top-[5px] right-3 text-sm" onClick={handleCopy}>Copy</button>
+                </div>
+                <label className="ml-3 mr-3">--background-1: <label style={{ color: 'rgb(180, 133, 137)' }}>{background1.join(' ')}</label>;</label>
+                <label className="ml-3 mr-3">--background-2: <label style={{ color: 'rgb(180, 133, 137)' }}>{background2.join(' ')}</label>;</label>
+                <label className="ml-3 mr-3">--background-3: <label style={{ color: 'rgb(180, 133, 137)' }}>{background3.join(' ')}</label>;</label>
+                <label className="ml-3 mr-3">--foreground-1: <label style={{ color: 'rgb(180, 133, 137)' }}>{foreground1.join(' ')}</label>;</label>
+                <label className="ml-3 mr-3">--foreground-2: <label style={{ color: 'rgb(180, 133, 137)' }}>{foreground2.join(' ')}</label>;</label>
             </div>
         </>
     )

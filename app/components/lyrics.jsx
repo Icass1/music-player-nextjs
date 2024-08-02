@@ -111,7 +111,6 @@ export default function Lyrics() {
                             lyricsOut.segments.push(newSegment)
 
                         }
-                        console.log(lyricsOut)
                     }
                     setDynamicLyrics(data.has_dynamic_lyrics)
                     if (lyricsOut) {
@@ -161,7 +160,7 @@ export default function Lyrics() {
         element.parentNode.addEventListener("scroll", handleScroll)
 
         return () => {
-            element.parentNode.removeEventListener("scroll", handleScroll)
+            element?.parentNode?.removeEventListener("scroll", handleScroll)
         }
 
     }, [mainRef])

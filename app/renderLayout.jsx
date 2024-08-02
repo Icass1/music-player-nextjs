@@ -82,7 +82,11 @@ export default function RenderLayout({ children }) {
             </main>
 
             <div id='lyrics' className={clsx("overflow-y-auto scroll-smooth overflow-x-hidden hidden md:block bg-2 rounded-md", { "md:hidden": !showLyrics })} style={{ gridArea: 'lyrics' }}>
-                <Lyrics />
+                {showLyrics ?
+                    <Lyrics />
+                    :
+                    <></>
+                }
             </div>
         </div>
     )

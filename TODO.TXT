@@ -1,15 +1,9 @@
+
+
 Add videoclip with youtube url
-
-DONE - Add queue view in phone
-DONE - Add lyrics in desktop
-DONE - Add lyrics in phone
-
-DONE - When song ends save info of time played in database
 
 When song is added to queue, the list where it comes from is stored to set currentlist
 
-DONE - When there is only one genere, it should be 'Genre | Album Rock' instead of 'Genres | Album Rock'
-DONE - Store volume in database
 Store home view index in database
 
 URGENT - Limit to one download at a time and only for users.
@@ -18,13 +12,37 @@ Change icons of home view.
 
 CHECK - The Boys Of Summer in All Out 80s
 
-DONE - When search in list view, scroll to top
+IN PROGRESS, TO CHECK - Cache next song
 
 Create and rename lists
 
-Cache next song
+If nn mobile and song view is open, if click in header, it should closes
 
-DONE - Remove user circles in mobile and add proper user menu
+Drop Spotify link anywhere and add list to library
+    Add status column to song in database
+        Downloading, Downloaded, Not MP3 file available, ...
+
+TO CHECK - Fix onplayend when playing list from search
+
+Make volume cuadratic
+
+Song page
+    Title 
+    Artist
+    Album
+    Song cover
+    Lyrics
+
+Artist page
+    Show albums This Is Supertramp cover style
+    Random songs
+
+Genre list
+    Default list with songs in database of that genre
+
+Home
+    Show genres list with all the songs in database of one genre
+Maybe create library with user stuff
 
 Make usable when not logged in
     Table of list
@@ -43,22 +61,6 @@ Make usable when not logged in
         Lyrics
         Duration
 
-Drop Spotify link anywhere and add list to library
-
-DONE - Add list to database when all songs are downloaded
-
-In mobile and song view is open, if click in header, it should closes
-
-TO CHECK - Fix onplayend when playing list from search
-
-Make volume cuadratic
-
-DONE - In dynamic lyrics, move to the next line in every comma
-
-DONE,FAILED - In home view, slight background color of the cover image and shadow
-
-DONE - rgb(98 141 154), #77ADDE, (222, 107, 72), #9DE2B0
-
 Add admin panel
     Users view
     Downloads view
@@ -73,18 +75,23 @@ Add user view
         DONE - Album
         DONE - Artist
         DONE - Times played
+        Add play button
     DONE - Show most listened album
         DONE - Cover
         DONE - Title
         DONE - Artist
         DONE - Times played
+        Add link to album
     DONE - Show most listened artist
         DONE - Artist
         DONE - Times played
+        Add link to artist page
     DONE - Show most listened genre
         DONE - Genre
         DONE - Times played
-    Equalizer 
+        Add link to genre list
+    Equalizer
+    Add customize link
 
 Song options
     DONE - Play
@@ -93,10 +100,6 @@ Song options
     DONE - Add to queue
     DONE - Copy ID
     If song is in queue, move song to next position option
-
-Home
-    Show genres list with all the songs in database of one genre
-Maybe create library with user stuff
 
 List view
     DONE - Add total duration to list view 
@@ -121,3 +124,16 @@ DONE - User database
     DONE - volume
     DONE - admin
     DONE - super_admin
+
+DONE - Add queue view in phone
+DONE - Add lyrics in desktop
+DONE - Add lyrics in phone
+DONE - When song ends save info of time played in database
+DONE - When there is only one genere, it should be 'Genre | Album Rock' instead of 'Genres | Album Rock'
+DONE - Store volume in database
+DONE - When search in list view, scroll to top
+DONE - Remove user circles in mobile and add proper user menu
+DONE - Add list to database when all songs are downloaded
+DONE - In dynamic lyrics, move to the next line in every comma
+DONE,FAILED - In home view, slight background color of the cover image and shadow
+DONE - rgb(98 141 154), #77ADDE, (222, 107, 72), #9DE2B0

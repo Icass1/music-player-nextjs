@@ -26,12 +26,15 @@ TO CHECK - Fix onplayend when playing list from search
 
 Make volume cuadratic
 
-Song page
-    Title 
-    Artist
-    Album
-    Song cover
-    Lyrics
+DONE - Song page
+    DONE - Title 
+    DONE - Artist
+    DONE - Album
+    DONE - Song cover
+    DONE - Duration
+    DONE - Genre
+    DONE - Copyright
+    DONE - Lyrics
 
 Artist page
     Show albums This Is Supertramp cover style
@@ -76,20 +79,28 @@ Add user view
         DONE - Artist
         DONE - Times played
         Add play button
+        Add show more button
+            Show more song in order of most played
     DONE - Show most listened album
         DONE - Cover
         DONE - Title
         DONE - Artist
         DONE - Times played
         Add link to album
+        Add show more button
+            Show more album in order of most played
     DONE - Show most listened artist
         DONE - Artist
         DONE - Times played
         Add link to artist page
+        Add show more button
+            Show more artists in order of most played
     DONE - Show most listened genre
         DONE - Genre
         DONE - Times played
         Add link to genre list
+        Add show more button
+            Show more genres in order of most played
     Equalizer
     Add customize link
 
@@ -100,6 +111,7 @@ Song options
     DONE - Add to queue
     DONE - Copy ID
     If song is in queue, move song to next position option
+    Share link to song page
 
 List view
     DONE - Add total duration to list view 

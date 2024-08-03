@@ -3,6 +3,7 @@
 import { MediaPlayerContext } from "@/app/components/audioContext";
 import Lyrics from "@/app/components/lyrics";
 import useColors from "@/app/hooks/getColors";
+import { apiFetch } from "@/app/utils/apiFetch";
 import SVG from "@/app/utils/renderSVG";
 import { Link } from "next-view-transitions";
 import Image from "next/image";

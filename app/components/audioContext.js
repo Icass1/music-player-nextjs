@@ -102,7 +102,7 @@ const AudioProvider = ({ children }) => {
 
             if (session.data.user.current_song) {
 
-                fetch(`https://api.music.rockhosting.org/api/song/info/${session.data.user.current_song}`).
+                apiFetch(`/api/song/info/${session.data.user.current_song}`).
                     then(response => response.json()).
                     then(data => {
                         setCurrentSong(data);
@@ -214,7 +214,7 @@ const AudioProvider = ({ children }) => {
         const signal = controller.signal
 
         console.log("Caching", song.title, "-", song.artist, song.id)
-        fetch(`https://api.music.rockhosting.org/api/song/${song.id}`, { signal: signal }).then(data => data.blob()).then(blob => {
+        apiFetch(`/api/song/${song.id}`, { signal: signal }).then(data => data.blob()).then(blob => {
             console.log("Cached")
             console.log(blob)
             audioCacheRef.current = { id: song.id, blob: blob }

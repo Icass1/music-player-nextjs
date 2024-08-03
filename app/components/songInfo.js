@@ -12,9 +12,10 @@ import useWindowWidth from '../hooks/useWindowWidth';
 import SVG from '../utils/renderSVG';
 import Queue from './queue';
 import useColors from '../hooks/getColors';
+import { apiFetch } from '../utils/apiFetch';
 
 const handleDownloadMP3 = (song) => {
-    fetch(`https://api.music.rockhosting.org/api/song/${song.id}`)
+    apiFetch(`/api/song/${song.id}`)
         .then(response => response.blob())
         .then(blob => {
             let url = window.URL.createObjectURL(blob);

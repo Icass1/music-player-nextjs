@@ -3,6 +3,7 @@ import { MediaPlayerContext } from "./audioContext";
 import clsx from "clsx";
 import { debounce } from "lodash";
 import classNames from "classnames";
+import { apiFetch } from "../utils/apiFetch";
 
 
 function DynamicLyrics({ lyrics, fontSize }) {
@@ -75,7 +76,7 @@ export default function Lyrics({ songID, fontSize, lineClassName }) {
         }
 
         if (!songID || currentSong.id == songID) {
-            fetch(`https://api.music.rockhosting.org/api/song/lyrics/${currentSong.id}`).then(response => {
+            apiFetch(`/api/song/lyrics/${currentSong.id}`).then(response => {
                 if (response.status == 200) {
                     response.json().then(data => {
 
@@ -126,7 +127,7 @@ export default function Lyrics({ songID, fontSize, lineClassName }) {
                 }
             })
         } else {
-            fetch(`https://api.music.rockhosting.org/api/song/normal-lyrics/${songID}`).then(response => {
+            apiFetch(`/api/song/normal-lyrics/${songID}`).then(response => {
 
                 if (response.status == 200) {
                     response.text().then(data => {

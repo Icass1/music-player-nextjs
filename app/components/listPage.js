@@ -146,7 +146,7 @@ export default function DefaultListPage({ listId, musicData }) {
 
     useEffect(() => {
         if (session.status != "authenticated") { return }
-        apiFetch(`https://api.music.rockhosting.org/api/user/get-lists`, session).then(response => response.json()).then(data => {
+        apiFetch(`/api/user/get-lists`, session).then(response => response.json()).then(data => {
             setUserLists(data.map(list => list.id))
         })
     }, [session])
@@ -236,7 +236,7 @@ export default function DefaultListPage({ listId, musicData }) {
             if (session.status == "authenticated") {
                 console.log("ADD list")
                 // apiFetch(`http://12.12.12.3:8000/api/add-list`, session, {
-                apiFetch(`https://api.music.rockhosting.org/api/add-list`, session, {
+                apiFetch(`/api/add-list`, session, {
                     method: "POST",
                     body: JSON.stringify({ url: musicData.spotify_url })
                 }).then(response => response.json()).then(data => {
@@ -412,7 +412,7 @@ export default function DefaultListPage({ listId, musicData }) {
     }, 300);
 
     const handleAddListToLibrary = () => {
-        apiFetch(`https://api.music.rockhosting.org/api/user/add-list`, session, { method: "POST", body: JSON.stringify({ list_id: musicData.id }) }).then(response => response.json()).then(data => {
+        apiFetch(`/api/user/add-list`, session, { method: "POST", body: JSON.stringify({ list_id: musicData.id }) }).then(response => response.json()).then(data => {
             setUserLists(data.map(list => list.id))
             console.log(data.map(list => list.id))
         })

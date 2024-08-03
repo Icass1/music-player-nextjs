@@ -22,7 +22,7 @@ export default function User() {
     useEffect(() => {
         if (session?.status != "authenticated") { return }
 
-        apiFetch(`https://api.music.rockhosting.org/api/user/get-last-played`, session).then(response => response.json()).then(data => {
+        apiFetch(`/api/user/get-last-played`, session).then(response => response.json()).then(data => {
             data.reverse()
 
             let out = {}

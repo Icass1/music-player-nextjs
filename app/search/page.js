@@ -28,7 +28,7 @@ export default function Search({ searchResults, handleSearch }) {
             return;
         }
 
-        fetch(`https://api.music.rockhosting.org/api/song/info/${id}`).
+        apiFetch(`/api/song/info/${id}`).
             then(response => response.json()).
             then(data => {
                 setQueue([data]);
@@ -55,7 +55,7 @@ export default function Search({ searchResults, handleSearch }) {
 
     useEffect(() => {
 
-        fetch(`https://api.music.rockhosting.org/api/lists`).
+        apiFetch(`/api/lists`).
             then(response => response.json()).
             then(data => {
 
@@ -190,7 +190,7 @@ function ResultContextMenu({ children, list }) {
                 "Copy Spotify ID": () => { navigator.clipboard.writeText(list.id) },
             } : {
                 "Download": () => { },
-                "Add to library": () => { apiFetch(`https://api.music.rockhosting.org/api/user/add-list`, session, { method: "POST", body: JSON.stringify({ list_id: list.database_id }) }) },
+                "Add to library": () => { apiFetch(`/api/user/add-list`, session, { method: "POST", body: JSON.stringify({ list_id: list.database_id }) }) },
                 "Add to queue": () => { },
                 "Copy ID": () => { navigator.clipboard.writeText(list.database_id) },
             }}

@@ -7,6 +7,7 @@ import Lyrics from "./components/lyrics";
 import Search from "./search/page";
 import { MediaPlayerContext } from "./components/audioContext";
 import clsx from "clsx";
+import { apiFetch } from "./utils/apiFetch";
 
 export default function RenderLayout({ children }) {
 
@@ -28,7 +29,7 @@ export default function RenderLayout({ children }) {
         console.log("b")
 
         try {
-            const response = await fetch(`https://api.music.rockhosting.org/api/search?q=${query}`);
+            const response = await apiFetch(`/api/search?q=${query}`);
             const data = await response.json();
             setSearchResults(data);
         } catch (error) {
@@ -50,7 +51,7 @@ export default function RenderLayout({ children }) {
     //     console.log("b")
 
     //     try {
-    //         const response = await fetch(`https://api.music.rockhosting.org/api/search?q=${query}`);
+    //         const response = await apiFetch(`/api/search?q=${query}`);
     //         const data = await response.json();
     //         setSearchResults(data);
     //     } catch (error) {

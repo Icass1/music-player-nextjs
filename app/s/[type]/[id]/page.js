@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useContext } from 'react';
 import DefaultListPage from '@/app/components/listPage';
+import { apiFetch } from './apiFetch';
 
 export default function SearchListPage({ params }) {
 
@@ -16,7 +17,7 @@ export default function SearchListPage({ params }) {
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await fetch(`https://api.music.rockhosting.org/api/s/${params.type}/${params.id}`);
+            const response = await apiFetch(`/api/s/${params.type}/${params.id}`);
             // const response = await fetch(`http://12.12.12.3:8000/api/s/${params.type}/${params.id}`);
             if (!response.ok) {
                 throw new Error('Network response was not ok');

@@ -12,6 +12,7 @@ import { useRouter } from "next/router";
 import useWindowWidth from "../hooks/useWindowWidth";
 import SVG from "../utils/renderSVG";
 import useColors from "../hooks/getColors";
+import { apiFetch } from "../utils/apiFetch";
 
 export function Song({ type, musicData, checkMusicData, index, song, listId }) {
 
@@ -58,7 +59,7 @@ export function Song({ type, musicData, checkMusicData, index, song, listId }) {
     };
 
     const handleDownloadMP3 = () => {
-        fetch(`https://api.music.rockhosting.org/api/song/${song.id}`)
+        apiFetch(`/api/song/${song.id}`)
             .then(response => response.blob())
             .then(blob => {
                 let url = window.URL.createObjectURL(blob);

@@ -1,4 +1,5 @@
 import { openDB } from 'idb';
+import { apiFetch } from './apiFetch';
 
 const DB_NAME = 'musicDB';
 const DB_VERSION = 1;
@@ -17,7 +18,7 @@ const initDB = async () => {
 // export function addList(id) {
 
 //     const db = await initDB();
-//     fetch(`https://api.music.rockhosting.org/api/list/${id}`).then(data => data.json()).then(data => {
+//     apiFetch(`/api/list/${id}`).then(data => data.json()).then(data => {
 //         console.log(data)
 //         initDB().then(db => {
 //             db.put(LIST_TABLE, { "tsert": "asfd" }, "Key 1")
@@ -30,7 +31,7 @@ const initDB = async () => {
 
 export const addList = async (id) => {
     const db = await initDB();
-    const response = await fetch(`https://api.music.rockhosting.org/api/list/${id}`)
+    const response = await apiFetch(`/api/list/${id}`)
     const data = await response.json()
     await db.put(LIST_TABLE, { name: "ASDF", fileBlob: "a" }, "B");
     console.log("PUT")

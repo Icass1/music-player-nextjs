@@ -4,7 +4,6 @@ import { MediaPlayerContext } from "@/app/components/audioContext";
 import Lyrics from "@/app/components/lyrics";
 import useColors from "@/app/hooks/getColors";
 import SVG from "@/app/utils/renderSVG";
-import clsx from "clsx";
 import { Link } from "next-view-transitions";
 import Image from "next/image";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
@@ -31,7 +30,7 @@ export default function SongPage({ params }) {
     const lyricsRef = useRef();
 
     useEffect(() => {
-        fetch(`https://api.music.rockhosting.org/api/song/info/${params.id}`).then(data => data.json()).then(data => {
+        apiFetch(`/api/song/info/${params.id}`).then(data => data.json()).then(data => {
             setSongInfo(data)
             console.log(data)
         })

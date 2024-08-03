@@ -31,7 +31,7 @@ export default function Home() {
     useEffect(() => {
         if (session?.status != "authenticated") { return }
 
-        apiFetch(`https://api.music.rockhosting.org/api/user/get-lists`, session).then(response => {
+        apiFetch(`/api/user/get-lists`, session).then(response => {
 
             if (response.status !== 200) {
                 setMusicData({ status: response.status })
@@ -185,7 +185,7 @@ function AddContextMenu({ children, item, setDownloadProgress, setMusicData }) {
 
     const handlePlayList = (id) => {
 
-        fetch(`https://api.music.rockhosting.org/api/list/${id}`)
+        apiFetch(`/api/list/${id}`)
             .then(response => response.text())
             .then(data => JSON.parse(data))
             .then(musicData => {
@@ -212,7 +212,7 @@ function AddContextMenu({ children, item, setDownloadProgress, setMusicData }) {
         setDownloadingID(id)
     }
     const handleAddListToQueue = (id) => {
-        fetch(`https://api.music.rockhosting.org/api/list/${id}`)
+        apiFetch(`/api/list/${id}`)
             .then(response => response.text())
             .then(data => JSON.parse(data))
             .then(musicData => {
@@ -235,7 +235,7 @@ function AddContextMenu({ children, item, setDownloadProgress, setMusicData }) {
     }
 
     const handleAddListToBottomQueue = (id) => {
-        fetch(`https://api.music.rockhosting.org/api/list/${id}`)
+        apiFetch(`/api/list/${id}`)
             .then(response => response.text())
             .then(data => JSON.parse(data))
             .then(musicData => {
@@ -254,7 +254,7 @@ function AddContextMenu({ children, item, setDownloadProgress, setMusicData }) {
     }
 
     const handleRemoveList = (id) => {
-        apiFetch(`https://api.music.rockhosting.org/api/user/remove-list`, session, { method: "POST", body: JSON.stringify({ list_id: id }) }).then(response => response.json()).then(data => {
+        apiFetch(`/api/user/remove-list`, session, { method: "POST", body: JSON.stringify({ list_id: id }) }).then(response => response.json()).then(data => {
             setMusicData(data);
         })
     }

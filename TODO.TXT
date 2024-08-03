@@ -8,15 +8,13 @@ Store home view index in database
 
 URGENT - Limit to one download at a time and only for users.
 
-Change icons of home view.
-
 CHECK - The Boys Of Summer in All Out 80s
 
 IN PROGRESS, TO CHECK - Cache next song
 
 Create and rename lists
 
-If nn mobile and song view is open, if click in header, it should closes
+If in mobile and song view is open, if click in header, it should closes
 
 Drop Spotify link anywhere and add list to library
     Add status column to song in database
@@ -25,16 +23,6 @@ Drop Spotify link anywhere and add list to library
 TO CHECK - Fix onplayend when playing list from search
 
 Make volume cuadratic
-
-DONE - Song page
-    DONE - Title 
-    DONE - Artist
-    DONE - Album
-    DONE - Song cover
-    DONE - Duration
-    DONE - Genre
-    DONE - Copyright
-    DONE - Lyrics
 
 Artist page
     Show albums This Is Supertramp cover style
@@ -120,6 +108,16 @@ List view
     DONE - On mobile, remove genre and album from playlist song container
     Download and search button should move when lyrics are shown
 
+DONE - Song page
+    DONE - Title 
+    DONE - Artist
+    DONE - Album
+    DONE - Song cover
+    DONE - Duration
+    DONE - Genre
+    DONE - Copyright
+    DONE - Lyrics
+
 DONE - User database
     DONE - id  
     DONE - username
@@ -138,6 +136,7 @@ DONE - User database
     DONE - super_admin
 
 DONE - Add queue view in phone
+DONE - Change icons of home view.
 DONE - Add lyrics in desktop
 DONE - Add lyrics in phone
 DONE - When song ends save info of time played in database

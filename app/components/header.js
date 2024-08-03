@@ -110,12 +110,24 @@ export default function Header({ handleSearch }) {
 
     useEffect(() => {
 
-        if (homeView.view == 0) {
-            setHomeViewIndicatorImagePath('https://api.music.rockhosting.org/images/listWithName.svg')
-        } else if (homeView.view == 1) {
-            setHomeViewIndicatorImagePath('https://api.music.rockhosting.org/images/grid.svg')
-        }
+        // if (homeView.view == 0) {
+        //     // setHomeViewIndicatorImagePath('https://api.music.rockhosting.org/images/listWithTitle.svg')
+        //     setHomeViewIndicatorImagePath('https://api.music.rockhosting.org/images/list.svg')
+        // } else if (homeView.view == 1) {
+        //     setHomeViewIndicatorImagePath('https://api.music.rockhosting.org/images/listWithTitle.svg')
+        // }
 
+        switch (homeView?.view) {
+            case 0:
+                setHomeViewIndicatorImagePath('https://api.music.rockhosting.org/images/list.svg')
+                return
+            case 1:
+                setHomeViewIndicatorImagePath('https://api.music.rockhosting.org/images/listWithTitle.svg')
+                return
+            case 2:
+                setHomeViewIndicatorImagePath('https://api.music.rockhosting.org/images/grid.svg')
+                return
+        }
     }, [homeView])
 
     useEffect(() => {
@@ -178,15 +190,7 @@ export default function Header({ handleSearch }) {
                 alt="Toggle lyrics"
                 onClick={toggleShowLyrics}
             />
-            {/* <Image
-                className="md:block invert-[0.6] select-none hover:invert-[0.7] cursor-pointer transition-all"
-                style={{ filter: randomQueue ? ('brightness(0) saturate(100%) invert(44%) sepia(91%) saturate(474%) hue-rotate(3deg) brightness(105%) contrast(97%)') : ('') }}
-                src='https://api.music.rockhosting.org/images/random.svg'
-                width={30}
-                height={30}
-                alt="Toggle random queue"
-                onClick={toggleRandomQueue}
-            /> */}
+
 
             <div className="hidden md:block relative h-[30px] w-[30px]">
                 <Image

@@ -39,7 +39,7 @@ const AudioProvider = ({ children }) => {
     const innerWidth = useWindowWidth()
 
     const [socket, setSocket] = useState(null);
-    const [homeView, setHomeView] = useState({ view: 0, numberOfViews: 2 });
+    const [homeView, setHomeView] = useState({ view: 0, numberOfViews: 3 });
 
     const audioCacheRef = useRef();
 

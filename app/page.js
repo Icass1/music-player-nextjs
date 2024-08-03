@@ -60,11 +60,13 @@ export default function Home() {
     const renderView = (homeView) => {
         switch (homeView?.view) {
             case 0:
-                return <GridLayout musicData={musicData} setMusicData={setMusicData} ></GridLayout>
+                return <ListLayout musicData={musicData} setMusicData={setMusicData} ></ListLayout>
             case 1:
                 return <ListWithNameLayout musicData={musicData} setMusicData={setMusicData}></ListWithNameLayout>
+            case 2:
+                return <GridLayout musicData={musicData} setMusicData={setMusicData}></GridLayout>
             default:
-                return <GridLayout musicData={musicData} setMusicData={setMusicData} ></GridLayout>
+                return <ListLayout musicData={musicData} setMusicData={setMusicData} ></ListLayout>
         }
     };
 
@@ -198,8 +200,6 @@ function AddContextMenu({ children, item, setDownloadProgress, setMusicData }) {
                     _list.sort(() => Math.random() - 0.5);
                 }
 
-                // audio.src = `https://api.music.rockhosting.org/api/song/${_list[0].id}`;
-
                 setQueue(_list);
                 setQueueIndex(0);
                 setCurrentSong(_list[0]);
@@ -274,7 +274,57 @@ function AddContextMenu({ children, item, setDownloadProgress, setMusicData }) {
     )
 }
 
+function GridLayout({ musicData, setMusicData }) {
+
+    return (
+        <div className='grid gap-2 p-2' style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
+            {musicData.map((item) => (
+                <GridContainer key={item.id} item={item} setMusicData={setMusicData} />
+            ))}
+        </div>
+    )
+}
+
 function GridContainer({ item, setMusicData }) {
+    const [downloadProgress, setDownloadProgress] = useState(0);
+    const { currentList } = useContext(MediaPlayerContext);
+
+
+    return (
+        <AddContextMenu item={item} setMusicData={setMusicData} setDownloadProgress={setDownloadProgress}>
+            <Link
+                href={`/list/${item.id}`}
+                className={`rounded-lg md:bg-3 md:hover:brightness-110 transition-all md:shadow-lg`}
+            >
+                <Image
+                    src={`https://api.music.rockhosting.org/api/list/image/${item.id}_300x300`}
+                    width={0}
+                    height={0}
+                    sizes="100vw"
+                    className='rounded-lg w-11/12 h-auto max-w-96 ml-auto mr-auto mt-2'
+                    alt={item.name}
+                />
+                <div className='flex flex-col mt-3 mb-3'>
+                    <label className={clsx('ml-3 mr-3 text-xl fade-out-neutral-200 font-bold cursor-pointer overflow-y-hidden min-w-0 max-w-full', { 'fade-out-fg-1': item.id == currentList })}>{item.name}</label>
+                    <label className={clsx('ml-3 mr-3 text-lg fade-out-neutral-200 cursor-pointer min-w-0 max-w-full', { 'fade-out-fg-2': item.id == currentList })}>{item.author}</label>
+                </div>
+            </Link>
+        </AddContextMenu>
+    )
+}
+
+function ListLayout({ musicData, setMusicData }) {
+
+    return (
+        <div className='grid gap-2 p-2' style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))' }}>
+            {musicData.map((item) => (
+                <ListContainer key={item.id} item={item} setMusicData={setMusicData} />
+            ))}
+        </div>
+    )
+}
+
+function ListContainer({ item, setMusicData }) {
     const [downloadProgress, setDownloadProgress] = useState(0);
     const { currentList } = useContext(MediaPlayerContext);
 
@@ -301,17 +351,6 @@ function GridContainer({ item, setMusicData }) {
                 </div>
             </Link>
         </AddContextMenu>
-    )
-}
-
-function GridLayout({ musicData, setMusicData }) {
-
-    return (
-        <div className='grid gap-2 p-2' style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))' }}>
-            {musicData.map((item) => (
-                <GridContainer key={item.id} item={item} setMusicData={setMusicData} />
-            ))}
-        </div>
     )
 }
 

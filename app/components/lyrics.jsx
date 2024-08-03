@@ -2,14 +2,15 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { MediaPlayerContext } from "./audioContext";
 import clsx from "clsx";
 import { debounce } from "lodash";
+import classNames from "classnames";
 
 
-function DynamicLyrics(lyrics) {
+function DynamicLyrics({ lyrics, fontSize }) {
     const {
         currentTime,
     } = useContext(MediaPlayerContext);
 
-    if (!lyrics.lyrics) {
+    if (!lyrics) {
         return (
             <div className="text-center top-1/2 relative h-full font-bold text-xl">
                 Loading lyrics...
@@ -18,10 +19,10 @@ function DynamicLyrics(lyrics) {
     }
     return (
         <>
-            {lyrics.lyrics.segments.map((line, index) =>
+            {lyrics.segments.map((line, index) =>
                 <div key={"line" + index} id={"segment-id-" + line.id} className="w-fit ml-auto mr-auto">
                     {line.words.map((word, index) =>
-                        <label key={"word" + index} className={clsx("text-center ml-1", { 'text-neutral-100': word.start < currentTime, 'text-neutral-500': word.start > currentTime })}>{word.text}</label>
+                        <label key={"word" + index} style={{ fontSize: fontSize }} className={clsx("text-center ml-1", { 'text-fg-2': word.start < currentTime, 'text-neutral-500': word.start > currentTime })}>{word.text}</label>
                     )}
                 </div>
             )}
@@ -29,14 +30,14 @@ function DynamicLyrics(lyrics) {
     )
 }
 
-function NormalLyrics(lyrics) {
-    if (lyrics.lyrics == '') {
+function NormalLyrics({ lyrics, fontSize, lineClassName }) {
+    if (lyrics == '') {
         return (
             <div className="text-center top-1/2 relative h-full font-bold text-xl">
                 No lyrics found
             </div>
         )
-    } else if (!lyrics.lyrics) {
+    } else if (!lyrics) {
         return (
             <div className="text-center top-1/2 relative h-full font-bold text-xl">
                 Loading lyrics...
@@ -45,17 +46,17 @@ function NormalLyrics(lyrics) {
     }
     return (
         <>
-            {lyrics.lyrics.split("\n").map((line, index) =>
+            {lyrics.split("\n").map((line, index) =>
                 line == "" ?
                     <div key={index} className="min-h-4"></div>
                     :
-                    <label key={index} className="text-center text-neutral-200">{line}</label>
+                    <label key={index} style={{ fontSize: fontSize }} className={classNames("text-center text-neutral-200", lineClassName)}>{line}</label>
             )}
         </>
     )
 }
 
-export default function Lyrics() {
+export default function Lyrics({ songID, fontSize, lineClassName }) {
 
     const {
         currentSong,
@@ -73,59 +74,75 @@ export default function Lyrics() {
             return
         }
 
-        fetch(`https://api.music.rockhosting.org/api/song/lyrics/${currentSong.id}`).then(response => {
-            if (response.status == 200) {
-                response.json().then(data => {
+        if (!songID || currentSong.id == songID) {
+            fetch(`https://api.music.rockhosting.org/api/song/lyrics/${currentSong.id}`).then(response => {
+                if (response.status == 200) {
+                    response.json().then(data => {
 
-                    let lyricsOut;
+                        let lyricsOut;
 
-                    if (data.has_dynamic_lyrics && data.lyrics) {
-                        lyricsOut = { segments: [] }
-                        let segmentIndex = 0
+                        if (data.has_dynamic_lyrics && data.lyrics) {
+                            lyricsOut = { segments: [] }
+                            let segmentIndex = 0
 
+                            for (let segment of data.lyrics.segments) {
 
-                        for (let segment of data.lyrics.segments) {
+                                let newSegment = { id: segmentIndex, words: [] }
+                                segmentIndex++;
 
-                            let newSegment = { id: segmentIndex, words: [] }
-                            segmentIndex++;
+                                for (let word of segment.words) {
 
-                            for (let word of segment.words) {
+                                    if (word.text.includes(",")) {
+                                        word.text = word.text.replace(",", "")
+                                        newSegment.words.push(word)
+                                        newSegment.end = word.end
+                                        lyricsOut.segments.push(newSegment)
 
-                                if (word.text.includes(",")) {
-                                    word.text = word.text.replace(",", "")
-                                    newSegment.words.push(word)
-                                    newSegment.end = word.end
-                                    lyricsOut.segments.push(newSegment)
-
-                                    newSegment = { id: segmentIndex, words: [] }
-                                    segmentIndex++;
-                                } else {
-                                    if (newSegment.words.length == 0) {
-                                        newSegment.start = word.start
-                                        word.text = word.text[0].toUpperCase() + word.text.slice(1,)
+                                        newSegment = { id: segmentIndex, words: [] }
+                                        segmentIndex++;
+                                    } else {
+                                        if (newSegment.words.length == 0) {
+                                            newSegment.start = word.start
+                                            word.text = word.text[0].toUpperCase() + word.text.slice(1,)
+                                        }
+                                        newSegment.words.push(word)
                                     }
-                                    newSegment.words.push(word)
                                 }
+                                newSegment.end = segment.end
+                                lyricsOut.segments.push(newSegment)
+
                             }
-                            newSegment.end = segment.end
-                            lyricsOut.segments.push(newSegment)
-
                         }
-                    }
-                    setDynamicLyrics(data.has_dynamic_lyrics)
-                    if (lyricsOut) {
-                        setLyrics(lyricsOut)
-                    } else {
-                        setLyrics(data.lyrics)
-                    }
-                })
-            } else {
-                setDynamicLyrics(false)
-                setLyrics('')
-            }
-        })
+                        setDynamicLyrics(data.has_dynamic_lyrics)
+                        if (lyricsOut) {
+                            setLyrics(lyricsOut)
+                        } else {
+                            setLyrics(data.lyrics)
+                        }
+                    })
+                } else {
+                    setDynamicLyrics(false)
+                    setLyrics('')
+                }
+            })
+        } else {
+            fetch(`https://api.music.rockhosting.org/api/song/normal-lyrics/${songID}`).then(response => {
 
-    }, [currentSong])
+                if (response.status == 200) {
+                    response.text().then(data => {
+                        console.log(data)
+                        setDynamicLyrics(false)
+                        setLyrics(data)
+                    })
+                } else {
+                    setDynamicLyrics(false)
+                    setLyrics('')
+                }
+            })
+        }
+
+
+    }, [currentSong, songID])
 
     useEffect(() => {
         if (!dynamicLyrics) { return }
@@ -168,7 +185,7 @@ export default function Lyrics() {
     return (
         <div ref={mainRef} className="flex flex-col h-full text-lg">
             <div className="min-h-6 list-item"></div>
-            {dynamicLyrics ? <DynamicLyrics lyrics={lyrics} /> : <NormalLyrics lyrics={lyrics} />}
+            {dynamicLyrics ? <DynamicLyrics lyrics={lyrics} fontSize={fontSize} /> : <NormalLyrics lyrics={lyrics} fontSize={fontSize} lineClassName={lineClassName}/>}
             <div className="min-h-20 list-item"></div>
         </div>
     )

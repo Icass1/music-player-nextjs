@@ -39,7 +39,7 @@ const AudioProvider = ({ children }) => {
     const innerWidth = useWindowWidth()
 
     const [socket, setSocket] = useState(null);
-    const [homeView, setHomeView] = useState({ view: 0, numberOfViews: 3 });
+    const [homeView, setHomeView] = useState({ view: null, numberOfViews: 3 });
 
     const audioCacheRef = useRef();
 
@@ -54,23 +54,23 @@ const AudioProvider = ({ children }) => {
             audio.volume = 1
             setAudioVolume(1)
         }
-
     }, [innerWidth, audio])
 
     useEffect(() => {
 
         if (session.status !== "authenticated") { return }
 
-        let newSocket = io('https://api.music.rockhosting.org');
+        // let newSocket = io('https://api.music.rockhosting.org');
+        let newSocket = io('http://12.12.12.3:8000');
 
         newSocket.on('connect', () => {
-            // console.log('Connected to server');
+            console.log('Connected to server');
             newSocket?.emit('register', { id: session.data.user.id });  // Send the client ID to the server
         });
 
         newSocket.on('disconnect', () => {
-            // console.log('Disconnected from server');
-            // console.log('Reconnecting');
+            console.log('Disconnected from server');
+            console.log('Reconnecting');
             newSocket?.newSocket?.connect()
         });
 
@@ -108,6 +108,13 @@ const AudioProvider = ({ children }) => {
                         setCurrentSong(data);
                     })
             }
+
+
+            setHomeView((value) => {
+                let newValue = { ...value }; // Create a new copy of the state
+                newValue.view = session.data.user.view_layout_index;
+                return newValue;
+            });
 
             setCurrentList(session.data.user.current_list);
 
@@ -241,6 +248,16 @@ const AudioProvider = ({ children }) => {
     }, [currentList, session, socket]);
 
     useEffect(() => {
+        if (homeView.view == null) {
+            return
+        }
+
+        if (session.status == "authenticated") {
+            socket?.emit("set-user-data", { view_layout_index: homeView.view })
+        }
+    }, [homeView, session, socket])
+
+    useEffect(() => {
         if (currentList == '') {
             return
         }
@@ -273,7 +290,7 @@ const AudioProvider = ({ children }) => {
         }
 
         if (session.status == "authenticated") {
-            socket?.emit("set-user-data", { queue: queue, })
+            socket?.emit("set-user-data", { queue: JSON.stringify(queue) })
 
         } else if (session.status == "unauthenticated") {
             localStorage.setItem('queue', JSON.stringify(queue));

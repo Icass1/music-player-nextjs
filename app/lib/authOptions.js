@@ -43,7 +43,8 @@ export const authOptions = {
                 session.user.id = token.sub;
             }
 
-            const response = await fetch(`https://api.music.rockhosting.org/api/user/get`, {
+            const response = await fetch(`http://12.12.12.3:8000/api/user/get`, {
+            // const response = await fetch(`https://api.music.rockhosting.org/api/user/get`, {
                 method: "GET",
                 headers: {
                     'Authorization': `Bearer ${token.sub}` // Pass user id in the headers
@@ -52,17 +53,8 @@ export const authOptions = {
 
             if (response.ok) {
                 const data = await response.json()
-                // console.log("data", data)
-                session.user.current_song = data.current_song
-                session.user.current_list = data.current_list
-                session.user.current_time = data.current_time
-                session.user.queue = data.queue
-                session.user.queue_index = data.queue_index
-                session.user.volume = data.volume
-                session.user.random_queue = data.random_queue
-                session.user.show_lyrics = data.show_lyrics
+                session.user = Object.assign({}, session.user, data)
             }
-
             return session
         },
         async jwt({ token, user, account, profile, isNewUser }) {

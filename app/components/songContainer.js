@@ -84,8 +84,6 @@ export function Song({ type, musicData, checkMusicData, index, song, listId }) {
 
     const handleAddToQueue = () => {
 
-        console.log(queue, queueIndex)
-
         let tempQueue = queue.slice(0, queueIndex + 1)
         let tempEndQueue = queue.slice(queueIndex + 1)
 
@@ -103,8 +101,6 @@ export function Song({ type, musicData, checkMusicData, index, song, listId }) {
 
         eventSource.onmessage = (event) => {
             const message = JSON.parse(event.data);
-
-            // console.log(message);
 
             setDownloadProgress(message.completed);
 
@@ -131,31 +127,33 @@ export function Song({ type, musicData, checkMusicData, index, song, listId }) {
         };
     }
 
-    const [stored, setStored] = useState(false)
+    const handleMoveSongToNextInQueue = () => {
 
-    // useEffect(() => {
-    //     getMusicFile(song.id).then(data => {
-    //         if (data == undefined) {
-    //             setStored(false)
-    //         } else {
-    //             setStored(true)
-    //         }
-    //     })
-    // }, [song])
+        let tempQueue = queue.slice(0, queueIndex + 1)
+        let tempEndQueue = queue.slice(queueIndex + 1)
+
+        setQueue(tempQueue.concat(song).concat(tempEndQueue))
+    }
+
+    const [stored, setStored] = useState(false)
 
     return (
         <ContextMenu
-            options={song.in_database == false ? {
-                "Download to database": handleDownloadToDatabase,
-                "Copy Spotify URL": () => { console.log(song.spotify_url) },
-                "Copy Spotify ID": () => { console.log(song.spotify_url.replace("https://open.spotify.com/track/", "")) },
-            } : {
-                "Play": handlePlayClick,
-                "Download MP3": handleDownloadMP3,
-                "TODO Download": handleDownload,
-                "Add to queue": handleAddToQueue,
-                "Copy ID": () => { navigator.clipboard.writeText(song.id) }
-            }}
+            options={Object.assign({},
+                song.in_database == false ? {
+                    "Download to database": handleDownloadToDatabase,
+                    "Copy Spotify URL": () => { navigator.clipboard.writeText(song.spotify_url) },
+                    "Copy Spotify ID": () => { navigator.clipboard.writeText(song.spotify_url.replace("https://open.spotify.com/track/", "")) },
+                } : {
+                    "Play": handlePlayClick,
+                    "Download MP3": handleDownloadMP3,
+                    "TODO - Download": handleDownload,
+                    "Add to queue": handleAddToQueue,
+                    "Copy ID": () => { navigator.clipboard.writeText(song.id) },
+                    "Share": () => { navigator.clipboard.writeText(`https://music.rockhosting.org/song/${song.id}`) }
+                },
+                queue.slice(queueIndex + 2).map(el => el.id).includes(song.id) ? { "Move song to next in queue": handleMoveSongToNextInQueue } : {}
+            )}
         >
             <div onClick={handlePlayClick} className="relative ml-3 mr-3 mt-2 mb-2">
                 {type == "Album" ? (

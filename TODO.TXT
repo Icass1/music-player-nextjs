@@ -4,7 +4,6 @@ Add videoclip with youtube url
 
 When song is added to queue, the list where it comes from is stored to set currentlist
 
-Store home view index in database
 
 URGENT - Limit to one download at a time and only for users.
 
@@ -98,13 +97,13 @@ Song options
     DONE - Download
     DONE - Add to queue
     DONE - Copy ID
-    If song is in queue, move song to next position option
-    Share link to song page
+    DONE - If song is in queue, move song to next position option
+    DONE - Share link to song page
 
 List view
     DONE - Add total duration to list view 
     DONE - Check list header alignment 
-    Remove ' - Remastered xxx' from songs
+    MAYBE - Remove ' - Remastered xxx' from songs
     DONE - On mobile, remove genre and album from playlist song container
     Download and search button should move when lyrics are shown
 
@@ -135,6 +134,7 @@ DONE - User database
     DONE - admin
     DONE - super_admin
 
+DONE - Store home view index in database
 DONE - Add queue view in phone
 DONE - Change icons of home view.
 DONE - Add lyrics in desktop

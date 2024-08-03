@@ -11,6 +11,7 @@ import useWindowWidth from '../hooks/useWindowWidth';
 
 import SVG from '../utils/renderSVG';
 import Queue from './queue';
+import useColors from '../hooks/getColors';
 
 const handleDownloadMP3 = (song) => {
     fetch(`https://api.music.rockhosting.org/api/song/${song.id}`)
@@ -54,6 +55,7 @@ export default function SongInfo() {
 
     const songViewScrollRef = useRef();
     const [showSongView, setShowSongView] = useState(false);
+    const colors = useColors();
 
     useEffect(() => {
         if (audioDuration == 0) { return }
@@ -152,10 +154,8 @@ export default function SongInfo() {
     }
 
 
-
     return (
         <>
-
             {innerWidth > 768 ?
                 <></>
                 :
@@ -283,7 +283,7 @@ export default function SongInfo() {
                                 <SVG alt="Next" color='rgb(204 204 204)' className='cursor-pointer' src='https://api.music.rockhosting.org/images/next.svg' width={40} height={40} onClick={(e) => { e.stopPropagation(); handleNext() }} />
                                 <SVG
                                     className="select-none cursor-pointer transition-all"
-                                    color={randomQueue ? `rgb(${getComputedStyle(document.body).getPropertyValue("--foreground-1")})` : 'rgb(204 204 204)'}
+                                    color={randomQueue ? `rgb(${colors.foreground1})` : 'rgb(204 204 204)'}
                                     src='https://api.music.rockhosting.org/images/random.svg'
                                     width={30}
                                     height={30}
@@ -370,6 +370,7 @@ function SongInfoMenu({
 
     const songDataRef = useRef();
     const innerWidth = useWindowWidth();
+    const colors = useColors();
 
     useEffect(() => {
         songDataRef.current.scrollTo(songDataRef.current.offsetWidth * queueIndex, 0)
@@ -501,7 +502,7 @@ function SongInfoMenu({
                         <SVG color='rgb(204, 204, 204)' className='hidden md:block cursor-pointer hover:brightness-110' src='https://api.music.rockhosting.org/images/next.svg' width={30} height={30} onClick={handleNext} />
                         <SVG
                             className="hidden md:block select-none cursor-pointer transition-all hover:brightness-110"
-                            color={randomQueue ? `rgb(${getComputedStyle(document.body).getPropertyValue("--foreground-1")})` : 'rgb(204 204 204)'}
+                            color={randomQueue ? `rgb(${colors.foreground1})` : 'rgb(204 204 204)'}
                             src='https://api.music.rockhosting.org/images/random.svg'
                             width={25}
                             height={25}

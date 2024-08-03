@@ -166,7 +166,7 @@ export default function User() {
 
                 {lastSongsPlayed == null || lastSongsPlayed == undefined ?
 
-                    <label className="ml-6 mt-3 text-xl font-bold text-neutral-300">Loading...</label>
+                    <label className="ml-6 mt-3 text-xl font-bold text-neutral-300 relative top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">Loading...</label>
                     :
                     Object.keys(lastSongsPlayed).length !== 0 ? 
                     <>

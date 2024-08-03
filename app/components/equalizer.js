@@ -1,9 +1,12 @@
 import React, { useContext, useEffect, useRef, useState, useCallback } from 'react';
 import { MediaPlayerContext } from '@/app/components/audioContext';
+import useColors from '../hooks/getColors';
 
 export default function Equalizer({ className, bar_count = 20, bar_gap = 1, centered = false, toggleCenter = true }) {
     const canvasRef = useRef(null);
     const requestRef = useRef()
+
+    const colors = useColors();
 
     const [updateFunc, setUpdateFunc] = useState(centered ? (1) : (0));
 
@@ -43,7 +46,7 @@ export default function Equalizer({ className, bar_count = 20, bar_gap = 1, cent
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        const foreground = getComputedStyle(document.body).getPropertyValue("--foreground-1").split(" ")
+        const foreground = colors.foreground1.split(" ")
 
         const r = Number(foreground[0]);
         const g = Number(foreground[1]);
@@ -62,7 +65,7 @@ export default function Equalizer({ className, bar_count = 20, bar_gap = 1, cent
 
             ctx.fillRect(bar_pos, canvas.height / 2 - bar_height / 2, bar_width, bar_height);
         }
-    }, [analyser, bar_count, bar_gap])
+    }, [analyser, bar_count, bar_gap, colors])
 
 
     const updateBottom = useCallback(() => {

@@ -11,6 +11,7 @@ import { useRouter } from "next/router";
 // import { downloadAndSaveMusic, getMusicFile } from "../utils/storage";
 import useWindowWidth from "../hooks/useWindowWidth";
 import SVG from "../utils/renderSVG";
+import useColors from "../hooks/getColors";
 
 export function Song({ type, musicData, checkMusicData, index, song, listId }) {
 
@@ -169,6 +170,7 @@ export function Song({ type, musicData, checkMusicData, index, song, listId }) {
 function AlbumSong({ index, stored, song, listId, downloadProgress, handleDownloadToDatabase }) {
 
     const { currentSong, currentList, isPlaying } = useContext(MediaPlayerContext);
+    const colors = useColors();
 
     return (
         <div
@@ -201,7 +203,7 @@ function AlbumSong({ index, stored, song, listId, downloadProgress, handleDownlo
                 <label></label>
             ) : (
                 <SVG
-                    color={`rgb(${getComputedStyle(document.body).getPropertyValue("--foreground-1")})`}
+                    color={`rgb(${colors.foreground1})`}
                     // className={clsx("cursor-pointer [filter:invert(29%)_sepia(93%)_saturate(1108%)_hue-rotate(25deg)_brightness(93%)_contrast(98%)]", { "hover:[filter:invert(45%)_sepia(100%)_saturate(412%)_hue-rotate(3deg)_brightness(90%)_contrast(97%)]": !song.in_database })}
                     src={song.in_database ? ("https://api.music.rockhosting.org/images/tick.svg") : ("https://api.music.rockhosting.org/images/download.svg")}
                     width={30}
@@ -232,6 +234,7 @@ function PlaylistSong({ index, stored, song, listId, handleDownloadToDatabase })
 
     const { currentSong, isPlaying, currentList } = useContext(MediaPlayerContext);
 
+    const colors = useColors();
     const innerWidth = useWindowWidth();
 
     song.cover_url = song.cover_url.replace("_50x50", innerWidth > 768 ? "_50x50" : "_100x100")
@@ -270,9 +273,7 @@ function PlaylistSong({ index, stored, song, listId, handleDownloadToDatabase })
                 <label></label>
             ) : (
                 <SVG
-                    color={`rgb(${getComputedStyle(document.body).getPropertyValue("--foreground-1")})`}
-
-                    // className={clsx("cursor-pointer [filter:invert(29%)_sepia(93%)_saturate(1108%)_hue-rotate(25deg)_brightness(93%)_contrast(98%)]", { "hover:[filter:invert(45%)_sepia(100%)_saturate(412%)_hue-rotate(3deg)_brightness(90%)_contrast(97%)]": !song.in_database })}
+                    color={`rgb(${colors.foreground1})`}
                     src={song.in_database ? ("https://api.music.rockhosting.org/images/tick.svg") : ("https://api.music.rockhosting.org/images/download.svg")}
                     width={30}
                     height={30}

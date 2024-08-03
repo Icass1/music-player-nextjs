@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { createGlobalStyle } from 'styled-components';
 import classNames from 'classnames';
+import useColors from '../hooks/getColors';
 
 const GlobalStyles = createGlobalStyle`
 .default-slider[mouseover]::-webkit-slider-thumb {
@@ -43,6 +44,8 @@ export default function Slider({ value, onInput, onChange, className }) {
         setMouseOver(false)
     }
 
+    const colors = useColors();
+
     return (
         <>
             <GlobalStyles />
@@ -52,7 +55,7 @@ export default function Slider({ value, onInput, onChange, className }) {
                 type='range'
                 className={classNames(className, 'default-slider min-w-0 w-full h-[0.4rem] rounded-full appearance-none')}
                 {...(mouseOver ? {
-                    style: { background: `linear-gradient(90deg, rgb(${getComputedStyle(document.body).getPropertyValue("--foreground-1")}) 0%, rgb(${getComputedStyle(document.body).getPropertyValue("--foreground-2")}) calc(0.2rem + (100% - 0.4rem)*${value}), black calc(0.2rem + (100% - 0.4rem)*${value}), black 100%)` }
+                    style: { background: `linear-gradient(90deg, rgb(${colors.foreground1}) 0%, rgb(${colors.foreground2}) calc(0.2rem + (100% - 0.4rem)*${value}), black calc(0.2rem + (100% - 0.4rem)*${value}), black 100%)` }
                 } : {
                     style: { background: `linear-gradient(90deg, rgb(150, 150, 150) 0%, rgb(150, 150, 150) calc(0.2rem + (100% - 0.4rem)*${value}), black calc(0.2rem + (100% - 0.4rem)*${value}), black 100%)` }
                 })}

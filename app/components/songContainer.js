@@ -257,7 +257,22 @@ function PlaylistSong({ index, stored, song, listId, handleDownloadToDatabase })
 
             <div className='flex flex-col cursor-pointer min-w-0 max-w-full'>
                 <label className={clsx('cursor-pointer text-xl fade-out-neutral-200 min-w-0 max-w-full', { 'fade-out-fg-1': song.id == currentSong.id && listId == currentList })}>{song.title}</label>
-                <label className={clsx('cursor-pointer fade-out-neutral-300 min-w-0 max-w-full', { 'fade-out-fg-2': song.id == currentSong.id && listId == currentList })}>{song.artist}</label>
+                <label className="min-w-0 max-w-full cursor-pointer grid items-center" style={{ gridTemplateColumns: 'max-content max-content 1fr' }}>
+
+                    {song.has_lyrics ?
+                        <label className="col-start-1 col-end-2 text-xs mr-1 bg-neutral-600 text-neutral-100 text-opacity-65 rounded-sm h-min pl-1 pr-1">LYRICS</label>
+                        :
+                        <></>
+                    }
+                    {song.has_dynamic_lyrics ?
+                        <label className="col-start-2 col-end-3 text-xs mr-1 bg-neutral-600 text-neutral-100 text-opacity-65 rounded-sm h-min pl-1 pr-1">DYNAMIC LYRICS</label>
+                        :
+                        <></>
+                    }
+
+
+                    <label className={clsx('fade-out-neutral-300 min-w-0 max-w-full col-start-3 col-end-4', { 'fade-out-fg-2': song.id == currentSong.id && listId == currentList })}>{song.artist}</label>
+                </label>
             </div>
             <label className={clsx('hidden md:block fade-out-neutral-200 min-w-0 max-w-full', { 'fade-out-fg-2': song.id == currentSong.id && listId == currentList })} title={song.genre}>{song.genre}</label>
             <Link

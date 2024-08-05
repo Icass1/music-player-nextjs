@@ -21,6 +21,8 @@ Drop Spotify link anywhere and add list to library
 
 TO CHECK - Fix onplayend when playing list from search
 
+Update cache when song is added to queue
+
 Make volume cuadratic
 
 Artist page
@@ -134,6 +136,7 @@ DONE - User database
     DONE - admin
     DONE - super_admin
 
+DONE - Add label to song container with LYRICS and DYNAMIC LYRICS
 DONE - Store home view index in database
 DONE - Add queue view in phone
 DONE - Change icons of home view.

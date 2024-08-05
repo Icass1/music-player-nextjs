@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { MediaPlayerContext } from "./audioContext";
 import clsx from "clsx";
 import { debounce } from "lodash";
@@ -116,6 +116,7 @@ export default function Lyrics({ songID, fontSize, lineClassName }) {
                         }
                         setDynamicLyrics(data.has_dynamic_lyrics)
                         if (lyricsOut) {
+                            console.log(lyricsOut)
                             setLyrics(lyricsOut)
                         } else {
                             setLyrics(data.lyrics)
@@ -145,48 +146,66 @@ export default function Lyrics({ songID, fontSize, lineClassName }) {
 
     }, [currentSong, songID])
 
+    const timeoutFollowLyrics = debounce((e) => {
+        setFollowLyrics(true)
+    }, 4000);
+
+    const handleScroll = useCallback(() => {
+        console.log("setFollowLyrics(false)")
+        setFollowLyrics(false)
+        timeoutFollowLyrics()
+    }, [timeoutFollowLyrics])
+
     useEffect(() => {
+        // console.log("A", dynamicLyrics, followLyrics)
         if (!dynamicLyrics) { return }
         if (!followLyrics) { return }
 
-        for (let segmentIndex in lyrics.segments) {
+        let segmentIndex
+
+        for (segmentIndex in lyrics.segments) {
             let segment = lyrics.segments[segmentIndex];
 
-            if (segment.start < currentTime && segment.end > currentTime) {
-
-                let scroll = document.querySelector("#segment-id-" + segment.id).offsetTop - mainRef.current.parentNode.offsetTop
-
-                mainRef.current.parentNode.scrollTo(0, scroll - mainRef.current.parentNode.offsetHeight / 2)
+            if (segment.start > currentTime) {
                 break
             }
         }
-    }, [dynamicLyrics, lyrics, currentTime, mainRef, followLyrics])
 
-    useEffect(() => {
+        // console.log("B")
 
-        const element = mainRef.current
+        let segment = lyrics.segments[segmentIndex]
+        let scroll = document.querySelector("#segment-id-" + segment.id).offsetTop - mainRef.current.parentNode.offsetTop
 
-        const timeoutFollowLyrics = debounce((e) => {
-            setFollowLyrics(true)
-        }, 4000);
 
-        const handleScroll = () => {
-            setFollowLyrics(false)
-            timeoutFollowLyrics()
-        }
+        // console.log("removeEventListener")
+        // mainRef.current.parentNode.removeEventListener("scroll", handleScroll)
+        // mainRef.current.parentNode.addEventListener("scrollend", () => {
+        //     console.log("scrollend"); 
+        //     mainRef.current.parentNode.addEventListener("scroll", handleScroll)
 
-        element.parentNode.addEventListener("scroll", handleScroll)
+        // })
+        mainRef.current.parentNode.scrollTo(0, scroll - mainRef.current.parentNode.offsetHeight / 2)
 
-        return () => {
-            element?.parentNode?.removeEventListener("scroll", handleScroll)
-        }
 
-    }, [mainRef])
+    }, [dynamicLyrics, lyrics, currentTime, mainRef, followLyrics, handleScroll])
+
+    // useEffect(() => {
+
+    //     const element = mainRef.current
+
+    //     console.log("addEventListener")
+    //     element.parentNode.addEventListener("scroll", handleScroll)
+
+    //     return () => {
+    //         element?.parentNode?.removeEventListener("scroll", handleScroll)
+    //     }
+
+    // }, [mainRef, handleScroll])
 
     return (
         <div ref={mainRef} className="flex flex-col h-full text-lg">
             <div className="min-h-6 list-item"></div>
-            {dynamicLyrics ? <DynamicLyrics lyrics={lyrics} fontSize={fontSize} /> : <NormalLyrics lyrics={lyrics} fontSize={fontSize} lineClassName={lineClassName}/>}
+            {dynamicLyrics ? <DynamicLyrics lyrics={lyrics} fontSize={fontSize} /> : <NormalLyrics lyrics={lyrics} fontSize={fontSize} lineClassName={lineClassName} />}
             <div className="min-h-20 list-item"></div>
         </div>
     )

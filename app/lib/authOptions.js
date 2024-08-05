@@ -43,8 +43,8 @@ export const authOptions = {
                 session.user.id = token.sub;
             }
 
-            const response = await fetch(`http://12.12.12.3:8000/api/user/get`, {
-            // const response = await fetch(`https://api.music.rockhosting.org/api/user/get`, {
+            // const response = await fetch(`http://12.12.12.3:8000/api/user/get`, {
+            const response = await fetch(`https://api.music.rockhosting.org/api/user/get`, {
                 method: "GET",
                 headers: {
                     'Authorization': `Bearer ${token.sub}` // Pass user id in the headers

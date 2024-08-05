@@ -174,7 +174,6 @@ export default function Search({ searchResults, handleSearch }) {
                             </div>
                         </div>
                     </div>
-
             }
         </div>
     )
@@ -205,7 +204,7 @@ function ResultContent({ list }) {
         <div className="relative flex flex-col w-[220px] h-[290px] bg-3 hover:brightness-110 transition-all rounded-lg">
             <Image
                 className='ml-auto mr-auto mt-2 rounded-md'
-                src={list.image_url}
+                src={list.image_url ? list.image_url : "https://api.music.rockhosting.org/images/defaultAlbum.png"}
                 width={200}
                 height={200}
                 alt=""

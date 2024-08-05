@@ -61,7 +61,6 @@ const AudioProvider = ({ children }) => {
         if (session.status !== "authenticated") { return }
 
         let newSocket = io('https://api.music.rockhosting.org');
-        // let newSocket = io('http://12.12.12.3:8000');
 
         newSocket.on('connect', () => {
             console.log('Connected to server');

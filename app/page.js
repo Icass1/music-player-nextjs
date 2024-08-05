@@ -152,7 +152,6 @@ function AddContextMenu({ children, item, setDownloadProgress, setMusicData }) {
                     setDownloadProgress({ id: downloadingID, progress: 0 });
                 }, 1000);
 
-                // let uri = `http://12.12.12.3:8000/api/download-list/${message.outputName}`;
                 let uri = `https://api.music.rockhosting.org/api/download-list/${message.outputName}`;
                 let link = document.createElement("a");
                 link.href = uri;

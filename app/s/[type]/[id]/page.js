@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useContext } from 'react';
 import DefaultListPage from '@/app/components/listPage';
-import { apiFetch } from './apiFetch';
+import { apiFetch } from '@/app/utils/apiFetch';
 
 export default function SearchListPage({ params }) {
 
@@ -14,11 +14,9 @@ export default function SearchListPage({ params }) {
         type: '',
     });
 
-
     useEffect(() => {
         const fetchData = async () => {
             const response = await apiFetch(`/api/s/${params.type}/${params.id}`);
-            // const response = await fetch(`http://12.12.12.3:8000/api/s/${params.type}/${params.id}`);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
@@ -27,9 +25,9 @@ export default function SearchListPage({ params }) {
             if (data.type == "Album") {
                 data.songs = data.songs.map(song => Object.assign({}, song, { "search": song.title.toUpperCase() }));
             } else {
-                data.songs = data.songs.map(song => Object.assign({}, song, { "search": song.title.toUpperCase() + " " +  song.artist.toUpperCase() + " "  + song.album.toUpperCase() + " "  + song.genre.toUpperCase()}));
+                data.songs = data.songs.map(song => Object.assign({}, song, { "search": song.title.toUpperCase() + " " + song.artist.toUpperCase() + " " + song.album.toUpperCase() + " " + song.genre.toUpperCase() }));
             }
-            
+
             setMusicData(data);
         };
         fetchData();
@@ -37,7 +35,7 @@ export default function SearchListPage({ params }) {
 
 
     return (
-        <DefaultListPage listId={params.id} musicData={musicData} />
+        <DefaultListPage listId={params.id} musicData={musicData} setMusicData={setMusicData} />
     )
 };
 

@@ -237,7 +237,6 @@ export default function DefaultListPage({ listId, musicData, setMusicData }) {
 
             if (session.status == "authenticated") {
                 console.log("ADD list")
-                // apiFetch(`http://12.12.12.3:8000/api/add-list`, session, {
                 apiFetch(`/api/add-list`, session, {
                     method: "POST",
                     body: JSON.stringify({ url: musicData.spotify_url })
@@ -274,7 +273,6 @@ export default function DefaultListPage({ listId, musicData, setMusicData }) {
                     setDownloadProgress(undefined);
                 }, 1000);
 
-                // let uri = `http://12.12.12.3:8000/api/download-list/${message.outputName}`;
                 let uri = `https://api.music.rockhosting.org/api/download-list/${message.outputName}`;
                 let link = document.createElement("a");
                 link.href = uri;
@@ -426,7 +424,7 @@ export default function DefaultListPage({ listId, musicData, setMusicData }) {
 
         if (session.status !== "authenticated") { return }
 
-        const url = `http://12.12.12.3:8000/api/download-list-db/${musicData.spotify_url.replace('https://open.spotify.com/', '')}?user_id=${session.data.user.id}`
+        const url = `https://api.music.rockhosting.org/api/download-list-db/${musicData.spotify_url.replace('https://open.spotify.com/', '')}?user_id=${session.data.user.id}`
         console.log(url)
 
         const eventSource = new EventSource(url);

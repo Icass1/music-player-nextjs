@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { MediaPlayerContext } from "./audioContext";
 import clsx from "clsx";
 import Image from "next/image";
@@ -13,6 +13,8 @@ import useWindowWidth from "../hooks/useWindowWidth";
 import SVG from "../utils/renderSVG";
 import useColors from "../hooks/getColors";
 import { apiFetch } from "../utils/apiFetch";
+import { useSession } from "next-auth/react";
+import { getServerSession } from "next-auth";
 
 export function Song({ type, musicData, checkMusicData, index, song, listId }) {
 
@@ -30,6 +32,8 @@ export function Song({ type, musicData, checkMusicData, index, song, listId }) {
     } = useContext(MediaPlayerContext);
 
     const [downloadProgress, setDownloadProgress] = useState(undefined)
+
+    const session = useSession();
 
     function handlePlayClick() {
 
@@ -90,10 +94,12 @@ export function Song({ type, musicData, checkMusicData, index, song, listId }) {
         setQueue(tempQueue.concat(song).concat(tempEndQueue))
     }
 
-    const handleDownloadToDatabase = () => {
+    const handleDownloadToDatabase = useCallback(() => {
+
+        if (session.status != "authenticated") {return}
 
         const id = song.spotify_url.replace("https://open.spotify.com/track/", "")
-        const url = `https://api.music.rockhosting.org/api/download-song/${id}`
+        const url = `https://api.music.rockhosting.org/api/download-song/${id}?user_id=${session.data.user.id}`
 
         const eventSource = new EventSource(url);
 
@@ -125,7 +131,7 @@ export function Song({ type, musicData, checkMusicData, index, song, listId }) {
             eventSource.close();
             setDownloadProgress(undefined)
         };
-    }
+    }, [checkMusicData, session, song])
 
     const handleMoveSongToNextInQueue = () => {
 

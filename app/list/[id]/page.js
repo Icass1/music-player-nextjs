@@ -34,6 +34,6 @@ export default function ListPage({ params }) {
     }, [params.id]);
 
     return (
-        <DefaultListPage listId={params.id} musicData={musicData} />
+        <DefaultListPage listId={params.id} musicData={musicData} setMusicData={setMusicData}/>
     )
 }

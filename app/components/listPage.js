@@ -104,7 +104,7 @@ function CircularProgressBar({ className = "", progress = 50, smooth = true, onC
     )
 }
 
-export default function DefaultListPage({ listId, musicData }) {
+export default function DefaultListPage({ listId, musicData, setMusicData }) {
 
     const {
         audio,
@@ -230,6 +230,8 @@ export default function DefaultListPage({ listId, musicData }) {
             }
         }
 
+        if (musicData.id) { return }
+
         if (songsInDatabase != 0 && songsInDatabase == musicData.songs.length) {
             console.log("all songs are downloaded. this list should be added to database. TODO")
 
@@ -240,12 +242,14 @@ export default function DefaultListPage({ listId, musicData }) {
                     method: "POST",
                     body: JSON.stringify({ url: musicData.spotify_url })
                 }).then(response => response.json()).then(data => {
-                    console.log(data)
-                    musicData.id = data.id
+                    let newMusicData = { ...musicData }
+                    newMusicData.id = data.id
+                    newMusicData.downloaded = true
+                    setMusicData(newMusicData)
                 })
             }
         }
-    }, [musicData, session])
+    }, [musicData, session, setMusicData])
 
     useEffect(() => {
         checkMusicData();
@@ -417,6 +421,44 @@ export default function DefaultListPage({ listId, musicData }) {
             console.log(data.map(list => list.id))
         })
     }
+
+    const handleDownloadToDatabase = useCallback(() => {
+
+        if (session.status !== "authenticated") { return }
+
+        const url = `http://12.12.12.3:8000/api/download-list-db/${musicData.spotify_url.replace('https://open.spotify.com/', '')}?user_id=${session.data.user.id}`
+        console.log(url)
+
+        const eventSource = new EventSource(url);
+
+        eventSource.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+
+            console.log(message)
+
+            // if ((message.completed) == 100) {
+            //     eventSource.close();
+            //     song.in_database = true;
+            //     song.title = message.title
+            //     song.artist = message.artist
+            //     song.id = message.id;
+            //     song.genre = message.genre
+            //     song.album = message.album
+            //     song.cover_url = message.cover_url
+            //     song.duration = message.duration
+            //     song.album_url = message.album_url
+            //     checkMusicData()
+            // }
+        };
+
+        eventSource.onerror = (error) => {
+            console.error(error)
+            eventSource.close();
+        };
+
+
+    }, [musicData.spotify_url, session])
+
     return (
         <>
             <div className='relative h-full'>
@@ -450,7 +492,8 @@ export default function DefaultListPage({ listId, musicData }) {
                                     />
                                 </div>
                                 {
-                                    !userLists.includes(listId) && musicData.id ?
+                                    musicData.id && !userLists.includes(musicData.id) ?
+                                        // false ?
                                         <div
                                             className='h-16 w-16 fg-1 rounded-full bottom-4 left-4 cursor-pointer'
                                             onClick={handleAddListToLibrary}
@@ -461,6 +504,24 @@ export default function DefaultListPage({ listId, musicData }) {
                                                 width={40}
                                                 className='relative ml-auto mr-auto top-1/2 -translate-y-1/2'
                                                 title='Add to library'
+                                                alt=""
+                                            />
+                                        </div>
+                                        :
+                                        <></>
+                                }
+                                {
+                                    musicData.downloaded === false && session.status == "authenticated" ?
+                                        <div
+                                            className='h-16 w-16 fg-1 rounded-full bottom-4 left-4 cursor-pointer'
+                                            onClick={handleDownloadToDatabase}
+                                        >
+                                            <Image
+                                                src='https://api.music.rockhosting.org/images/download.svg'
+                                                height={40}
+                                                width={40}
+                                                className='relative ml-auto mr-auto top-1/2 -translate-y-1/2'
+                                                title='Download to database'
                                                 alt=""
                                             />
                                         </div>

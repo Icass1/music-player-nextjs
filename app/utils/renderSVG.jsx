@@ -36,6 +36,9 @@ export default function SVG({ src, height, width, color, className, onClick, tit
     }, [width, height, color, data])
 
     return (
-        <div className={className} title={title} dangerouslySetInnerHTML={{ __html: svgContent }} style={{ height: height, width: width }} onClick={onClick} />
+        <div className={className} title={title} style={{ height: height, width: width, position: "relative" }} >
+            <div className={className} dangerouslySetInnerHTML={{ __html: svgContent }} style={{ height: height, width: width, position: "absolute" }}/>
+            <div className={className} title={title} style={{ height: height, width: width, position: "absolute" }} onClick={onClick} ></div>
+        </div>
     )
 }

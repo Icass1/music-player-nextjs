@@ -564,9 +564,9 @@ export default function DefaultListPage({ listId, musicData }) {
                     <div className='hidden md:h-20 md:block relative'>
 
                         {/* <div className='relative left-1/2 -translate-x-1/2 w-fit flex flex-row gap-7 text-neutral-400'> */}
-                        <label className='absolute left-[30%] -translate-x-1/2 top-1/2 -translate-y-1/2 w-fit text-neutral-400'>Genre{genres.length == 1 ? <></> : <>s</>} | {genres?.join(", ")}</label>
-                        <label className='absolute left-[50%] -translate-x-1/2 top-1/2 -translate-y-1/2 w-fit text-neutral-400'>{getTotalDuration(musicData.songs)}</label>
-                        <label className='absolute left-[70%] -translate-x-1/2 top-1/2 -translate-y-1/2 w-fit text-neutral-400'>{musicData.songs.length} Song{musicData.songs.length == 1 ? <></> : <>s</>} </label>
+                        <label className='absolute left-[30%] w-[20%] -translate-x-1/2 top-1/2 -translate-y-1/2 fade-out-neutral-300'>Genre{genres.length == 1 ? <></> : <>s</>} | {genres?.join(", ")}</label>
+                        <label className='absolute left-[50%] w-[20%] -translate-x-1/2 top-1/2 -translate-y-1/2 fade-out-neutral-300'>{getTotalDuration(musicData.songs)}</label>
+                        <label className='absolute left-[70%] w-[20%] -translate-x-1/2 top-1/2 -translate-y-1/2 fade-out-neutral-300'>{musicData.songs.length} Song{musicData.songs.length == 1 ? <></> : <>s</>} </label>
                         {/* </div> */}
 
                     </div>

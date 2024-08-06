@@ -11,6 +11,8 @@ import { useSession } from 'next-auth/react';
 import { apiFetch } from '../utils/apiFetch';
 import useWindowWidth from '../hooks/useWindowWidth';
 import getImageMeanColor from '../utils/getImageMeanColor';
+import SVG from '../utils/renderSVG';
+import useColors from '../hooks/getColors';
 
 
 function CircularProgressBar({ className = "", progress = 50, smooth = true, onClick }) {
@@ -143,6 +145,8 @@ export default function DefaultListPage({ listId, musicData, setMusicData }) {
     const pathname = usePathname()
 
     const innerWidth = useWindowWidth()
+
+    const colors = useColors()
 
     useEffect(() => {
         if (session.status != "authenticated") { return }
@@ -556,11 +560,12 @@ export default function DefaultListPage({ listId, musicData, setMusicData }) {
                                 <label></label>
                         }
 
-                        <Image
+                        <SVG
                             src={currentList == listId && isPlaying ? (`https://api.music.rockhosting.org/images/pause.svg`) : (`https://api.music.rockhosting.org/images/play.svg`)}
                             height={40}
                             width={40}
-                            className='relative ml-1 invert-[0.2]'
+                            color={`rgb(${colors.foreground1})`}
+                            className='relative ml-1'
                             title={currentList == listId && isPlaying ? ("Pause") : ("Play")}
                             alt=""
                             onClick={currentList == listId && isPlaying ? (handlePauseClick) : (handlePlayClick)}

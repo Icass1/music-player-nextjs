@@ -6,12 +6,9 @@ Add videoclip with youtube url
 
 When song is added to queue, the list where it comes from is stored to set currentlist
 
-
 URGENT - Limit to one download at a time and only for users.
 
 CHECK - The Boys Of Summer in All Out 80s
-
-IN PROGRESS, TO CHECK - Cache next song
 
 Create and rename lists
 
@@ -23,15 +20,9 @@ Drop Spotify link anywhere and add list to library
 
 TO CHECK - Fix onplayend when playing list from search
 
-DONE - Update cache when song is added to queue
-
 Make volume cuadratic
 
-When tab is focused, some times the audio reset due to the cache
-
 Move to top of the queue creates adds more songs to the queue
-
-Button play pause list in list view should be white 
 
 Artist page
     Show albums This Is Supertramp cover style
@@ -153,6 +144,10 @@ DONE - User database
     DONE - admin
     DONE - super_admin
 
+DONE - Button play pause list in list view should be white 
+DONE - When tab is focused, some times the audio reset due to the cache
+DONE - Update cache when song is added to queue
+DONE - Cache next song
 DONE - Add label to song container with LYRICS and DYNAMIC LYRICS
 DONE - Store home view index in database
 DONE - Add queue view in phone

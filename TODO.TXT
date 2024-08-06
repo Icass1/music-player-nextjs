@@ -1,5 +1,7 @@
 
 
+Context menu in mobile should cover the full screen blurring the background and showing the options on top with a picture
+
 Add videoclip with youtube url
 
 When song is added to queue, the list where it comes from is stored to set currentlist
@@ -13,7 +15,7 @@ IN PROGRESS, TO CHECK - Cache next song
 
 Create and rename lists
 
-If in mobile and song view is open, if click in header, it should closes
+If in mobile and song view is open, if click in header, it should close
 
 Drop Spotify link anywhere and add list to library
     Add status column to song in database
@@ -21,9 +23,15 @@ Drop Spotify link anywhere and add list to library
 
 TO CHECK - Fix onplayend when playing list from search
 
-Update cache when song is added to queue
+DONE - Update cache when song is added to queue
 
 Make volume cuadratic
+
+When tab is focused, some times the audio reset due to the cache
+
+Move to top of the queue creates adds more songs to the queue
+
+Button play pause list in list view should be white 
 
 Artist page
     Show albums This Is Supertramp cover style
@@ -54,7 +62,15 @@ Make usable when not logged in
         Duration
 
 Add admin panel
+    General
+        Graph of active users over time
+        Graph of downloaded songs over time
+        Total number of songs
+            Number of songs with lyrics
+            Number of songs with dynamic lyrics
+        Backend error log
     Users view
+    Lists view
     Downloads view
     See, search and edit songs and lists in database
 
@@ -99,8 +115,9 @@ Song options
     DONE - Download
     DONE - Add to queue
     DONE - Copy ID
-    DONE - If song is in queue, move song to next position option
+    TO FIX, DONE - If song is in queue, move song to next position option
     DONE - Share link to song page
+    Show times played
 
 List view
     DONE - Add total duration to list view 

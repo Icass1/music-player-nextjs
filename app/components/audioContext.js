@@ -170,28 +170,36 @@ const AudioProvider = ({ children }) => {
             localStorage.setItem('currentSong', JSON.stringify(currentSong));
         }
 
-        document.title = currentSong.title + " - " + currentSong.artist
-        if (audio.src == `https://api.music.rockhosting.org/api/song/${currentSong.id}`) {
+        console.log("useeffect", audio.src)
 
+        document.title = currentSong.title + " - " + currentSong.artist
+        if (audio.src == `https://api.music.rockhosting.org/api/song/${currentSong.id}` || audio.id == currentSong.id) {
+            console.log("1")
         } else if (audio.src == "") {
+            console.log("2")
             let currentTime = audio.currentTime
             if (audioCacheRef.current?.id == currentSong.id) {
-                console.log("Loading cached audio")
+                console.log("Loading cached audio 1 ")
                 audio.src = URL.createObjectURL(audioCacheRef.current?.blob);
+                audio.id = currentSong.id
                 audio.load()
             } else {
-                console.log("Loading remote audio")
+                console.log("Loading remote audio 1")
                 audio.src = `https://api.music.rockhosting.org/api/song/${currentSong.id}`;
+                audio.id = currentSong.id
             }
             audio.currentTime = currentTime
         } else {
+            console.log("3")
             if (audioCacheRef.current?.id == currentSong.id) {
-                console.log("Loading cached audio")
+                console.log("Loading cached audio 2")
                 audio.src = URL.createObjectURL(audioCacheRef.current?.blob);
+                audio.id = currentSong.id
                 audio.load()
             } else {
-                console.log("Loading remote audio")
+                console.log("Loading remote audio 2")
                 audio.src = `https://api.music.rockhosting.org/api/song/${currentSong.id}`;
+                audio.id = currentSong.id
             }
             audio.onload = () => { console.log("audio loaded") }
 

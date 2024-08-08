@@ -11,7 +11,6 @@ URGENT - Limit to one download at a time and only for users.
 
 CHECK - The Boys Of Summer in All Out 80s
 
-IN PROGRESS, TO CHECK - Cache next song
 
 Create and rename lists
 
@@ -23,11 +22,10 @@ Drop Spotify link anywhere and add list to library
 
 TO CHECK - Fix onplayend when playing list from search
 
-DONE - Update cache when song is added to queue
 
 Make volume cuadratic
 
-When tab is focused, some times the audio reset due to the cache
+TO CHECK - When tab is focused, some times the audio reset due to the cache
 
 Move to top of the queue creates adds more songs to the queue
 
@@ -153,6 +151,8 @@ DONE - User database
     DONE - admin
     DONE - super_admin
 
+DONE - Cache next song
+DONE - Update cache when song is added to queue
 DONE - Add label to song container with LYRICS and DYNAMIC LYRICS
 DONE - Store home view index in database
 DONE - Add queue view in phone

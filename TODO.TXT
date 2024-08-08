@@ -10,6 +10,7 @@ URGENT - Limit to one download at a time and only for users.
 
 CHECK - The Boys Of Summer in All Out 80s
 
+
 Create and rename lists
 
 If in mobile and song view is open, if click in header, it should close
@@ -19,6 +20,7 @@ Drop Spotify link anywhere and add list to library
         Downloading, Downloaded, Not MP3 file available, ...
 
 TO CHECK - Fix onplayend when playing list from search
+
 
 Make volume cuadratic
 
@@ -148,6 +150,8 @@ DONE - User database
     DONE - admin
     DONE - super_admin
 
+DONE - Cache next song
+DONE - Update cache when song is added to queue
 DONE - Button play pause list in list view should be white 
 DONE - When tab is focused, some times the audio reset due to the cache
 DONE - Update cache when song is added to queue

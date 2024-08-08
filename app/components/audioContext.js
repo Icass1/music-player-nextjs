@@ -43,22 +43,24 @@ const AudioProvider = ({ children }) => {
 
     const audioCacheRef = useRef();
 
-    useEffect(() => {
+    // useEffect(() => {
         
-        if (session.status == "loading") {
-            return
-        }
+    //     if (session.status == "loading") {
+    //         return
+    //     }
 
-        if (session.status == "authenticated") {
-            if (session.data.user.dev_user) {
-                return
-            }
-        }
+    //     if (session.status == "authenticated") {
+    //         if (session.data.user.dev_user) {
+    //             return
+    //         }
+    //     }
         
-        // Disable logging
-        console.log = () => {}
 
-    }, [session])
+    //     // Disable logging
+    //     console.info("console.log disabled")
+    //     console.log = () => {}
+
+    // }, [session])
 
     useEffect(() => {
         setAudio(new Audio());

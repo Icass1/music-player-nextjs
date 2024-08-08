@@ -27,6 +27,9 @@ Move to top of the queue creates adds more songs to the queue
 Artist page
     Show albums This Is Supertramp cover style
     Random songs
+    Add artist table to database
+    Add artist url to song table
+    Add artsit id to song table
 
 Genre list
     Default list with songs in database of that genre
@@ -59,11 +62,12 @@ Add admin panel
         Total number of songs
             Number of songs with lyrics
             Number of songs with dynamic lyrics
+            Number of pending songs
         Backend error log
-    Users view
-    Lists view
+    See, search and edit songs in database
+    See, search and edit users in database
+    See, search and edit lists in database
     Downloads view
-    See, search and edit songs and lists in database
 
 Add user view
     DONE - Show recently played songs

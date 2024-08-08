@@ -15,6 +15,7 @@ import { useSession } from "next-auth/react";
 import { apiFetch } from './utils/apiFetch';
 import getImageMeanColor from './utils/getImageMeanColor';
 import useWindowWidth from './hooks/useWindowWidth';
+import { Skeleton } from '@mui/material';
 // import { addList } from './utils/storage';
 
 // addList("gK5eJjv9BRoysWh8")
@@ -288,27 +289,63 @@ function GridContainer({ item, setMusicData }) {
     const [downloadProgress, setDownloadProgress] = useState(0);
     const { currentList } = useContext(MediaPlayerContext);
 
-
     return (
         <AddContextMenu item={item} setMusicData={setMusicData} setDownloadProgress={setDownloadProgress}>
             <Link
                 href={`/list/${item.id}`}
                 className={`rounded-lg md:bg-3 md:hover:brightness-110 transition-all md:shadow-lg`}
             >
-                <Image
+
+
+                <RenderCover src={`https://api.music.rockhosting.org/api/list/image/${item.id}_300x300`} alt={item.name} />
+
+                {/* <Image
                     src={`https://api.music.rockhosting.org/api/list/image/${item.id}_300x300`}
                     width={0}
                     height={0}
                     sizes="100vw"
                     className='rounded-lg w-11/12 h-auto max-w-96 ml-auto mr-auto mt-2'
                     alt={item.name}
-                />
+                /> */}
+
+
+
                 <div className='flex flex-col mt-3 mb-3'>
                     <label className={clsx('ml-3 mr-3 text-xl fade-out-neutral-200 font-bold cursor-pointer overflow-y-hidden min-w-0 max-w-full', { 'fade-out-fg-1': item.id == currentList })}>{item.name}</label>
                     <label className={clsx('ml-3 mr-3 text-lg fade-out-neutral-200 cursor-pointer min-w-0 max-w-full', { 'fade-out-fg-2': item.id == currentList })}>{item.author}</label>
                 </div>
             </Link>
         </AddContextMenu>
+    )
+}
+
+function RenderCover({ src, alt }) {
+
+    const [loaded, setLoaded] = useState(false)
+
+    return (
+        <>
+            <Image
+                src={src}
+                width={0}
+                height={0}
+                sizes="100vw"
+                className='rounded-lg w-11/12 h-auto max-w-96 ml-auto mr-auto mt-2'
+                alt={alt}
+                onLoadingComplete={() => { setLoaded(true) }}
+            />
+            {loaded ?
+                <></>
+                :
+                <Skeleton
+                    height={200}
+                    width='91.666667%'
+                    variant='rounded'
+                    animation="wave"
+                    className='ml-auto mr-auto mt-2'
+                />
+            }
+        </>
     )
 }
 

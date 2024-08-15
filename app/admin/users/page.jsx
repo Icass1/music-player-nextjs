@@ -1,10 +1,10 @@
+
 'use client'
 
 import { Table } from "@/app/components/table"
 import { apiFetch } from "@/app/utils/apiFetch"
 import { debounce } from "lodash"
 import { useCallback, useEffect, useRef, useState } from "react"
-
 
 export default function Users({ }) {
 
@@ -17,8 +17,10 @@ export default function Users({ }) {
         console.log(search)
         loading.current = true
         apiFetch(`http://12.12.12.3:8000/api/admin/users?r=${limits.bottom}:${limits.top}&${Object.keys(search).map(key => `${key}=${search[key]}`).join('&')}`).then(data => data.json()).then(data => {
-            setData({ columns: data.columns, rows: data.users, total: data.total_lists })
+            setData({ columns: data.columns, rows: data.rows, total: data.total_rows, total_showing: data.total_rows_showing })
             loading.current = false
+        }).catch(error => {
+            setData('error')
         })
     }, [loading, limits, search])
 
@@ -32,37 +34,26 @@ export default function Users({ }) {
     const onSearch = debounce((search) => {
         console.log(search)
         setSearch({ ...search })
-        // loading.current = true
-        // apiFetch(`http://12.12.12.3:8000/api/admin/lists?r=${limits.bottom}:${limits.top}&${Object.keys(search).map(key => `${key}=${search[key]}`).join('&')}`).then(data => data.json()).then(data => {
-        //     setData({ columns: data.columns, rows: data.lists, total: data.total_lists })
-        //     loading.current = false
-        // })
     }, 1000);
 
     return (
         <>
-            <div>
-                {data == null ?
-                    <></>
-                    :
-                    <>
-                        <label>Rows: {data.total} </label>
-                        {
-                            loading.current ?
-                                <label className="text-sm">Loading...</label>
-                                :
-                                <></>
-                        }
-
-                    </>
-
-                }
+            <div className="flex flex-row gap-7">
+                <label>Search results: {data?.total_showing}</label>
+                <label>Total users: {data?.total}</label>
             </div>
-                {data == null ?
-                    <label className="ml-auto mr-auto w-fit block top-1/2 relative text-4xl font-bold text-neutral-200 h-fit">Loading...</label>
-                    :
-                    <Table data={data} onSearch={onSearch} limits={limits} handleScroll={handleScroll} />
-                }
+            {
+                function () {
+                    switch (data) {
+                        case null:
+                            return <label className="ml-auto mr-auto w-fit block top-1/2 relative text-4xl font-bold text-neutral-200 h-fit">Loading...</label>
+                        case 'error':
+                            return <label className="ml-auto mr-auto w-fit block top-1/2 relative text-4xl font-bold text-neutral-200 h-fit">Error</label>
+                        default:
+                            return <Table data={data} onSearch={onSearch} limits={limits} handleScroll={handleScroll} />
+                    }
+                }()
+            }
         </>
     )
 }

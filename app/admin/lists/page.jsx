@@ -17,12 +17,10 @@ export default function Lists({ }) {
         console.log(search)
         loading.current = true
         apiFetch(`http://12.12.12.3:8000/api/admin/lists?r=${limits.bottom}:${limits.top}&${Object.keys(search).map(key => `${key}=${search[key]}`).join('&')}`).then(data => data.json()).then(data => {
-            setData({ columns: data.columns, rows: data.lists, total: data.total_lists })
+            setData({ columns: data.columns, rows: data.rows, total: data.total_rows, total_showing: data.total_rows_showing })
             loading.current = false
         }).catch(error => {
-
             setData('error')
-
         })
     }, [loading, limits, search])
 
@@ -33,17 +31,17 @@ export default function Lists({ }) {
         }
     }, [loading])
 
-
-
     const onSearch = debounce((search) => {
         console.log(search)
         setSearch({ ...search })
     }, 1000);
 
-
-
     return (
         <>
+            <div className="flex flex-row gap-7">
+                <label>Total users: {data?.total}</label>
+                <label>Search results: {data?.total_showing}</label>
+            </div>
             {
                 function () {
                     switch (data) {
@@ -52,37 +50,10 @@ export default function Lists({ }) {
                         case 'error':
                             return <label className="ml-auto mr-auto w-fit block top-1/2 relative text-4xl font-bold text-neutral-200 h-fit">Error</label>
                         default:
-                            <Table data={data} onSearch={onSearch} limits={limits} handleScroll={handleScroll} />
+                            return <Table data={data} onSearch={onSearch} limits={limits} handleScroll={handleScroll} />
                     }
                 }()
             }
-
-
-
-
-
-
-            {/* <div>
-                {data == null ?
-                    <></>
-                    :
-                    <>
-                        <label>Rows: {data.total} </label>
-                        {
-                            loading.current ?
-                                <label className="text-sm">Loading...</label>
-                                :
-                                <></>
-                        }
-
-                    </>
-                }
-            </div>
-            {data == null ?
-                <label className="ml-auto mr-auto w-fit block top-1/2 relative text-4xl font-bold text-neutral-200 h-fit">Loading...</label>
-                :
-                <Table data={data} onSearch={onSearch} limits={limits} handleScroll={handleScroll} />
-            } */}
         </>
     )
 }

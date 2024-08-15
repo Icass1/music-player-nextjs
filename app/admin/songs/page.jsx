@@ -4,6 +4,7 @@
 import { Table } from "@/app/components/table"
 import { apiFetch } from "@/app/utils/apiFetch"
 import { debounce } from "lodash"
+import { useSession } from "next-auth/react"
 import { useCallback, useEffect, useRef, useState } from "react"
 
 export default function Songs({ }) {
@@ -13,16 +14,18 @@ export default function Songs({ }) {
     const [search, setSearch] = useState({})
     const loading = useRef(true)
 
+    const session = useSession()
+
     useEffect(() => {
         console.log(search)
         loading.current = true
-        apiFetch(`https://api.music.rockhosting.org/api/admin/songs?r=${limits.bottom}:${limits.top}&${Object.keys(search).map(key => `${key}=${search[key]}`).join('&')}`).then(data => data.json()).then(data => {
+        apiFetch(`https://api.music.rockhosting.org/api/admin/songs?r=${limits.bottom}:${limits.top}&${Object.keys(search).map(key => `${key}=${search[key]}`).join('&')}`, session).then(data => data.json()).then(data => {
             setData({ columns: data.columns, rows: data.rows, total: data.total_rows, total_showing: data.total_rows_showing })
             loading.current = false
         }).catch(error => {
             setData('error')
         })
-    }, [loading, limits, search])
+    }, [loading, limits, search, session])
 
     const handleScroll = useCallback((e) => {
         if (e.target.scrollTop == e.target.scrollHeight - e.target.offsetHeight + 10) {

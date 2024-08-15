@@ -10,9 +10,7 @@ export function Table({ data, onSearch, limits, handleScroll }) {
     const search = useRef({});
     const scrollRef = useRef();
 
-
     const [rowShowing, setRowShowing] = useState('')
-
 
     useEffect(() => {
 
@@ -31,9 +29,20 @@ export function Table({ data, onSearch, limits, handleScroll }) {
         }
     }, [scrollRef])
 
+    useEffect(() => {
 
+        const handleKey = (e) => {
+            if (e.keyCode == 27) { 
+                setRowShowing('')
+            }
+        }
 
+        document.addEventListener("keydown", handleKey)
 
+        return () => {
+            document.removeEventListener("keydown", handleKey)
+        }
+    }, [])
 
     return (
         <>
@@ -193,20 +202,7 @@ function RowMenu({ originalRowShowing, data }) {
         })
     }
 
-    useEffect(() => {
 
-        const handleKey = (e) => {
-            if (e.keyCode == 27) { 
-                setRowShowing('')
-            }
-        }
-
-        document.addEventListener("keydown", handleKey)
-
-        return () => {
-            document.removeEventListener("keydown", handleKey)
-        }
-    }, [])
 
     return (
         <div className="bg-neutral-600 shadow-lg rounded-lg absolute left-10 right-20 top-20 bottom-20 z-10 text-white overflow-y-auto">

@@ -69,10 +69,19 @@ Add admin panel
             DONE - Number of pending songs
         DONE - Number of users
         Backend error log
-    Song 
-    See, search and edit songs in database
-    See, search and edit users in database
-    See, search and edit lists in database
+    Songs in database
+        DONE - See
+        DONE - search
+        Edit
+    Users in database
+        DONE - See
+        DONE - search
+        Edit
+    Lists in database
+        DONE - See
+        DONE - search
+        Edit
+
     Downloads view
 
 Add user view

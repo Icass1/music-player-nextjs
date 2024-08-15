@@ -10,7 +10,6 @@ URGENT - Limit to one download at a time and only for users.
 
 CHECK - The Boys Of Summer in All Out 80s
 
-
 Create and rename lists
 
 If in mobile and song view is open, if click in header, it should close
@@ -21,10 +20,13 @@ Drop Spotify link anywhere and add list to library
 
 TO CHECK - Fix onplayend when playing list from search
 
-
 Make volume cuadratic
 
 Move to top of the queue creates adds more songs to the queue
+
+Fix Uncaught (in promise) DOMException: The play() request was interrupted by a call to pause(). https://goo.gl/LdLk22
+Fix Uncaught (in promise) DOMException: The play() request was interrupted by a new load request. https://goo.gl/LdLk22
+
 
 Artist page
     Show albums This Is Supertramp cover style
@@ -61,11 +63,13 @@ Add admin panel
     General
         Graph of active users over time
         Graph of downloaded songs over time
-        Total number of songs
-            Number of songs with lyrics
-            Number of songs with dynamic lyrics
-            Number of pending songs
+        DONE - Total number of songs 
+            DONE - Number of songs with lyrics
+            DONE - Number of songs with dynamic lyrics
+            DONE - Number of pending songs
+        DONE - Number of users
         Backend error log
+    Song 
     See, search and edit songs in database
     See, search and edit users in database
     See, search and edit lists in database

@@ -16,7 +16,7 @@ export default function Users({ }) {
     useEffect(() => {
         console.log(search)
         loading.current = true
-        apiFetch(`http://12.12.12.3:8000/api/admin/users?r=${limits.bottom}:${limits.top}&${Object.keys(search).map(key => `${key}=${search[key]}`).join('&')}`).then(data => data.json()).then(data => {
+        apiFetch(`https://api.music.rockhosting.org/api/admin/users?r=${limits.bottom}:${limits.top}&${Object.keys(search).map(key => `${key}=${search[key]}`).join('&')}`).then(data => data.json()).then(data => {
             setData({ columns: data.columns, rows: data.rows, total: data.total_rows, total_showing: data.total_rows_showing })
             loading.current = false
         }).catch(error => {

@@ -27,21 +27,13 @@ export default function AdminLayout({ children }) {
 
     const session = useSession();
 
-    // if (session.status == "authenticated" && session.data.user.admin) {
+    if (session.status == "authenticated" && session.data.user.admin) {
 
-    // } else if (session.status == "loading") {
-    //     return (
-    //         <div>
-    //             Loading
-    //         </div>
-    //     )
-    // } else {
-    //     return (
-    //         <div>
-    //             Access denied
-    //         </div>
-    //     )
-    // }
+    } else if (session.status == "loading") {
+        return <label className="ml-auto mr-auto w-fit block top-1/2 relative text-4xl font-bold text-neutral-200 h-fit">Loading...</label>
+    } else {
+        return <label className="ml-auto mr-auto w-fit block top-1/2 relative text-4xl font-bold text-neutral-200 h-fit">Access denied</label>
+    }
 
     return (
         <div className="grid h-full" style={{ gridTemplateColumns: '150px 1fr' }}>

@@ -75,7 +75,7 @@ export default function General() {
 
     useEffect(() => {
         // if (session.status != "authenticated") { return }
-        apiFetch("http://12.12.12.3:8000/api/admin/info", session).then(response => {
+        apiFetch("https://api.music.rockhosting.org/api/admin/info", session).then(response => {
 
             console.log(response)
 

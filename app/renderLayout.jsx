@@ -60,7 +60,7 @@ export default function RenderLayout({ children }) {
     //     }
     // };
 
-    if (pathname == "/experimental") {
+    if (pathname.startsWith("/experimental")) {
         return (
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
                 {children}

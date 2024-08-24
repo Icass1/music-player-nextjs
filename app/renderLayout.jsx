@@ -8,6 +8,7 @@ import Search from "./search/page";
 import { MediaPlayerContext } from "./components/audioContext";
 import clsx from "clsx";
 import { apiFetch } from "./utils/apiFetch";
+import { ThemeProvider } from "next-themes";
 
 export default function RenderLayout({ children }) {
 
@@ -58,6 +59,14 @@ export default function RenderLayout({ children }) {
     //         console.error('Error fetching search results:', error);
     //     }
     // };
+
+    if (pathname == "/experimental") {
+        return (
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+                {children}
+            </ThemeProvider>
+        )
+    }
 
     return (
         <div id='page' className={clsx('pb-0 md:pb-2 grid h-full w-full md:p-2 gap-2 mobile-layout md:desktop-layout', { "md:desktop-layout-lyrics": showLyrics })}>

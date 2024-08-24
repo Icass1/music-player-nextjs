@@ -43,22 +43,24 @@ const AudioProvider = ({ children }) => {
 
     const audioCacheRef = useRef();
 
-    useEffect(() => {
+    // useEffect(() => {
         
-        if (session.status == "loading") {
-            return
-        }
+    //     if (session.status == "loading") {
+    //         return
+    //     }
 
-        if (session.status == "authenticated") {
-            if (session.data.user.dev_user) {
-                return
-            }
-        }
+    //     if (session.status == "authenticated") {
+    //         if (session.data.user.dev_user) {
+    //             return
+    //         }
+    //     }
         
-        // Disable logging
-        console.log = () => {}
 
-    }, [session])
+    //     // Disable logging
+    //     console.info("console.log disabled")
+    //     console.log = () => {}
+
+    // }, [session])
 
     useEffect(() => {
         setAudio(new Audio());
@@ -444,24 +446,7 @@ const AudioProvider = ({ children }) => {
 
     }, [showLyrics, session, socket])
 
-    function getTime(seconds) {
 
-        seconds = Math.round(seconds);
-
-        if (typeof seconds !== 'number' || isNaN(seconds)) {
-            return "Invalid input";
-        }
-
-        // Calculate minutes and remaining seconds
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = Math.round(seconds % 60);
-
-        // Format the result with leading zeros
-        const formattedMinutes = String(minutes).padStart(2, '0');
-        const formattedSeconds = String(remainingSeconds).padStart(2, '0');
-
-        return `${formattedMinutes}:${formattedSeconds}`;
-    }
 
     const previousSong = useCallback(() => {
         if (currentTime > 5) {
@@ -494,7 +479,6 @@ const AudioProvider = ({ children }) => {
 
     return (
         <MediaPlayerContext.Provider value={{
-            getTime,
 
             audio,
             analyser,

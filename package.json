@@ -9,6 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.0",
+    "@emotion/styled": "^11.13.0",
+    "@mui/material": "^5.16.6",
     "circular-progress-bar": "^2.1.0",
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",

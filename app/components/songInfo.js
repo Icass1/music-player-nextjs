@@ -13,6 +13,7 @@ import SVG from '../utils/renderSVG';
 import Queue from './queue';
 import useColors from '../hooks/getColors';
 import { apiFetch } from '../utils/apiFetch';
+import { getTime } from '../utils/getTime';
 import { Link } from 'next-view-transitions';
 import useWindowSize from '../hooks/useWindowSize';
 
@@ -35,7 +36,6 @@ const handleDownloadMP3 = (song) => {
 export default function SongInfo() {
     const {
         audio,
-        getTime,
         currentSong,
         isPlaying,
         currentTime,
@@ -513,7 +513,6 @@ function SongInfoMenu({
     const {
         nextSong,
         previousSong,
-        getTime,
         currentSong,
         isPlaying,
         currentTime,

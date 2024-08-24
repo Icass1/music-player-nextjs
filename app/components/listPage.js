@@ -157,6 +157,7 @@ export default function DefaultListPage({ listId, musicData, setMusicData }) {
 
 
 
+
     // Function to calculate total duration
     const getTotalDuration = (songs) => {
         let totalSeconds = 0;
@@ -434,9 +435,10 @@ export default function DefaultListPage({ listId, musicData, setMusicData }) {
         const eventSource = new EventSource(url);
 
         eventSource.onmessage = (event) => {
+            console.log("event.data:", event.data)
             const message = JSON.parse(event.data);
 
-            console.log(message)
+            console.log("message:", message)
 
             // if ((message.completed) == 100) {
             //     eventSource.close();
@@ -457,8 +459,6 @@ export default function DefaultListPage({ listId, musicData, setMusicData }) {
             console.error(error)
             eventSource.close();
         };
-
-
     }, [musicData.spotify_url, session])
 
     return (
@@ -547,14 +547,15 @@ export default function DefaultListPage({ listId, musicData, setMusicData }) {
                         />
                         {
                             !userLists.includes(listId) && musicData.id ?
-                                <Image
-                                    onClick={handleAddListToLibrary}
+                                <SVG
                                     src='https://api.music.rockhosting.org/images/addList.svg'
                                     height={40}
                                     width={40}
-                                    className='relative ml-1 invert-[0.2]'
+                                    color={`rgb(${colors.foreground1})`}
+                                    className='relative ml-1'
                                     title='Add to library'
                                     alt=""
+                                    onClick={handleAddListToLibrary}
                                 />
                                 :
                                 <label></label>
@@ -569,7 +570,6 @@ export default function DefaultListPage({ listId, musicData, setMusicData }) {
                             title={currentList == listId && isPlaying ? ("Pause") : ("Play")}
                             alt=""
                             onClick={currentList == listId && isPlaying ? (handlePauseClick) : (handlePlayClick)}
-
                         />
                     </div>
 

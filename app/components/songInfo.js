@@ -13,6 +13,8 @@ import SVG from '../utils/renderSVG';
 import Queue from './queue';
 import useColors from '../hooks/getColors';
 import { apiFetch } from '../utils/apiFetch';
+import { Link } from 'next-view-transitions';
+import useWindowSize from '../hooks/useWindowSize';
 
 const handleDownloadMP3 = (song) => {
     apiFetch(`/api/song/${song.id}`)
@@ -54,9 +56,11 @@ export default function SongInfo() {
     const [topScrollBarValue, setTopScrollBarValue] = useState(1);
 
 
-    const songViewScrollRef = useRef();
-    const [showSongView, setShowSongView] = useState(false);
+    const mobileSongViewScrollRef = useRef();
+    const [showMobileSongView, setShowMobileSongView] = useState(false);
     const colors = useColors();
+
+    const [showDesktopSongView, setShowDesktopSongView] = useState(false);
 
     useEffect(() => {
         if (audioDuration == 0) { return }
@@ -109,16 +113,12 @@ export default function SongInfo() {
         }
     }
 
-
-
-
-
     useEffect(() => {
 
         if (innerWidth > 768) {
             return
         }
-        const element = songViewScrollRef?.current
+        const element = mobileSongViewScrollRef?.current
 
         const handleScrollEnd = (e) => {
             e?.target?.scrollTo(Math.round(e?.target?.scrollLeft / innerWidth) * innerWidth, 0)
@@ -126,20 +126,20 @@ export default function SongInfo() {
 
         element.scrollTo(topScrollBarValue * innerWidth, 0)
 
-        songViewScrollRef?.current?.addEventListener("scrollend", handleScrollEnd)
+        mobileSongViewScrollRef?.current?.addEventListener("scrollend", handleScrollEnd)
 
         return () => {
             element.removeEventListener("scrollend", handleScrollEnd)
         }
 
-    }, [songViewScrollRef, innerWidth])
+    }, [mobileSongViewScrollRef, innerWidth])
 
     const handleViewScroll = (e) => {
         setTopScrollBarValue(e?.target?.scrollLeft / innerWidth * 100)
     }
 
-    const toggleShowSongView = () => {
-        setShowSongView(value => !value)
+    const toggleShowMobileSongView = () => {
+        setShowMobileSongView(value => !value)
     }
 
     const toggleRandomQueue = () => {
@@ -161,15 +161,12 @@ export default function SongInfo() {
                 <></>
                 :
                 <div
-                    id="delte"
-                    ref={songViewScrollRef}
+                    ref={mobileSongViewScrollRef}
                     className='fixed md:hidden flex flex-row bg-neutral-500 top-0 left-0 right-0 overflow-x-scroll bottom-[58px] z-10 scroll-smooth transition-all'
-                    onClick={toggleShowSongView}
+                    onClick={toggleShowMobileSongView}
                     onScroll={handleViewScroll}
-                    style={{ clipPath: showSongView ? `inset(0% 0px 0px 0px)` : `inset(100% 0px 0px 0px)` }}
-
+                    style={{ clipPath: showMobileSongView ? `inset(0% 0px 0px 0px)` : `inset(100% 0px 0px 0px)` }}
                 >
-
                     <Image
                         priority="high"
                         className='fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-full w-auto md:w-auto max-w-none blur-lg opacity-60 brightness-[.2] select-none'
@@ -196,11 +193,11 @@ export default function SongInfo() {
                                 <Queue />
                                 <div
                                     className='h-[60px] left-1 right-1 bottom-3 overflow-hidden absolute rounded-lg'
-                                    onTouchStart={(e) => { songViewScrollRef.current.style.overflowX = 'hidden' }}
-                                    onTouchEnd={(e) => { songViewScrollRef.current.style.overflowX = '' }}
+                                    onTouchStart={(e) => { mobileSongViewScrollRef.current.style.overflowX = 'hidden' }}
+                                    onTouchEnd={(e) => { mobileSongViewScrollRef.current.style.overflowX = '' }}
                                 >
                                     <SongInfoMenu
-                                        toggleShowSongView={toggleShowSongView}
+                                        toggleShowMobileSongView={toggleShowMobileSongView}
                                         showingEqualizer={showingEqualizer}
                                         handlePrevious={handlePrevious}
                                         handleNext={handleNext}
@@ -211,6 +208,7 @@ export default function SongInfo() {
                                         sliderInput={sliderInput}
                                         sliderChange={sliderChange}
                                         setShowingEqualizer={setShowingEqualizer}
+                                        setShowDesktopSongView={setShowDesktopSongView}
                                     />
                                 </div>
                             </div>
@@ -219,7 +217,6 @@ export default function SongInfo() {
 
                     <div className=' h-full flex-shrink-0 w-full relative overflow-x-hidden'>
                         <div className='relative grid max-w-full' style={{ gridTemplateRows: "2fr max-content 1fr max-content 60px 60px", height: 'calc(100% - 60px)' }}>
-
 
                             <label></label>
 
@@ -234,7 +231,7 @@ export default function SongInfo() {
                                 </div>
                                 <Image
                                     priority="high"
-                                    className={clsx('w-full rounded-xl', { 'opacity-70': showingEqualizer })}
+                                    className={clsx('w-full rounded-xl transition-opacity', { 'opacity-70': showingEqualizer })}
                                     // className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-full w-auto md:w-auto max-w-none blur-sm opacity-60 brightness-50 select-none'
                                     alt="Current Song"
                                     sizes='100%'
@@ -254,8 +251,8 @@ export default function SongInfo() {
 
                             <div
                                 className='grid relative gap-1 ml-2 mr-2 items-center justify-items-center scroll-'
-                                onTouchStart={(e) => { songViewScrollRef.current.style.overflowX = 'hidden' }}
-                                onTouchEnd={(e) => { songViewScrollRef.current.style.overflowX = '' }}
+                                onTouchStart={(e) => { mobileSongViewScrollRef.current.style.overflowX = 'hidden' }}
+                                onTouchEnd={(e) => { mobileSongViewScrollRef.current.style.overflowX = '' }}
                                 style={{ gridTemplateColumns: '50px 1fr 50px' }}
                             >
                                 <label className='text-neutral-300'>{getTime(currentTime)}</label>
@@ -301,11 +298,11 @@ export default function SongInfo() {
                             </div>
                             <div
                                 className='absolute h-[60px] left-3 right-3 bottom-3 overflow-hidden rounded-lg bg-[#525151b6]'
-                                onTouchStart={(e) => { songViewScrollRef.current.style.overflowX = 'hidden' }}
-                                onTouchEnd={(e) => { songViewScrollRef.current.style.overflowX = '' }}
+                                onTouchStart={(e) => { mobileSongViewScrollRef.current.style.overflowX = 'hidden' }}
+                                onTouchEnd={(e) => { mobileSongViewScrollRef.current.style.overflowX = '' }}
                             >
                                 <SongInfoMenu
-                                    toggleShowSongView={toggleShowSongView}
+                                    toggleShowMobileSongView={toggleShowMobileSongView}
                                     showingEqualizer={showingEqualizer}
                                     handlePrevious={handlePrevious}
                                     handleNext={handleNext}
@@ -316,16 +313,16 @@ export default function SongInfo() {
                                     sliderInput={sliderInput}
                                     sliderChange={sliderChange}
                                     setShowingEqualizer={setShowingEqualizer}
+                                    setShowDesktopSongView={setShowDesktopSongView}
                                 />
                             </div>
                         </div>
                     </div>
                 </div>
-
             }
 
             <SongInfoMenu
-                toggleShowSongView={toggleShowSongView}
+                toggleShowMobileSongView={toggleShowMobileSongView}
                 showingEqualizer={showingEqualizer}
                 handlePrevious={handlePrevious}
                 handleNext={handleNext}
@@ -336,14 +333,170 @@ export default function SongInfo() {
                 sliderInput={sliderInput}
                 sliderChange={sliderChange}
                 setShowingEqualizer={setShowingEqualizer}
+                setShowDesktopSongView={setShowDesktopSongView}
             />
+            {showDesktopSongView ?
+                <SongView
+                    sliderValue={sliderValue}
+                    sliderInput={sliderInput}
+                    sliderChange={sliderChange}
+                    setShowingEqualizer={setShowingEqualizer}
+                    showingEqualizer={showingEqualizer}
+                    toggleRandomQueue={toggleRandomQueue}
+                    setShowDesktopSongView={setShowDesktopSongView}
+                    handlePrevious={handlePrevious}
+                    handleNext={handleNext}
+                    handlePause={handlePause}
+                    handlePlay={handlePlay}
+                />
+                :
+                <></>
+            }
         </>
     )
 }
 
 
+function SongView({
+    setShowingEqualizer,
+    showingEqualizer,
+    setShowDesktopSongView,
+    sliderValue,
+    sliderInput,
+    sliderChange,
+    handlePrevious,
+    handleNext,
+    handlePause,
+    handlePlay,
+    toggleRandomQueue,
+}) {
+
+    const { currentSong, queue, queueIndex, getTime, currentTime, audioDuration, isPlaying, randomQueue } = useContext(MediaPlayerContext)
+    const [innerWidth, innerHeight] = useWindowSize();
+    const songDataRef = useRef();
+    const coverRef = useRef();
+    const backgroundCoverRef = useRef();
+    const colors = useColors();
+
+    useEffect(() => {
+
+        console.log(innerHeight, innerWidth)
+
+        let maxHeight = innerHeight - 400;
+        let maxWidth = innerWidth - 200;
+
+        if (coverRef.current) {
+            coverRef.current.style.height = Math.min(maxHeight, maxWidth) + 'px'
+            coverRef.current.style.width = Math.min(maxHeight, maxWidth) + 'px'
+        }
+
+        if (backgroundCoverRef.current) {
+            backgroundCoverRef.current.style.height = Math.max(innerHeight, innerWidth) + 'px'
+            backgroundCoverRef.current.style.width = Math.max(innerHeight, innerWidth) + 'px'
+        }
+        songDataRef.current.scrollTo(coverRef.current.style.width * queueIndex, 0)
+
+    }, [coverRef, backgroundCoverRef, queue, queueIndex, songDataRef, innerWidth, innerHeight])
+
+
+    return (
+        <div className='hidden md:block bg-neutral-800 z-50 fixed top-[75px] left-2 right-2 bottom-2 rounded-md overflow-hidden'>
+
+            <Image
+                ref={backgroundCoverRef}
+                priority="high"
+                className='md:block absolute top-1/2 md:left-1/2 -translate-y-1/2 md:-translate-x-1/2 blur-xl opacity-60 brightness-50 select-none'
+                alt="Current Song"
+                sizes="100vw"
+                src={`https://api.music.rockhosting.org/api/song/image/${currentSong.id == "" ? ("_") : (currentSong.id)}`}
+                width={0}
+                height={0}
+            />
+
+            <SVG
+                className="select-none cursor-pointer transition-all absolute"
+                color='rgb(204 204 204)'
+                src='https://api.music.rockhosting.org/images/back.svg'
+                width={40}
+                height={40}
+                alt="Toggle random queue"
+                onClick={() => { setShowDesktopSongView(false) }}
+            />
+
+            <div style={{ width: coverRef?.current?.style?.width ? coverRef.current.style.width : '50%' }} className='left-1/2 -translate-x-1/2 block absolute top-1/2 -translate-y-1/2'>
+
+                <div ref={coverRef} className='ml-auto mr-auto relative' onClick={(e) => { e.stopPropagation(); setShowingEqualizer((prevState) => !prevState) }}>
+
+                    <div className='z-10 relative w-full h-0 pb-[100%] mb-[-100%]'>
+                        {showingEqualizer ? (
+                            <Equalizer bar_gap={0} bar_count={innerWidth > 768 ? 180 : 52} toggleCenter={false} centered={true} className='w-full h-full absolute' />
+                        ) : (
+                            <></>
+                        )}
+                    </div>
+                    <Image
+                        priority="high"
+                        className={clsx('w-full rounded-xl transition-opacity', { 'opacity-70': showingEqualizer })}
+                        // className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-full w-auto md:w-auto max-w-none blur-sm opacity-60 brightness-50 select-none'
+                        alt="Current Song"
+                        sizes='100%'
+                        src={`https://api.music.rockhosting.org/api/song/image/${currentSong.id == "" ? ("_") : (currentSong.id)}`}
+                        width={0}
+                        height={0}
+                    />
+                </div>
+
+                <div ref={songDataRef} className='flex flex-row scroll-smooth overflow-hidden relative'>
+                    {queue.map((item, index) => (
+                        <div key={index} className="flex-shrink-0 w-full">
+                            <label className='text-lg md:text-3xl flex flex-row ml-2 mt-1 md:mt-2 mr-2 items-center gap-2 h-6 md:h-auto md:min-h-9 font-bold md:w-[calc(100%_-_35px)] fade-out-neutral-200'>{item.title}</label>
+                            <label className='block text-base md:text-2xl fade-out-neutral-300 ml-2 mr-2 mb-2 md:min-h-8'>{item.artist}</label>
+                        </div>
+                    ))}
+                </div>
+
+                <div className='hidden md:grid relative gap-1 items-center justify-items-center' style={{ gridTemplateColumns: '40px 1fr 40px' }}>
+                    <label className='text-sm'>{getTime(currentTime)}</label>
+                    <Slider value={sliderValue} onInput={sliderInput} onChange={sliderChange}></Slider>
+                    <label className='text-sm'>{getTime(audioDuration)}</label>
+                </div>
+
+                <div className='grid items-center justify-items-center ml-auto mr-auto w-min' style={{ gridTemplateColumns: innerWidth > 768 ? '60px 60px 60px 60px 60px' : '60px' }}>
+                    <SVG
+                        className="hidden md:block select-none cursor-pointer transition-all hover:brightness-110"
+                        color='rgb(204 204 204)'
+                        src='https://api.music.rockhosting.org/images/download.svg'
+                        width={30}
+                        height={30}
+                        title="Download MP3"
+                        onClick={() => { handleDownloadMP3(currentSong) }}
+                    />
+                    <SVG color='rgb(204, 204, 204)' className='hidden md:block cursor-pointer hover:brightness-110' src='https://api.music.rockhosting.org/images/previous.svg' width={40} height={40} onClick={handlePrevious} />
+                    {isPlaying ?
+                        <SVG color='rgb(204, 204, 204)' className='md:block cursor-pointer hover:brightness-110' src='https://api.music.rockhosting.org/images/pause.svg' width={55} height={55} onClick={(e) => { e.stopPropagation(); handlePause() }} />
+                        :
+                        <SVG color='rgb(204, 204, 204)' className='md:block cursor-pointer hover:brightness-110' src='https://api.music.rockhosting.org/images/play.svg' width={55} height={55} onClick={(e) => { e.stopPropagation(); handlePlay() }} />
+                    }
+                    <SVG color='rgb(204, 204, 204)' className='hidden md:block cursor-pointer hover:brightness-110' src='https://api.music.rockhosting.org/images/next.svg' width={40} height={40} onClick={handleNext} />
+                    <SVG
+                        className="hidden md:block select-none cursor-pointer transition-all hover:brightness-110"
+                        color={randomQueue ? `rgb(${colors.foreground1})` : 'rgb(204 204 204)'}
+                        src='https://api.music.rockhosting.org/images/random.svg'
+                        width={30}
+                        height={30}
+                        title="Toggle random queue"
+                        onClick={toggleRandomQueue}
+                    />
+                </div>
+            </div>
+        </div>
+    )
+}
+
+
+
 function SongInfoMenu({
-    toggleShowSongView,
+    toggleShowMobileSongView,
     showingEqualizer,
     handlePrevious,
     handleNext,
@@ -353,7 +506,8 @@ function SongInfoMenu({
     sliderValue,
     sliderInput,
     sliderChange,
-    setShowingEqualizer
+    setShowingEqualizer,
+    setShowDesktopSongView
 }) {
 
     const {
@@ -370,8 +524,8 @@ function SongInfoMenu({
     } = useContext(MediaPlayerContext);
 
     const songDataRef = useRef();
-    const innerWidth = useWindowWidth();
     const colors = useColors();
+    const [innerWidth, innerHeight] = useWindowSize();
 
     useEffect(() => {
         songDataRef.current.scrollTo(songDataRef.current.offsetWidth * queueIndex, 0)
@@ -458,23 +612,31 @@ function SongInfoMenu({
             <div
                 className='relative grid h-full w-full m-0 top-0 items-center justify-items-start md:justify-items-center'
                 style={{ gridTemplateColumns: '60px 1fr 60px', gridTemplateRows: `${innerWidth > 768 ? '80px' : '60px'} 1fr 40px 40px` }}
-                onClick={toggleShowSongView}
+                onClick={toggleShowMobileSongView}
             >
-                <div ref={songDataRef} className='w-full absolute  flex flex-row scroll-smooth overflow-hidden  row-start-1 row-end-2     col-start-2 col-end-3     md:row-start-1 md:row-end-2    md:col-start-1 md:col-end-4'>
+                <div className='hidden md:block w-5 h-5 absolute z-50 right-2 top-4'>
+                    <SVG
+                        color='rgb(204, 204, 204)'
+                        className='cursor-pointer hover:brightness-110'
+                        src='https://api.music.rockhosting.org/images/expand.svg'
+                        width={20}
+                        height={20}
+                        onClick={() => { setShowDesktopSongView(true) }}
+                    />
+                </div>
 
+                <div ref={songDataRef} className='w-full absolute  flex flex-row scroll-smooth overflow-hidden  row-start-1 row-end-2     col-start-2 col-end-3     md:row-start-1 md:row-end-2    md:col-start-1 md:col-end-4'>
                     {queue.map((item, index) => (
                         <div key={index} className="flex-shrink-0 w-full">
-                            <label className='block text-lg md:text-3xl ml-2 mt-1 md:mt-2 mr-2 fade-out-neutral-200 h-6 md:h-auto md:min-h-9 font-bold'>{item.title}</label>
+                            <label className='text-lg md:text-3xl flex flex-row ml-2 mt-1 md:mt-2 mr-2 items-center gap-2 h-6 md:h-auto md:min-h-9 font-bold md:w-[calc(100%_-_35px)] fade-out-neutral-200'>{item.title}</label>
                             <label className='block text-base md:text-2xl fade-out-neutral-300 ml-2 mr-2 mb-2 md:min-h-8'>{item.artist}</label>
                         </div>
                     ))}
-                    <label className="flex-shrink-0 w-full block text-xl md:text-3xl ml-2 mt-2 mr-2 fade-out-neutral-200 md:min-h-9 font-bold">{currentTime}</label>
-                    <label className="flex-shrink-0 w-full block text-xl md:text-3xl ml-2 mt-2 mr-2 fade-out-neutral-200 md:min-h-9 font-bold">{audioDuration}</label>
                 </div>
 
                 <div className='realtive   row-start-1 row-end-2     col-start-1 col-end-2    md:row-start-2 md:row-end-3     md:col-start-1 md:col-end-4    p-1 md:p-0  h-full md:w-[180px] md:h-[180px] flex cursor-pointer' onClick={(e) => { e.stopPropagation(); setShowingEqualizer((prevState) => !prevState) }}>
 
-                    <Image priority="high" className={clsx('realtive select-none h-full w-auto rounded-lg md:rounded-none', { "opacity-70": showingEqualizer })} alt="Current Song" src={`https://api.music.rockhosting.org/api/song/image/${currentSong.id == "" ? ("_") : (currentSong.id)}`} width={180} height={180} />
+                    <Image priority="high" className={clsx('realtive select-none h-full w-auto rounded-lg md:rounded-none transition-opacity', { "opacity-70": showingEqualizer })} alt="Current Song" src={`https://api.music.rockhosting.org/api/song/image/${currentSong.id == "" ? ("_") : (currentSong.id)}`} width={180} height={180} />
 
                     {showingEqualizer ? (
                         <Equalizer bar_gap={0} bar_count={innerWidth > 768 ? 180 : 52} toggleCenter={false} centered={true} className='select-none w-[52px] h-[52px] absolute md:w-[180px] md:h-[180px]' />
@@ -521,7 +683,6 @@ function SongInfoMenu({
                     </div>
                 </div>
             </div>
-            {/* <div className='fixed block md:hidden h-1 left-0 bottom-[58px] bg-neutral-200 rounded-bl-full rounded-br-full' style={{ right: (currentTime == null ? 100 : 100 - 100 * currentTime / audioDuration) + "%" }}></div> */}
             <div className='block md:hidden absolute h-1 left-0 bottom-0 bg-neutral-200 ' style={{ right: (currentTime == null ? 100 : 100 - 100 * currentTime / audioDuration) + "%" }}></div>
         </>
     )

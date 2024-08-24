@@ -42,7 +42,7 @@ export default function Songs({ }) {
     return (
         <>
             <div className="flex flex-row gap-7">
-                <label>Total users: {data?.total}</label>
+                <label>Total songs: {data?.total}</label>
                 <label>Search results: {data?.total_showing}</label>
             </div>
             {

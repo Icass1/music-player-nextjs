@@ -41,8 +41,9 @@ export default function Lists({ }) {
     return (
         <>
             <div className="flex flex-row gap-7">
-                <label>Total users: {data?.total}</label>
+                <label>Total lists: {data?.total}</label>
                 <label>Search results: {data?.total_showing}</label>
+                <label className="text-orange-500">When edit DB is available, change directory path of lists that starts with AllSongs</label>
             </div>
             {
                 function () {
@@ -53,6 +54,7 @@ export default function Lists({ }) {
                             return <label className="ml-auto mr-auto w-fit block top-1/2 relative text-4xl font-bold text-neutral-200 h-fit">Error</label>
                         default:
                             return <Table data={data} onSearch={onSearch} limits={limits} handleScroll={handleScroll} />
+                           
                     }
                 }()
             }

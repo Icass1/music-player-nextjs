@@ -217,10 +217,7 @@ export default function Header({ handleSearch }) {
 
             </div>
 
-            {/* <div className="hidden md:block"> */}
             <Slider value={audioVolume} onChange={sliderChange} className="hidden md:block"></Slider>
-            {/* </div> */}
-
 
             {session.data ? (
                 <div className="hidden md:flex flex-row gap-2 w-max items-center">

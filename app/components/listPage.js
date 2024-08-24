@@ -42,8 +42,11 @@ function CircularProgressBar({ className = "", progress = 50, smooth = true, onC
                     --circumference: calc(var(--radius) * 3.141592653589793 * 2);
                     --dash: calc((var(--progress) * var(--circumference)) / 100);
                     position: absolute;
-                    width: calc(100%);
-                    height: calc(100%);
+                    width: calc(100% + var(--stroke-width) / 3);
+                    height: calc(100% + var(--stroke-width) / 3);
+                    transform: translate(-50%, -50%);
+                    top: 50%;
+                    left: 50%;
                     viewBox: 0 0 250 250;
                 }
 
@@ -435,10 +438,17 @@ export default function DefaultListPage({ listId, musicData, setMusicData }) {
         const eventSource = new EventSource(url);
 
         eventSource.onmessage = (event) => {
-            console.log("event.data:", event.data)
             const message = JSON.parse(event.data);
 
             console.log("message:", message)
+
+            if (message.id === 'total') {
+                setDownloadProgress(message.completed)
+                if (message.completed == 100) {
+                    setDownloadProgress(undefined)
+                }
+            }
+
 
             // if ((message.completed) == 100) {
             //     eventSource.close();
@@ -514,19 +524,38 @@ export default function DefaultListPage({ listId, musicData, setMusicData }) {
                                 }
                                 {
                                     musicData.downloaded === false && session.status == "authenticated" ?
+
                                         <div
                                             className='h-16 w-16 fg-1 rounded-full bottom-4 left-4 cursor-pointer'
                                             onClick={handleDownloadToDatabase}
                                         >
-                                            <Image
-                                                src='https://api.music.rockhosting.org/images/download.svg'
-                                                height={40}
-                                                width={40}
-                                                className='relative ml-auto mr-auto top-1/2 -translate-y-1/2'
-                                                title='Download to database'
-                                                alt=""
-                                            />
+                                            {downloadProgress == undefined ? (
+                                                <></>
+                                            ) : (
+                                                <CircularProgressBar
+                                                    className='absolute h-16 w-16 fg-1 rounded-full cursor-pointer'
+                                                    progress={downloadProgress}
+                                                    smooth={downloadSmooth}
+                                                />
+                                            )}
+                                            <Image src='https://api.music.rockhosting.org/images/download.svg' height={40} width={40} className='relative ml-auto mr-auto top-1/2 -translate-y-1/2' alt='' />
                                         </div>
+
+
+
+                                        // <div
+                                        //     className='h-16 w-16 fg-1 rounded-full bottom-4 left-4 cursor-pointer'
+                                        //     onClick={handleDownloadToDatabase}
+                                        // >
+                                        //     <Image
+                                        //         src='https://api.music.rockhosting.org/images/download.svg'
+                                        //         height={40}
+                                        //         width={40}
+                                        //         className='relative ml-auto mr-auto top-1/2 -translate-y-1/2'
+                                        //         title='Download to database'
+                                        //         alt=""
+                                        //     />
+                                        // </div>
                                         :
                                         <></>
                                 }

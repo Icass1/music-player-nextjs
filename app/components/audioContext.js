@@ -44,7 +44,7 @@ const AudioProvider = ({ children }) => {
     const audioCacheRef = useRef();
 
     // useEffect(() => {
-        
+
     //     if (session.status == "loading") {
     //         return
     //     }
@@ -54,7 +54,7 @@ const AudioProvider = ({ children }) => {
     //             return
     //         }
     //     }
-        
+
 
     //     // Disable logging
     //     console.info("console.log disabled")
@@ -477,11 +477,81 @@ const AudioProvider = ({ children }) => {
         }
     }, [audio, currentTime, queueIndex, queue, setCurrentSong, setQueueIndex, audio, currentTime])
 
+
+    const handlePause = () => {
+        audio.pause()
+    }
+
+    const handlePlay = () => {
+        audio.play()
+    }
+
+    const handlePrevious = () => {
+        if (currentTime > 5) {
+            audio.currentTime = 0;
+        } else {
+            if (queueIndex <= 0) {
+                return
+            }
+            else {
+
+                setCurrentSong(queue[queueIndex - 1]);
+                setQueueIndex(queueIndex - 1);
+            }
+        }
+    }
+
+    const handleNext = () => {
+
+        if (queueIndex >= queue.length - 1) {
+
+            setCurrentSong(queue[0]);
+            setQueueIndex(0);
+
+        } else {
+
+            setCurrentSong(queue[queueIndex + 1]);
+            setQueueIndex(queueIndex + 1);
+        }
+    }
+
+    const handlePlayList = (id) => {
+
+        apiFetch(`/api/list/${id}`)
+            .then(response => response.text())
+            .then(data => JSON.parse(data))
+            .then(musicData => {
+
+                let _list = [...musicData.songs].filter(song => { if (song.in_database == false) { return false } else { return true } });
+
+                if (_list.length == 0) {
+                    return;
+                }
+
+                if (randomQueue) {
+                    _list.sort(() => Math.random() - 0.5);
+                }
+
+                setQueue(_list);
+                setQueueIndex(0);
+                setCurrentSong(_list[0]);
+                setCurrentList(id);
+                audio.play();
+            })
+    }
+
+
     return (
         <MediaPlayerContext.Provider value={{
 
             audio,
             analyser,
+
+            handlePlay,
+            handlePause,
+            handleNext,
+            handlePrevious,
+            handlePlayList,
 
             currentSong,
             setCurrentSong,

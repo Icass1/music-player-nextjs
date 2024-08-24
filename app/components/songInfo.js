@@ -44,9 +44,10 @@ export default function SongInfo() {
         randomQueue,
         setRandomQueue,
         queueIndex,
-        setCurrentSong,
-        setQueueIndex,
-
+        handlePlay,
+        handlePause,
+        handlePrevious,
+        handleNext,
         setQueue,
     } = useContext(MediaPlayerContext);
 
@@ -75,43 +76,7 @@ export default function SongInfo() {
         setSliderValue(event.target.value);
     };
 
-    const handlePause = () => {
-        audio.pause()
-    }
 
-    const handlePlay = () => {
-        audio.play()
-    }
-
-    const handlePrevious = () => {
-        if (currentTime > 5) {
-            audio.currentTime = 0;
-        } else {
-            if (queueIndex <= 0) {
-                return
-            }
-            else {
-
-                setCurrentSong(queue[queueIndex - 1]);
-                setQueueIndex(queueIndex - 1);
-            }
-        }
-    }
-
-    const handleNext = () => {
-
-        if (queueIndex >= queue.length - 1) {
-
-
-            setCurrentSong(queue[0]);
-            setQueueIndex(0);
-
-        } else {
-
-            setCurrentSong(queue[queueIndex + 1]);
-            setQueueIndex(queueIndex + 1);
-        }
-    }
 
     useEffect(() => {
 
@@ -199,10 +164,6 @@ export default function SongInfo() {
                                     <SongInfoMenu
                                         toggleShowMobileSongView={toggleShowMobileSongView}
                                         showingEqualizer={showingEqualizer}
-                                        handlePrevious={handlePrevious}
-                                        handleNext={handleNext}
-                                        handlePause={handlePause}
-                                        handlePlay={handlePlay}
                                         toggleRandomQueue={toggleRandomQueue}
                                         sliderValue={sliderValue}
                                         sliderInput={sliderInput}
@@ -304,10 +265,6 @@ export default function SongInfo() {
                                 <SongInfoMenu
                                     toggleShowMobileSongView={toggleShowMobileSongView}
                                     showingEqualizer={showingEqualizer}
-                                    handlePrevious={handlePrevious}
-                                    handleNext={handleNext}
-                                    handlePause={handlePause}
-                                    handlePlay={handlePlay}
                                     toggleRandomQueue={toggleRandomQueue}
                                     sliderValue={sliderValue}
                                     sliderInput={sliderInput}
@@ -324,10 +281,6 @@ export default function SongInfo() {
             <SongInfoMenu
                 toggleShowMobileSongView={toggleShowMobileSongView}
                 showingEqualizer={showingEqualizer}
-                handlePrevious={handlePrevious}
-                handleNext={handleNext}
-                handlePause={handlePause}
-                handlePlay={handlePlay}
                 toggleRandomQueue={toggleRandomQueue}
                 sliderValue={sliderValue}
                 sliderInput={sliderInput}
@@ -344,10 +297,6 @@ export default function SongInfo() {
                     showingEqualizer={showingEqualizer}
                     toggleRandomQueue={toggleRandomQueue}
                     setShowDesktopSongView={setShowDesktopSongView}
-                    handlePrevious={handlePrevious}
-                    handleNext={handleNext}
-                    handlePause={handlePause}
-                    handlePlay={handlePlay}
                 />
                 :
                 <></>
@@ -364,14 +313,23 @@ function SongView({
     sliderValue,
     sliderInput,
     sliderChange,
-    handlePrevious,
-    handleNext,
-    handlePause,
-    handlePlay,
     toggleRandomQueue,
 }) {
 
-    const { currentSong, queue, queueIndex, getTime, currentTime, audioDuration, isPlaying, randomQueue } = useContext(MediaPlayerContext)
+    const {
+        currentSong,
+        queue,
+        queueIndex,
+        getTime,
+        currentTime,
+        audioDuration,
+        isPlaying,
+        randomQueue,
+        handlePrevious,
+        handlePause,
+        handlePlay,
+        handleNext,
+    } = useContext(MediaPlayerContext)
     const [innerWidth, innerHeight] = useWindowSize();
     const songDataRef = useRef();
     const coverRef = useRef();
@@ -498,10 +456,6 @@ function SongView({
 function SongInfoMenu({
     toggleShowMobileSongView,
     showingEqualizer,
-    handlePrevious,
-    handleNext,
-    handlePause,
-    handlePlay,
     toggleRandomQueue,
     sliderValue,
     sliderInput,
@@ -519,7 +473,11 @@ function SongInfoMenu({
         audioDuration,
         queue,
         randomQueue,
-        queueIndex
+        queueIndex,
+        handlePrevious,
+        handlePause,
+        handlePlay,
+        handleNext,
     } = useContext(MediaPlayerContext);
 
     const songDataRef = useRef();

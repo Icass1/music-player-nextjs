@@ -128,7 +128,14 @@ export default function Home() {
 }
 
 function AddContextMenu({ children, item, setDownloadProgress, setMusicData }) {
-    const { currentList, isPlaying, randomQueue, setCurrentList, audio, setQueue, setQueueIndex, setCurrentSong, queue, queueIndex } = useContext(MediaPlayerContext);
+    const {
+        randomQueue,
+        handlePlayList,
+        setQueue,
+        queue,
+        queueIndex
+    } = useContext(MediaPlayerContext);
+    
     const session = useSession()
 
     const [downloadingID, setDownloadingID] = useState('');
@@ -183,30 +190,7 @@ function AddContextMenu({ children, item, setDownloadProgress, setMusicData }) {
     }, [downloadingID, setDownloadProgress]);
 
 
-    const handlePlayList = (id) => {
 
-        apiFetch(`/api/list/${id}`)
-            .then(response => response.text())
-            .then(data => JSON.parse(data))
-            .then(musicData => {
-
-                let _list = [...musicData.songs].filter(song => { if (song.in_database == false) { return false } else { return true } });
-
-                if (_list.length == 0) {
-                    return;
-                }
-
-                if (randomQueue) {
-                    _list.sort(() => Math.random() - 0.5);
-                }
-
-                setQueue(_list);
-                setQueueIndex(0);
-                setCurrentSong(_list[0]);
-                setCurrentList(id);
-                audio.play();
-            })
-    }
 
     const handleDownloadList = (id) => {
         setDownloadingID(id)

@@ -7,13 +7,14 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { SkipBack, SkipForward, Play, Pause, Volume2, MicVocal, Shuffle, Sun, Lock, Moon, Home, Users, ListMusic, Music2, Library, Search, Menu, ChevronLeft, ChevronRight, User } from "lucide-react"
 import { useTheme } from "next-themes"
-import { useSession } from "next-auth/react"
+import { signIn, useSession } from "next-auth/react"
 import { MediaPlayerContext } from '../components/audioContext'
 import { getTime } from '../utils/getTime'
 import { Link } from 'next-view-transitions'
 import { usePathname } from 'next/navigation'
 import Image from 'next/image'
 import { apiFetch } from '../utils/apiFetch'
+import { Skeleton } from '@/components/ui/skeleton'
 
 function NavigationPath({ path, label, Icon, showing, _index }) {
     const pathname = usePathname()
@@ -72,7 +73,7 @@ export default function Layout({ children }) {
     const [showNavigation, setShowNavigation] = React.useState(false);
     const [showQueue, setShowQueue] = React.useState(false);
     const { theme, setTheme } = useTheme();
-    const { data: session } = useSession();
+    const session = useSession();
 
     const [lyrics, setLyrics] = useState();
 
@@ -144,27 +145,60 @@ export default function Layout({ children }) {
                                 {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
                             </Button>
                         </div>
-                        {session && (
-                            <div className="flex items-center space-x-2 mb-6">
 
-                                {/* <Image src={session.user.image} alt='' width={35} height={35} className='rounded-full' style={{ top: '10px', left: '10px' }}></Image> */}
-                                <Avatar style={{ top: showNavigation ? '85px' : '60px', left: showNavigation ? '60px' : '6px' }} className={`absolute transition-all duration-300 ${showNavigation ? '' : 'w-7 h-7'}`}>
-                                    <AvatarImage src={session.user?.image || undefined} alt={session.user?.name || "User"} />
-                                    <AvatarFallback><User /></AvatarFallback>
-                                </Avatar>
-                                <div className='pl-10'>
-                                    <p className="font-semibold">{session.user?.name}</p>
-                                    <p className="text-sm text-muted-foreground">{session.user?.email}</p>
-                                </div>
-                            </div>
-                        )}
+                        {
+                            function () {
+                                switch (session.status) {
+                                    case "authenticated":
+                                        return (
+                                            <div className="flex items-center space-x-2 mb-6">
+
+                                                {/* <Image src={session.user.image} alt='' width={35} height={35} className='rounded-full' style={{ top: '10px', left: '10px' }}></Image> */}
+                                                <Avatar style={{ top: showNavigation ? '85px' : '60px', left: showNavigation ? '60px' : '6px' }} className={`absolute transition-all duration-300 ${showNavigation ? '' : 'w-7 h-7'}`}>
+                                                    <AvatarImage src={session.data.user?.image || undefined} alt={session.data.user?.name || "User"} />
+                                                    <AvatarFallback><User /></AvatarFallback>
+                                                </Avatar>
+                                                <div className='pl-10'>
+                                                    <p className="font-semibold">{session.data.user?.name}</p>
+                                                    <p className="text-sm text-muted-foreground">{session.data.user?.email}</p>
+                                                </div>
+                                            </div>
+
+                                        )
+                                    case "loading":
+                                        return (
+                                            <div className="flex items-center space-x-2 mb-6">
+                                                <div style={{ top: showNavigation ? '85px' : '60px', left: showNavigation ? '60px' : '6px' }} className={`bg-neutral-500 absolute transition-all duration-300 rounded-full ${showNavigation ? 'w-10 h-10' : 'w-7 h-7'}`}>
+                                                    <Skeleton className='w-full h-full relative rounded-full'></Skeleton>
+                                                </div>
+                                                <div className='pl-10'>
+                                                    <Skeleton className='bg-neutral-500 h-4 w-36 mt-2' />
+                                                    <Skeleton className='bg-neutral-400 h-3 w-32 mt-1' />
+                                                </div>
+                                            </div>
+                                        )
+                                    case "unauthenticated":
+
+                                        return <Button
+                                            size="icon"
+                                            variant="default"
+                                            onClick={() => { signIn("google", { callbackUrl: '/experimental' }) }}
+                                            aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
+                                            className='w-full'
+                                        >
+                                            Login
+                                        </Button>
+                                }
+                            }()
+                        }
+
                         <nav>
                             <ul className="space-y-2">
                                 <NavigationBar showing={showNavigation}>
                                     <NavigationPath path='/experimental' label='Home' Icon={Home} />
                                     <NavigationPath path='/experimental/search' label='Search' Icon={Search} />
                                     <NavigationPath path='/experimental/library' label='Your Library' Icon={Library} />
-                                    {session?.user?.admin === true ?
+                                    {session.data?.user?.admin === true ?
                                         <>
                                             <NavigationSeparator />
                                             <NavigationPath path='/admin/general' label='Admin' Icon={Lock} />
@@ -183,10 +217,10 @@ export default function Layout({ children }) {
                 </div>
 
                 {/* Content and Queue View */}
-                <div className="flex-1 flex overflow-hidden">
+                <div className="flex-1 flex overflow-hidden h-[calc(100vh_-_8rem)]">
                     {/* Content View */}
                     <div className="flex-1 overflow-hidden">
-                        <div className="h-[calc(100vh-7.4rem)] relative">
+                        <div className="h-full relative">
                             {showLyrics ?
                                 <ScrollArea className='h-full px-6'>
                                     <div className="p-6">
@@ -212,9 +246,9 @@ export default function Layout({ children }) {
                             {showQueue ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
                         </Button>
                         <div className="p-4 border-b">
-                            <h2 className="font-semibold">Queue {queueIndex}</h2>
+                            <h2 className="font-semibold">Queue</h2>
                         </div>
-                        <ScrollArea className="h-[calc(100vh-11rem)]">
+                        <ScrollArea className="h-full relative">
                             <div className="p-4 space-y-2 w-80">
                                 {queue.slice(queueIndex + 1).map((song, index) => (
                                     <div key={'queue' + song.id + index} className="flex items-center space-x-2">
@@ -238,7 +272,7 @@ export default function Layout({ children }) {
             </div>
 
             {/* Persistent player UI */}
-            <div className="border-t bg-card text-card-foreground h-auto">
+            <div className="border-t bg-card text-card-foreground h-32">
                 <div className="container mx-auto px-4 py-2">
                     <div className="grid items-center justify-betw een " style={{ gridTemplateColumns: '1fr min-content 1fr' }}>
                         {/* Current song info */}

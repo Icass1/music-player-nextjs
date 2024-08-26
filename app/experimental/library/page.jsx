@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/context-menu"
 import { MediaPlayerContext } from "@/app/components/audioContext";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Link } from "next-view-transitions";
 
 
 function AddContextMneu({ children, item }) {
@@ -77,47 +78,50 @@ function GridViewContainer({ item }) {
     const [coverLoaded, setCoverLoaded] = useState(false)
 
     return (
-        <div className="bg-card text-card-foreground rounded-lg overflow-hidden shadow-md relative hover:scale-105 transition-[transform] cursor-pointer">
 
-            <div className="bg-neutral-500 aspect-square w-full h-auto rounded overflow-hidden">
-            </div>
-            {item !== null ?
-                <Image
-                    onLoadingComplete={() => { setCoverLoaded(true) }}
-                    src={`https://api.music.rockhosting.org/api/list/image/${item.id}_300x300`}
-                    className="absolute top-0 rounded h-auto w-full "
-                    width={0}
-                    height={0}
-                    sizes="100vw"
-                    alt="" />
-                :
-                <></>
-            }
+        <Link href={`/experimental/list/${item?.id}`}>
+            <div className="bg-card text-card-foreground rounded-lg overflow-hidden shadow-md relative hover:scale-105 transition-[transform] cursor-pointer">
 
-            {coverLoaded ?
-                <></>
-                :
-                <Skeleton className='top-0 absolute aspect-square w-full h-auto rounded' />
-            }
-
-            <div className="p-4">
+                <div className="bg-neutral-500 aspect-square w-full h-auto rounded overflow-hidden">
+                </div>
                 {item !== null ?
-                    <>
-                        <h3 className="font-semibold text-nowrap text-ellipsis overflow-x-hidden">{item.name}</h3>
-                        <p className="text-sm text-muted-foreground text-nowrap text-ellipsis overflow-x-hidden">{item.author}</p>
-                    </>
+                    <Image
+                        onLoadingComplete={() => { setCoverLoaded(true) }}
+                        src={`https://api.music.rockhosting.org/api/list/image/${item.id}_300x300`}
+                        className="absolute top-0 rounded h-auto w-full "
+                        width={0}
+                        height={0}
+                        sizes="100vw"
+                        alt="" />
                     :
-                    <>
-                        <div className="relative w-full h-4 bg-neutral-500 rounded-sm">
-                            <Skeleton className='w-full h-full rounded-sm' />
-                        </div>
-                        <div className="relative w-9/12 h-3 bg-neutral-500 rounded-sm mt-2">
-                            <Skeleton className='w-full h-full rounded-sm' />
-                        </div>
-                    </>
+                    <></>
                 }
+
+                {coverLoaded ?
+                    <></>
+                    :
+                    <Skeleton className='top-0 absolute aspect-square w-full h-auto rounded' />
+                }
+
+                <div className="p-4">
+                    {item !== null ?
+                        <>
+                            <h3 className="font-semibold text-nowrap text-ellipsis overflow-x-hidden">{item.name}</h3>
+                            <p className="text-sm text-muted-foreground text-nowrap text-ellipsis overflow-x-hidden">{item.author}</p>
+                        </>
+                        :
+                        <>
+                            <div className="relative w-full h-4 bg-neutral-500 rounded-sm">
+                                <Skeleton className='w-full h-full rounded-sm' />
+                            </div>
+                            <div className="relative w-9/12 h-3 bg-neutral-500 rounded-sm mt-2">
+                                <Skeleton className='w-full h-full rounded-sm' />
+                            </div>
+                        </>
+                    }
+                </div>
             </div>
-        </div>
+        </Link>
     )
 }
 

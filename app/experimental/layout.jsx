@@ -39,7 +39,7 @@ function NavigationBar({ children, showing }) {
     return React.Children.map(children, (child) => {
         if (child.type === React.Fragment) {
             return child?.props?.children?.map((child1) => {
-                if (child1.type.name == 'NavigationSeparator') {
+                if (child1.type == NavigationSeparator) {
                     _index += 0.2;
                 } else {
                     _index++;
@@ -48,7 +48,7 @@ function NavigationBar({ children, showing }) {
                 return React.cloneElement(child1, { showing, _index });
             })
         } else {
-            if (child.type.name == 'NavigationSeparator') {
+            if (child.type == NavigationSeparator) {
                 _index += 0.2;
             } else {
                 _index++;

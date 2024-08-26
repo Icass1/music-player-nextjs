@@ -39,12 +39,9 @@ function RecentlyPlayedContainer({ song }) {
 
 export default function HomeView() {
 
-    const [recentlyPlayed, setRecentlyPlayed] = useState();
+    const [recentlyPlayed, setRecentlyPlayed] = useState([]);
     const session = useSession()
     const scrollRef = useRef();
-    const [width, setWidth] = useState();
-
-    const [innerWdith, innerHeight] = useWindowSize()
 
     useEffect(() => {
         apiFetch(`/api/user/get-last-played`, session).then(response => {
@@ -68,49 +65,29 @@ export default function HomeView() {
         })
     }, [session])
 
-    useEffect(() => {
-        setWidth(scrollRef.current.offsetWidth)
-
-    }, [scrollRef, innerWdith])
-
-    // return (
-    //     <div className="h-52 w-1/2 bg-red-300 block overflow-scroll">
-    //         <div className="h-36 w-[5000px] bg-gradient-to-l from-neutral-800 to-blue-300">
-
-    //         </div>
-    //     </div>
-    // )
-
     return (
         <ScrollArea ref={scrollRef} className='h-full px-6 w-full relative block'>
-            {/* <div className="p-6 space-y-8"> */}
             <h2 className="text-3xl font-bold flex flex-row my-6">Welcome to RockIt!{session?.data?.user?.name ? ',' : ''} {session?.data?.user?.name}</h2>
-            {/* 
-            <div className="h-52 w-1/2 bg-red-300 block overflow-x-scroll">
-                <div className="h-36 w-[2000px] bg-gradient-to-l from-neutral-800 to-blue-300">
-
-                </div>
-            </div> */}
-
-
 
             <section className="relative">
                 <h3 className="text-2xl font-semibold mb-4">Recently Played</h3>
 
                 <div className="absolute w-full">
-                    <ScrollArea className=" w-full" style={{ width: `ca lc(${width}px - 3rem)` }}>
-                        {/* Horizontal ScrollArea */}
-                        {recentlyPlayed ?
+
+                    {recentlyPlayed.length == 0 ?
+                        <label className="text-2xl font-semibold mt-20 block ml-auto mr-auto w-fit">You have listen to any song yet</label>
+                        :
+                        <ScrollArea className=" w-full">
+                            {/* Horizontal ScrollArea */}
                             <div className="flex flex-row gap-4 mb-4">
                                 {Object.keys(recentlyPlayed).map(time => (
                                     recentlyPlayed[time].map(song => <RecentlyPlayedContainer key={song.id} song={song} />)
                                 ))}
                             </div>
-                            :
-                            <></>
-                        }
-                        <ScrollBar orientation="horizontal" />
-                    </ScrollArea>
+                            <ScrollBar orientation="horizontal" />
+                        </ScrollArea>
+                    }
+
                     <div className="absolute h-full w-20 bg-gradient-to-r right-0 top-0 from-transparent to-background "></div>
                 </div>
                 <div className="h-72"></div>

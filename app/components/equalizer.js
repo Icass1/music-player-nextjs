@@ -59,11 +59,17 @@ export default function Equalizer({ className, bar_count = 20, bar_gap = 1, cent
         for (let i = 0; i < bar_count; i++) {
 
             ctx.fillStyle = `rgba(${r / (i / (bar_count - 1) + 1)}, ${g / (i / (bar_count - 1) + 1)}, ${b / (i / (bar_count - 1) + 1)}, ${a})`
+            ctx.beginPath();
+
 
             const bar_pos = bar_width * i + bar_gap * i;
             const bar_height = groupedFrequencies[i] / 255 * canvas.height;
 
-            ctx.fillRect(bar_pos, canvas.height / 2 - bar_height / 2, bar_width, bar_height);
+            // ctx.fillRect(bar_pos, canvas.height / 2 - bar_height / 2, bar_width, bar_height);
+            ctx.roundRect(bar_pos, canvas.height / 2 - bar_height / 2, bar_width, bar_height, [10]);
+
+
+            ctx.fill();
         }
     }, [analyser, bar_count, bar_gap, colors])
 

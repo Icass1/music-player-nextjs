@@ -124,9 +124,6 @@ export default function User() {
             }
             setMostPlayedGenre(mostListenedGenres)
 
-
-
-
             setLastSongsPlayed(out);
         })
     }, [session]);

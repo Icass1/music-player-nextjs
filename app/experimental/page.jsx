@@ -50,7 +50,7 @@ export default function HomeView() {
                     data.reverse()
                     let out = {}
                     console.log([4, 2, 7, 12, 1])
-                    for (let song of data) {
+                    for (let song of data.slice(0, 20)) {
 
                         if (out[song.time_played]) {
                             out[song.time_played].push(song)
@@ -83,7 +83,12 @@ export default function HomeView() {
                                 {Object.keys(recentlyPlayed).map(time => (
                                     recentlyPlayed[time].map(song => <RecentlyPlayedContainer key={song.id} song={song} />)
                                 ))}
+                                <div className="relative w-52">
+                                    <p className="font-medium truncate top-1/2 relative ml-auto mr-auto w-fit">See more</p>
+                                </div>
+
                             </div>
+
                             <ScrollBar orientation="horizontal" />
                         </ScrollArea>
                     }

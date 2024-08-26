@@ -515,29 +515,76 @@ const AudioProvider = ({ children }) => {
         }
     }
 
-    const handlePlayList = (id) => {
+    const handlePlayList = (id, startSong) => {
 
-        apiFetch(`/api/list/${id}`)
-            .then(response => response.text())
-            .then(data => JSON.parse(data))
-            .then(musicData => {
+        if (currentList == id) {
 
-                let _list = [...musicData.songs].filter(song => { if (song.in_database == false) { return false } else { return true } });
+            if (startSong) {
 
-                if (_list.length == 0) {
-                    return;
-                }
 
-                if (randomQueue) {
-                    _list.sort(() => Math.random() - 0.5);
-                }
+                apiFetch(`/api/list/${id}`)
+                    .then(response => response.json())
+                    .then(musicData => {
 
-                setQueue(_list);
-                setQueueIndex(0);
-                setCurrentSong(_list[0]);
-                setCurrentList(id);
-                audio.play();
-            })
+                        let _songsList = [...musicData.songs].filter(song => { if (song.in_database == false) { return false } else { return true } });
+
+                        let song = _songsList.filter(tempSong => tempSong.id == startSong)[0]
+
+                        console.log(song)
+        
+                        let index = _songsList.indexOf(song)
+                        console.log(index)
+                        let list = _songsList.slice(index + 1).concat(_songsList.slice(0, index))
+                        console.log(list)
+        
+                        if (randomQueue) {
+                            list.sort(() => Math.random() - 0.5)
+                        }
+        
+                        setQueue([song].concat(list));
+                        setQueueIndex(0);
+                        setCurrentSong(song);
+
+                    })
+
+
+            }
+
+            handlePlay();
+        } else {
+            apiFetch(`/api/list/${id}`)
+                .then(response => response.json())
+                .then(musicData => {
+
+                    let _list = [...musicData.songs].filter(song => { if (song.in_database == false) { return false } else { return true } });
+
+                    if (_list.length == 0) {
+                        return;
+                    }
+
+                    if (randomQueue) {
+                        _list.sort(() => Math.random() - 0.5);
+                    }
+
+                    setQueue(_list);
+                    setQueueIndex(0);
+                    setCurrentSong(_list[0]);
+                    setCurrentList(id);
+                    audio.play();
+                })
+        }
+    }
+
+    const toggleRandomQueue = () => {
+
+        if (randomQueue) {
+            setRandomQueue(false)
+        } else {
+            setRandomQueue(true)
+            let newQueue = queue.slice(queueIndex + 1)
+            newQueue.sort(() => Math.random() - 0.5)
+            setQueue(queue.slice(0, queueIndex + 1).concat(newQueue))
+        }
     }
 
 
@@ -552,6 +599,8 @@ const AudioProvider = ({ children }) => {
             handleNext,
             handlePrevious,
             handlePlayList,
+
+            toggleRandomQueue,
 
             currentSong,
             setCurrentSong,

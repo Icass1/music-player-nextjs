@@ -140,7 +140,7 @@ const AudioProvider = ({ children }) => {
             setQueueIndex(session.data.user.queue_index);
             setRandomQueue(session.data.user.random_queue);
             audio.currentTime = session.data.user.current_time;
-            audio.volume = session.data.user.volume;
+            audio.volume = session.data.user.volume**2;
             setAudioVolume(session.data.user.volume);
             setShowLyrics(session.data.user.show_lyrics);
 

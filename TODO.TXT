@@ -20,13 +20,10 @@ Drop Spotify link anywhere and add list to library
 
 TO CHECK - Fix onplayend when playing list from search
 
-Make volume cuadratic
-
 Move to top of the queue creates adds more songs to the queue
 
 Fix Uncaught (in promise) DOMException: The play() request was interrupted by a call to pause(). https://goo.gl/LdLk22
 Fix Uncaught (in promise) DOMException: The play() request was interrupted by a new load request. https://goo.gl/LdLk22
-
 
 Artist page
     Show albums This Is Supertramp cover style
@@ -163,6 +160,7 @@ DONE - User database
     DONE - admin
     DONE - super_admin
 
+DONE - Make volume cuadratic
 DONE - Cache next song
 DONE - Update cache when song is added to queue
 DONE - Button play pause list in list view should be white 

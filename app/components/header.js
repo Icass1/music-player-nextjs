@@ -42,7 +42,7 @@ export default function Header({ handleSearch }) {
     const pathname = usePathname();
 
     const sliderChange = (event) => {
-        audio.volume = event.target.value;
+        audio.volume = event.target.value ** 2;
         setAudioVolume(event.target.value);
 
         if (muted) {
@@ -52,10 +52,10 @@ export default function Header({ handleSearch }) {
 
     useEffect(() => {
         if (muted && audio.volume != 0) {
-            setLastAudioVolume(audio.volume);
+            setLastAudioVolume(Math.sqrt(audio.volume));
             audio.volume = 0;
         } else if (lastAudioVolume) {
-            audio.volume = lastAudioVolume
+            audio.volume = lastAudioVolume ** 2
         }
 
     }, [muted, audio]) // Do not add lastAudioVolume as a dependency.

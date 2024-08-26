@@ -298,7 +298,7 @@ export default function Layout({ children }) {
                             <Volume2 className="h-5 w-5" />
                             <Slider
                                 value={[audioVolume]}
-                                onValueChange={(e) => { console.log(e); setAudioVolume(e[0]) }}
+                                onValueChange={(e) => { audio.volume = e[0] ** 2; setAudioVolume(e[0]) }}
                                 className="w-24"
                                 max={1}
                                 step={0.01}

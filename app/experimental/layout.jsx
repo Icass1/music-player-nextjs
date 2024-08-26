@@ -1,11 +1,11 @@
 "use client"
 
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { SkipBack, SkipForward, Play, Pause, Volume2, MicVocal, Shuffle, Sun, Moon, Home, Library, Search, Menu, ChevronLeft, ChevronRight, User } from "lucide-react"
+import { SkipBack, SkipForward, Play, Pause, Volume2, MicVocal, Shuffle, Sun, Lock, Moon, Home, Users, ListMusic, Music2, Library, Search, Menu, ChevronLeft, ChevronRight, User } from "lucide-react"
 import { useTheme } from "next-themes"
 import { useSession } from "next-auth/react"
 import { MediaPlayerContext } from '../components/audioContext'
@@ -13,8 +13,58 @@ import { getTime } from '../utils/getTime'
 import { Link } from 'next-view-transitions'
 import { usePathname } from 'next/navigation'
 import Image from 'next/image'
+import { apiFetch } from '../utils/apiFetch'
 
+function NavigationPath({ path, label, Icon, showing, _index }) {
+    const pathname = usePathname()
 
+    return (
+        <Link href={path}>
+            <Button
+                variant={pathname === path ? 'default' : 'ghost'}
+                className={`absolute justify-start transition-all duration-300 ${showing ? `w-[230px] left-[56px]` : `left-[3px] p-0 w-[32px] h-8`}`}
+                style={{ top: showing ? `${100 + 50 * _index}px` : `${60 + 40 * _index}px` }}
+            >
+                <Icon className={`h-4 w-4 transition-all duration-300 ${showing ? 'mr-2' : 'mr-0 ml-[7px]'}`} />
+                {showing ? <label className='w-auto overflow-hidden'>{label}</label> : <></>}
+
+            </Button>
+        </Link>
+    )
+}
+
+function NavigationBar({ children, showing }) {
+    let _index = 0
+    return React.Children.map(children, (child) => {
+        if (child.type === React.Fragment) {
+            return child?.props?.children?.map((child1) => {
+                if (child1.type.name == 'NavigationSeparator') {
+                    _index += 0.2;
+                } else {
+                    _index++;
+                }
+
+                return React.cloneElement(child1, { showing, _index });
+            })
+        } else {
+            if (child.type.name == 'NavigationSeparator') {
+                _index += 0.2;
+            } else {
+                _index++;
+            }
+            return React.cloneElement(child, { showing, _index });
+        }
+    });
+}
+
+function NavigationSeparator({ showing, _index }) {
+    return (
+        <div
+            className={`absolute bg-border justify-start transition-all duration-300 h-[2px] ${showing ? `w-[230px] left-[56px] ` : `left-[3px] p-0 w-[32px]`}`}
+            style={{ top: showing ? `${130 + 50 * _index}px` : `${85 + 40 * _index}px` }}
+        ></div>
+    )
+}
 
 export default function Layout({ children }) {
     const [showLyrics, setShowLyrics] = React.useState(false);
@@ -24,7 +74,7 @@ export default function Layout({ children }) {
     const { theme, setTheme } = useTheme();
     const { data: session } = useSession();
 
-    const pathname = usePathname();
+    const [lyrics, setLyrics] = useState();
 
     const {
         audio,
@@ -34,10 +84,14 @@ export default function Layout({ children }) {
         queueIndex,
         audioDuration,
         isPlaying,
+        toggleRandomQueue,
+        randomQueue,
         handleNext,
         handlePrevious,
         handlePlay,
         handlePause,
+        audioVolume,
+        setAudioVolume,
     } = useContext(MediaPlayerContext)
 
     useEffect(() => {
@@ -50,6 +104,16 @@ export default function Layout({ children }) {
             audio.pause()
         }
     }, [audio, isPlaying])
+
+
+    useEffect(() => {
+
+        apiFetch(`/api/song/normal-lyrics/${currentSong.id}`).then(response => {
+            if (response.ok) {
+                response.text().then(data => { setLyrics(data) })
+            }
+        })
+    }, [currentSong])
 
     return (
         <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden">
@@ -70,7 +134,7 @@ export default function Layout({ children }) {
                 <div className={`${showNavigation ? 'w-64' : 'w-0'} transition-all duration-300 overflow-hidden bg-card border-r`}>
                     <div className="p-4">
                         <div className="flex justify-between items-center mb-6">
-                            <h1 className="text-2xl font-bold">RockIT</h1>
+                            <h1 className="text-2xl font-bold">RockIt!</h1>
                             <Button
                                 size="icon"
                                 variant="outline"
@@ -82,11 +146,13 @@ export default function Layout({ children }) {
                         </div>
                         {session && (
                             <div className="flex items-center space-x-2 mb-6">
-                                <Avatar>
+
+                                {/* <Image src={session.user.image} alt='' width={35} height={35} className='rounded-full' style={{ top: '10px', left: '10px' }}></Image> */}
+                                <Avatar style={{ top: showNavigation ? '85px' : '60px', left: showNavigation ? '60px' : '6px' }} className={`absolute transition-all duration-300 ${showNavigation ? '' : 'w-7 h-7'}`}>
                                     <AvatarImage src={session.user?.image || undefined} alt={session.user?.name || "User"} />
                                     <AvatarFallback><User /></AvatarFallback>
                                 </Avatar>
-                                <div>
+                                <div className='pl-10'>
                                     <p className="font-semibold">{session.user?.name}</p>
                                     <p className="text-sm text-muted-foreground">{session.user?.email}</p>
                                 </div>
@@ -94,34 +160,23 @@ export default function Layout({ children }) {
                         )}
                         <nav>
                             <ul className="space-y-2">
-                                <Link href={"/experimental"}>
-                                    <Button
-                                        variant={pathname === '/experimental' ? 'default' : 'ghost'}
-                                        className={`absolute justify-start transition-all duration-300 ${showNavigation ? 'w-[230px] top-[150px] left-[56px]' : ' top-[60px] left-[3px] p-0 w-[32px] h-8'}`}
-                                    >
-                                        <Home className={`h-4 w-4 transition-all duration-300 ${showNavigation ? 'mr-2' : 'mr-0 ml-[7px]'}`} />
-                                        {showNavigation ? <label className='w-auto overflow-hidden'>Home</label> : <></>}
-                                    </Button>
-                                </Link>
-                                <Link href={"/experimental/search"}>
-                                    <Button
-                                        variant={pathname === '/experimental/search' ? 'default' : 'ghost'}
-                                        className={`absolute justify-start transition-all duration-300 ${showNavigation ? 'w-[230px] top-[200px] left-[56px]' : ' top-[100px] left-[3px] p-0 w-[32px] h-8'}`}
-                                    >
-                                        <Search className={`h-4 w-4 transition-all duration-300 ${showNavigation ? 'mr-2' : 'mr-0 ml-[7px]'}`} />
-                                        {showNavigation ? <label className='w-auto overflow-hidden'>Search</label> : <></>}
-                                    </Button>
-                                </Link>
-                                <Link href={"/experimental/library"}>
-                                    <Button
-                                        variant={pathname === '/experimental/library' ? 'default' : 'ghost'}
-                                        className={`absolute justify-start transition-all duration-300 ${showNavigation ? 'w-[230px] top-[250px] left-[56px]' : ' top-[140px] left-[3px] p-0 w-[32px] h-8'}`}
-                                    >
-                                        <Library className={`h-4 w-4 transition-all duration-300 ${showNavigation ? 'mr-2' : 'mr-0 ml-[7px]'}`} />
-                                        {showNavigation ? <label className='w-auto overflow-hidden'>Your Library</label> : <></>}
-
-                                    </Button>
-                                </Link>
+                                <NavigationBar showing={showNavigation}>
+                                    <NavigationPath path='/experimental' label='Home' Icon={Home} />
+                                    <NavigationPath path='/experimental/search' label='Search' Icon={Search} />
+                                    <NavigationPath path='/experimental/library' label='Your Library' Icon={Library} />
+                                    {session?.user?.admin === true ?
+                                        <>
+                                            <NavigationSeparator />
+                                            <NavigationPath path='/admin/general' label='Admin' Icon={Lock} />
+                                            <NavigationPath path='/admin/users' label='Users' Icon={Users} />
+                                            <NavigationPath path='/admin/lists' label='Lists' Icon={ListMusic} />
+                                            <NavigationPath path='/admin/Songs' label='Songs' Icon={Music2} />
+                                            <NavigationSeparator />
+                                        </>
+                                        :
+                                        <></>
+                                    }
+                                </NavigationBar>
                             </ul>
                         </nav>
                     </div>
@@ -131,33 +186,18 @@ export default function Layout({ children }) {
                 <div className="flex-1 flex overflow-hidden">
                     {/* Content View */}
                     <div className="flex-1 overflow-hidden">
-                        {/* <ScrollArea className="h-[calc(100vh-7rem)]">
-                            {showLyrics ?
-                                <div className="p-6">
-                                    <h2 className="text-2xl font-semibold mb-4">Lyrics</h2>
-                                    <pre className="whitespace-pre-wrap font-sans">{currentSong.lyrics || "No lyrics available"}</pre>
-                                </div>
-                                :
-                                children
-                            }
-                        </ScrollArea> */}
-
-                        <div className="h-[calc(100vh-8rem)] relative">
+                        <div className="h-[calc(100vh-7.4rem)] relative">
                             {showLyrics ?
                                 <ScrollArea className='h-full px-6'>
                                     <div className="p-6">
                                         <h2 className="text-2xl font-semibold mb-4">Lyrics</h2>
-                                        <p className="text-md mb-4">{JSON.stringify(currentSong).replace(/,/g, ' ')}</p>
-                                        <pre className="whitespace-pre-wrap font-sans">{currentSong.lyrics || "No lyrics available"}</pre>
+                                        <pre className="whitespace-pre-wrap font-sans">{lyrics || "No lyrics available"}</pre>
                                     </div>
                                 </ScrollArea>
                                 :
                                 children
                             }
                         </div>
-
-
-
                     </div>
 
                     {/* Queue View */}
@@ -172,22 +212,22 @@ export default function Layout({ children }) {
                             {showQueue ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
                         </Button>
                         <div className="p-4 border-b">
-                            <h2 className="font-semibold">Queue</h2>
+                            <h2 className="font-semibold">Queue {queueIndex}</h2>
                         </div>
-                        <ScrollArea className="h-[calc(100vh-14rem)]">
-                            <div className="p-4 space-y-2">
-                                {queue.slice(queueIndex + 1,).map((song, index) => (
-                                    <div key={song.id} className="flex items-center space-x-2">
+                        <ScrollArea className="h-[calc(100vh-11rem)]">
+                            <div className="p-4 space-y-2 w-80">
+                                {queue.slice(queueIndex + 1).map((song, index) => (
+                                    <div key={'queue' + song.id + index} className="flex items-center space-x-2">
                                         <Image
                                             src={`https://api.music.rockhosting.org/api/song/image/${song.id}_64x64`}
                                             alt={`${song.title} cover`}
-                                            className="w-10 h-10 rounded"
                                             width={40}
                                             height={40}
+                                            className="rounded"
                                         />
-                                        <div>
-                                            <p className="text-sm font-medium">{song.title}</p>
-                                            <p className="text-xs text-muted-foreground">{song.artist}</p>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium truncate" title={song.title}>{song.title}</p>
+                                            <p className="text-xs text-muted-foreground truncate" title={song.artist}>{song.artist}</p>
                                         </div>
                                     </div>
                                 ))}
@@ -212,9 +252,9 @@ export default function Layout({ children }) {
                                     className="w-16 h-16 rounded"
                                 />
                             )}
-                            <div>
-                                <h3 className="font-semibold">{currentSong?.title || "No song playing"}</h3>
-                                <p className="text-sm text-muted-foreground">{currentSong?.artist || "Unknown artist"}</p>
+                            <div className='min-w-0'>
+                                <h3 className="font-semibold text-nowrap text-ellipsis overflow-x-hidden">{currentSong?.title || "No song playing"}</h3>
+                                <p className="text-sm text-muted-foreground text-nowrap text-ellipsis overflow-x-hidden">{currentSong?.artist || "Unknown artist"}</p>
                             </div>
                         </div>
 
@@ -222,9 +262,10 @@ export default function Layout({ children }) {
                         <div className="flex items-center space-x-4 justify-self-center">
                             <Button
                                 size="icon"
-                                variant="ghost"
-                                onClick={() => setShowLyrics(!showLyrics)}
+                                variant={randomQueue ? "default" : 'ghost'}
+                                onClick={toggleRandomQueue}
                                 aria-label={showLyrics ? "Hide lyrics" : "Show lyrics"}
+                                className='h-8 w-8'
                             >
                                 <Shuffle className="h-4 w-4" />
                             </Button>
@@ -243,9 +284,10 @@ export default function Layout({ children }) {
 
                             <Button
                                 size="icon"
-                                variant="ghost"
+                                variant={showLyrics ? "default" : 'ghost'}
                                 onClick={() => setShowLyrics(!showLyrics)}
                                 aria-label={showLyrics ? "Hide lyrics" : "Show lyrics"}
+                                className='h-8 w-8'
                             >
                                 <MicVocal className="h-4 w-4" />
                             </Button>
@@ -255,10 +297,11 @@ export default function Layout({ children }) {
                         <div className="hidden md:flex items-center space-x-2 justify-self-end">
                             <Volume2 className="h-5 w-5" />
                             <Slider
+                                value={[audioVolume]}
+                                onValueChange={(e) => { console.log(e); setAudioVolume(e[0]) }}
                                 className="w-24"
-                                defaultValue={[50]}
-                                max={100}
-                                step={1}
+                                max={1}
+                                step={0.01}
                             />
                         </div>
                     </div>
@@ -280,6 +323,6 @@ export default function Layout({ children }) {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }

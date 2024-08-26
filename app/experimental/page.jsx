@@ -1,19 +1,119 @@
-export default function HomeView() {
-    return (
-        <div className="p-6 space-y-8">
-            <h2 className="text-3xl font-bold">Welcome to RockIT</h2>
+'use client'
 
-            <section>
-                <h3 className="text-2xl font-semibold mb-4">Recently Played</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                    {[1, 2, 3, 4, 5, 6].map((item) => (
-                        <div key={item} className="space-y-2">
-                            <div className="aspect-square bg-muted rounded-md"></div>
-                            <p className="font-medium truncate">Song Title</p>
-                            <p className="text-sm text-muted-foreground truncate">Artist Name</p>
-                        </div>
-                    ))}
+import { useEffect, useRef, useState } from "react"
+import { apiFetch } from "../utils/apiFetch";
+import { useSession } from "next-auth/react";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import Image from "next/image";
+import { Skeleton } from "@/components/ui/skeleton";
+import useWindowSize from "../hooks/useWindowSize";
+
+function RecentlyPlayedContainer({ song }) {
+
+    const [coverLoaded, setCoverLoaded] = useState(false)
+
+    return (
+        <div className="relative w-52">
+            <div className="bg-neutral-500 aspect-square w-full h-auto rounded overflow-hidden">
+                <Image
+                    onLoadingComplete={() => { setCoverLoaded(true) }}
+                    src={`https://api.music.rockhosting.org/api/song/image/${song.id}_300x300`}
+                    className="absolute top-0 rounded h-auto w-full "
+                    width={0}
+                    height={0}
+                    sizes="100vw"
+                    alt=""
+                />
+                {coverLoaded ?
+                    <></>
+                    :
+                    <Skeleton className='top-0 absolute aspect-square w-full h-auto rounded' />
+                }
+            </div>
+
+            <p className="font-medium truncate">{song.title}</p>
+            <p className="text-sm text-muted-foreground truncate">{song.artist}</p>
+        </div>
+    )
+}
+
+export default function HomeView() {
+
+    const [recentlyPlayed, setRecentlyPlayed] = useState();
+    const session = useSession()
+    const scrollRef = useRef();
+    const [width, setWidth] = useState();
+
+    const [innerWdith, innerHeight] = useWindowSize()
+
+    useEffect(() => {
+        apiFetch(`/api/user/get-last-played`, session).then(response => {
+            if (response.ok) {
+                response.json().then(data => {
+                    data.reverse()
+                    let out = {}
+                    console.log([4, 2, 7, 12, 1])
+                    for (let song of data) {
+
+                        if (out[song.time_played]) {
+                            out[song.time_played].push(song)
+                        } else {
+                            out[song.time_played] = [song]
+                        }
+                    }
+                    console.log(out)
+                    setRecentlyPlayed(out)
+                })
+            }
+        })
+    }, [session])
+
+    useEffect(() => {
+        setWidth(scrollRef.current.offsetWidth)
+
+    }, [scrollRef, innerWdith])
+
+    // return (
+    //     <div className="h-52 w-1/2 bg-red-300 block overflow-scroll">
+    //         <div className="h-36 w-[5000px] bg-gradient-to-l from-neutral-800 to-blue-300">
+
+    //         </div>
+    //     </div>
+    // )
+
+    return (
+        <ScrollArea ref={scrollRef} className='h-full px-6 w-full relative block'>
+            {/* <div className="p-6 space-y-8"> */}
+            <h2 className="text-3xl font-bold flex flex-row my-6">Welcome to RockIt!{session?.data?.user?.name ? ',' : ''} {session?.data?.user?.name}</h2>
+            {/* 
+            <div className="h-52 w-1/2 bg-red-300 block overflow-x-scroll">
+                <div className="h-36 w-[2000px] bg-gradient-to-l from-neutral-800 to-blue-300">
+
                 </div>
+            </div> */}
+
+
+
+            <section className="relative">
+                <h3 className="text-2xl font-semibold mb-4">Recently Played</h3>
+
+                <div className="absolute w-full">
+                    <ScrollArea className=" w-full" style={{ width: `ca lc(${width}px - 3rem)` }}>
+                        {/* Horizontal ScrollArea */}
+                        {recentlyPlayed ?
+                            <div className="flex flex-row gap-4 mb-4">
+                                {Object.keys(recentlyPlayed).map(time => (
+                                    recentlyPlayed[time].map(song => <RecentlyPlayedContainer key={song.id} song={song} />)
+                                ))}
+                            </div>
+                            :
+                            <></>
+                        }
+                        <ScrollBar orientation="horizontal" />
+                    </ScrollArea>
+                    <div className="absolute h-full w-20 bg-gradient-to-r right-0 top-0 from-transparent to-background "></div>
+                </div>
+                <div className="h-72"></div>
             </section>
 
             <section>
@@ -41,7 +141,8 @@ export default function HomeView() {
                     ))}
                 </div>
             </section>
-        </div>
+            <div className="h-6"></div>
+        </ScrollArea>
     )
 
 } 

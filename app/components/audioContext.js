@@ -140,7 +140,7 @@ const AudioProvider = ({ children }) => {
             setQueueIndex(session.data.user.queue_index);
             setRandomQueue(session.data.user.random_queue);
             audio.currentTime = session.data.user.current_time;
-            audio.volume = session.data.user.volume**2;
+            audio.volume = session.data.user.volume ** 2;
             setAudioVolume(session.data.user.volume);
             setShowLyrics(session.data.user.show_lyrics);
 
@@ -520,34 +520,29 @@ const AudioProvider = ({ children }) => {
         if (currentList == id) {
 
             if (startSong) {
-
-
                 apiFetch(`/api/list/${id}`)
                     .then(response => response.json())
                     .then(musicData => {
 
-                        let _songsList = [...musicData.songs].filter(song => { if (song.in_database == false) { return false } else { return true } });
+                        // let _songsList = [...musicData.songs].filter(song => { if (song.in_database == false) { return false } else { return true } });
+                        let _songsList = [...musicData.songs].filter(song => (song.in_database == false || song.status != "ready") ? false : true);
+                        console.log("_songsList", _songsList)
 
                         let song = _songsList.filter(tempSong => tempSong.id == startSong)[0]
 
-                        console.log(song)
-        
+
                         let index = _songsList.indexOf(song)
-                        console.log(index)
                         let list = _songsList.slice(index + 1).concat(_songsList.slice(0, index))
-                        console.log(list)
-        
+
                         if (randomQueue) {
                             list.sort(() => Math.random() - 0.5)
                         }
-        
+
                         setQueue([song].concat(list));
                         setQueueIndex(0);
                         setCurrentSong(song);
 
                     })
-
-
             }
 
             handlePlay();
@@ -556,19 +551,32 @@ const AudioProvider = ({ children }) => {
                 .then(response => response.json())
                 .then(musicData => {
 
-                    let _list = [...musicData.songs].filter(song => { if (song.in_database == false) { return false } else { return true } });
+                    let _songsList = [...musicData.songs].filter(song => (song.in_database == false || song.status != "ready") ? false : true);
+                    let song = _songsList.filter(tempSong => tempSong.id == startSong)[0]
 
-                    if (_list.length == 0) {
+                    if (_songsList.length == 0) {
                         return;
                     }
 
                     if (randomQueue) {
-                        _list.sort(() => Math.random() - 0.5);
+                        _songsList.sort(() => Math.random() - 0.5);
                     }
 
-                    setQueue(_list);
+                    let index = _songsList.indexOf(song)
+                    let list = _songsList.slice(index + 1).concat(_songsList.slice(0, index))
+
+                    if (randomQueue) {
+                        list.sort(() => Math.random() - 0.5)
+                    }
+
+                    setQueue([song].concat(list));
                     setQueueIndex(0);
-                    setCurrentSong(_list[0]);
+                    setCurrentSong(song);
+
+
+                    // setQueue(_songsList);
+                    // setQueueIndex(0);
+                    // setCurrentSong(_songsList[0]);
                     setCurrentList(id);
                     audio.play();
                 })

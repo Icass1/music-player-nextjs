@@ -16,7 +16,7 @@ function RecentlyPlayedContainer({ song }) {
         <div className="relative w-52">
             <div className="bg-neutral-500 aspect-square w-full h-auto rounded overflow-hidden">
                 <Image
-                    onLoadingComplete={() => { setCoverLoaded(true) }}
+                    onLoad={() => { setCoverLoaded(true) }}
                     src={`https://api.music.rockhosting.org/api/song/image/${song.id}_300x300`}
                     className="absolute top-0 rounded h-auto w-full "
                     width={0}
@@ -49,7 +49,6 @@ export default function HomeView() {
                 response.json().then(data => {
                     data.reverse()
                     let out = {}
-                    console.log([4, 2, 7, 12, 1])
                     for (let song of data.slice(0, 20)) {
 
                         if (out[song.time_played]) {
@@ -58,7 +57,6 @@ export default function HomeView() {
                             out[song.time_played] = [song]
                         }
                     }
-                    console.log(out)
                     setRecentlyPlayed(out)
                 })
             }
@@ -80,8 +78,8 @@ export default function HomeView() {
                         <ScrollArea className=" w-full">
                             {/* Horizontal ScrollArea */}
                             <div className="flex flex-row gap-4 mb-4">
-                                {Object.keys(recentlyPlayed).map(time => (
-                                    recentlyPlayed[time].map(song => <RecentlyPlayedContainer key={song.id} song={song} />)
+                                {Object.keys(recentlyPlayed).map((time, index1) => (
+                                    recentlyPlayed[time].map((song, index2) => <RecentlyPlayedContainer key={'recentlyPlayed-' + index1 + "-" + index2 + "-" + song.id} song={song} />)
                                 ))}
                                 <div className="relative w-52">
                                     <p className="font-medium truncate top-1/2 relative ml-auto mr-auto w-fit">See more</p>

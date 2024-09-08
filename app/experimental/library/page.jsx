@@ -86,7 +86,7 @@ function GridViewContainer({ item }) {
                 </div>
                 {item !== null ?
                     <Image
-                        onLoadingComplete={() => { setCoverLoaded(true) }}
+                        onLoad={() => { setCoverLoaded(true) }}
                         src={`https://api.music.rockhosting.org/api/list/image/${item.id}_300x300`}
                         className="absolute top-0 rounded h-auto w-full "
                         width={0}
@@ -132,7 +132,7 @@ function ListViewContainer({ item }) {
         <div className="flex items-center space-x-4 p-2 bg-card text-card-foreground rounded-lg max-w-[500px] hover:scale-105 transition-[transform] cursor-pointer">
             <div className="bg-neutral-500 h-16 w-16 relative rounded">
                 {item !== null ?
-                    < Image onLoadingComplete={() => { setCoverLoaded(true) }} src={`https://api.music.rockhosting.org/api/list/image/${item.id}_300x300`} className="left-0 absolute rounded" width={64} height={64} alt="" />
+                    < Image onLoad={() => { setCoverLoaded(true) }} src={`https://api.music.rockhosting.org/api/list/image/${item.id}_300x300`} className="left-0 absolute rounded" width={64} height={64} alt="" />
                     :
                     <></>
                 }

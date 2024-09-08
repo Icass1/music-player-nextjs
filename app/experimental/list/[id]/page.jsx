@@ -27,8 +27,6 @@ function AlbumView({ musicData }) {
 
     return (
         <>
-
-
             {/* Song list */}
             <ScrollArea className="flex-1 px-6">
                 <Table>
@@ -73,11 +71,22 @@ function PlaylistView({ musicData, searchTerm }) {
 
     const { handlePlayList, currentList, isPlaying, handlePause, handlePlay, currentSong } = useContext(MediaPlayerContext)
 
-    const filteredSongs = musicData.songs.filter(song =>
-        song.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        song.artist.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        song.album.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    const [filteredSongs, setFilteredSongs] = useState(musicData.songs);
+
+
+    useEffect(() => {
+
+
+        console.log("filter")
+        setFilteredSongs(musicData.songs.filter(song =>
+            song.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            song.artist.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            song.album.toLowerCase().includes(searchTerm.toLowerCase())
+        ))
+    }, [searchTerm, musicData])
+
+    // let filteredSongs = musicData.songs
+
 
     return (
         <>
@@ -99,7 +108,12 @@ function PlaylistView({ musicData, searchTerm }) {
                             const isCurrentSong = currentSong && currentSong.id === song.id;
 
                             return (
-                                <TableRow className={`border-b-0 cursor-pointer hover:bg-muted/50 ${isCurrentSong ? 'bg-muted' : ''}`} key={song.id} onClick={() => { handlePlayList(musicData.id, song.id) }} variant={'ghost'}>
+                                <TableRow
+                                    className={`border-b-0  cursor-pointer hover:bg-muted/50 ${isCurrentSong ? ' bg-muted ' : ''} ${song.status != "ready" ? " pointer-events-none opacity-40 " : ""}`}
+                                    key={song.id + index}
+                                    onClick={() => { handlePlayList(musicData.id, song.id) }}
+                                    variant={'ghost'}
+                                >
                                     <TableCell className='py-1 px-0 w-14 text-center cursor-pointer'>
                                         <div className='w-14 h-14 relative'>
                                             <Image className={`ml-auto mr-auto absolute ${isCurrentSong && isPlaying ? 'opacity-30' : ''}`} src={`https://api.music.rockhosting.org/api/song/image/${song.id}_64x64`} height={64} width={64} alt=''></Image>

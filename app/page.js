@@ -316,7 +316,7 @@ function RenderCover({ src, alt }) {
                 sizes="100vw"
                 className='rounded-lg w-11/12 h-auto max-w-96 ml-auto mr-auto mt-2'
                 alt={alt}
-                onLoadingComplete={() => { setLoaded(true) }}
+                onLoad={() => { setLoaded(true) }}
             />
             {loaded ?
                 <></>

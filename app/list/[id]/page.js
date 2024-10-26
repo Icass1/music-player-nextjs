@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import DefaultListPage from '@/app/components/listPage';
 import { apiFetch } from '@/app/utils/apiFetch';
 

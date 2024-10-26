@@ -103,7 +103,7 @@ function PlaylistView({ musicData, searchTerm }) {
                         </TableRow>
                     </TableHeader>
                     <TableBody className='gap-10'>
-                        {filteredSongs.map((song, index) => {
+                        {filteredSongs.slice(0, 20).map((song, index) => {
 
                             const isCurrentSong = currentSong && currentSong.id === song.id;
 

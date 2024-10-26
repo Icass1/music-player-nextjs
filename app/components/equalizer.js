@@ -24,7 +24,6 @@ export default function Equalizer({ className, bar_count = 20, bar_gap = 1, cent
 
     }, [updateFunc, toggleCenter]);
 
-
     const updateCentered = useCallback(() => {
         if (canvasRef.current == null) { return }
 

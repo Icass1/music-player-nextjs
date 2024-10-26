@@ -261,7 +261,7 @@ function AddContextMenu({ children, item, setDownloadProgress, setMusicData }) {
 function GridLayout({ musicData, setMusicData }) {
 
     return (
-        <div className='grid gap-2 p-2' style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
+        <div className='grid gap-2 p-2' style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))' }}>
             {musicData.map((item) => (
                 <GridContainer key={item.id} item={item} setMusicData={setMusicData} />
             ))}
@@ -295,8 +295,8 @@ function GridContainer({ item, setMusicData }) {
 
 
                 <div className='flex flex-col mt-3 mb-3'>
-                    <label className={clsx('ml-3 mr-3 text-xl fade-out-neutral-200 font-bold cursor-pointer overflow-y-hidden min-w-0 max-w-full', { 'fade-out-fg-1': item.id == currentList })}>{item.name}</label>
-                    <label className={clsx('ml-3 mr-3 text-lg fade-out-neutral-200 cursor-pointer min-w-0 max-w-full', { 'fade-out-fg-2': item.id == currentList })}>{item.author}</label>
+                    <label className={clsx('ml-3 mr-3 text-lg fade-out-neutral-200 font-bold cursor-pointer overflow-y-hidden min-w-0 max-w-full', { 'fade-out-fg-1': item.id == currentList })}>{item.name}</label>
+                    <label className={clsx('ml-3 mr-3 text-base fade-out-neutral-200 cursor-pointer min-w-0 max-w-full', { 'fade-out-fg-2': item.id == currentList })}>{item.author}</label>
                 </div>
             </Link>
         </AddContextMenu>

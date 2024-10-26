@@ -94,6 +94,115 @@ function NavigationSeparator({ showing, _index }) {
     )
 }
 
+function QueueContainer() {
+
+    const {
+        queue,
+        queueIndex,
+    } = useContext(MediaPlayerContext)
+
+    const [scrollTop, setScrollTop] = useState(0)
+    const [startIndex, setStartIndex] = useState(0)
+    const [endIndex, setEndIndex] = useState()
+
+    const scrollRef = useRef()
+
+    const height = 40;
+    const gap = 8;
+
+    useEffect(() => {
+
+        let startIndex = Math.max(Math.round(scrollTop / (height + gap) - 1), 0)
+        let endIndex = Math.round((scrollRef.current.offsetHeight + scrollTop) / (height + gap))
+
+        setStartIndex(startIndex)
+        setEndIndex(endIndex)
+
+    }, [scrollRef, scrollTop])
+
+    // useEffect(() => {
+    //     if (!scrollRef.current) { return }
+
+    //     const element = scrollRef.current
+    //     const elementScroll = element.querySelector("div")
+
+    //     const handleWheel = (e) => {
+    //         elementScroll.scrollTop += e.deltaY
+    //         e.preventDefault();
+    //     }
+
+    //     element.addEventListener("wheel", handleWheel)
+
+    //     return () => {
+    //         element.removeEventListener("wheel", handleWheel)
+    //     }
+    // }, [scrollRef])
+
+
+    useEffect(() => {
+        if (!scrollRef.current) {
+            return;
+        }
+
+        const element = scrollRef.current;
+        const elementScroll = element.querySelector("div");
+
+        let scrollPosition = 0; // Store current scroll position
+        let isScrolling = false; // Flag to check if scrolling is in progress
+
+        const smoothScroll = () => {
+            if (!isScrolling) return; // Exit if scrolling is not needed
+            scrollPosition *= 0.7; // Damping effect
+            elementScroll.scrollTop += scrollPosition; // Apply scroll
+
+            if (Math.abs(scrollPosition) > 0.5) {
+                // Continue if scroll speed is significant
+                requestAnimationFrame(smoothScroll);
+            } else {
+                isScrolling = false; // Stop scrolling if movement is negligible
+            }
+        };
+
+        const handleWheel = (e) => {
+            scrollPosition += e.deltaY / 2; // Add wheel delta to scroll position
+            if (!isScrolling) {
+                isScrolling = true;
+                requestAnimationFrame(smoothScroll);
+            }
+            e.preventDefault(); // Prevent default wheel action
+        };
+
+        element.addEventListener("wheel", handleWheel);
+
+        return () => {
+            element.removeEventListener("wheel", handleWheel);
+        };
+    }, [scrollRef]);
+
+
+    return (
+        <ScrollArea ref={scrollRef} className="h-full relative" onScrollCapture={(e) => { setScrollTop(e.target.scrollTop) }}>
+            <div className="p-4 w-80" style={{ height: `${queue.length * (height + gap)}px` }}>
+                {queue.slice(queueIndex + 1).slice(startIndex, endIndex).map((song, index) => (
+                    <div key={'queue' + song.id + index} className="flex items-center space-x-2 absolute w-72" style={{ top: gap + (index + startIndex) * (height + gap) - scrollTop }}>
+                        <Image
+                            src={`https://api.music.rockhosting.org/api/song/image/${song.id}_64x64`}
+                            alt={`${song.title} cover`}
+                            width={40}
+                            height={40}
+                            className="rounded"
+                        />
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate" title={song.title}>{song.title}</p>
+                            <p className="text-xs text-muted-foreground truncate" title={song.artist}>{song.artist}</p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </ScrollArea>
+    )
+}
+
 export default function Layout({ children }) {
     const [showLyrics, setShowLyrics] = React.useState(false);
 
@@ -359,25 +468,7 @@ export default function Layout({ children }) {
                             <div className="p-4 border-b">
                                 <h2 className="font-semibold">Queue</h2>
                             </div>
-                            <ScrollArea className="h-full relative">
-                                <div className="p-4 space-y-2 w-80">
-                                    {queue.slice(queueIndex + 1).map((song, index) => (
-                                        <div key={'queue' + song.id + index} className="flex items-center space-x-2">
-                                            <Image
-                                                src={`https://api.music.rockhosting.org/api/song/image/${song.id}_64x64`}
-                                                alt={`${song.title} cover`}
-                                                width={40}
-                                                height={40}
-                                                className="rounded"
-                                            />
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium truncate" title={song.title}>{song.title}</p>
-                                                <p className="text-xs text-muted-foreground truncate" title={song.artist}>{song.artist}</p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </ScrollArea>
+                            <QueueContainer />
                         </div>
                     </div>
                 </div>

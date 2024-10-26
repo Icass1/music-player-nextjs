@@ -571,7 +571,7 @@ export default function DefaultListPage({ listId, musicData, setMusicData }) {
                     <div className='md:hidden relative grid w-auto mr-3 ml-3 mb-3' style={{ gridTemplateColumns: '1fr max-content max-content' }}>
                         <input
                             placeholder="Type to search..."
-                            className="text-lg min-w-0 block border-solid text-neutral-700 border-neutral-300 bg-transparent border-b focus:outline-none"
+                            className="text-lg min-w-0 block border-solid md:text-neutral-700 text-white border-neutral-300 bg-transparent border-b focus:outline-none"
                             onInput={handleSearch}
                         />
                         {
@@ -636,13 +636,13 @@ export default function DefaultListPage({ listId, musicData, setMusicData }) {
                             {searchResult.length != 0 ? (
                                 <div className='grid ml-5 mr-5 items-center' style={{ gridTemplateColumns: '1fr max-content 1fr' }}>
                                     <div className='h-2 fg-1 rounded-lg'></div>
-                                    <label className='text-center ml-2 mr-3 font-bold text-neutral-500'>End of search results</label>
+                                    <label className='text-center ml-2 mr-3 font-bold md:text-base text-sm text-neutral-500'>End of search results</label>
                                     <div className='h-2 fg-1 rounded-lg'></div>
                                 </div>
                             ) : (
                                 <div className='grid ml-5 mr-5 items-center' style={{ gridTemplateColumns: '1fr max-content 1fr' }}>
                                     <div className='h-2 fg-1 rounded-lg'></div>
-                                    <label className='text-center ml-2 mr-3 font-bold text-neutral-200'>No results found</label>
+                                    <label className='text-center ml-2 mr-3 font-bold md:text-base text-sm text-neutral-200'>No results found</label>
                                     <div className='h-2 fg-1 rounded-lg'></div>
                                 </div>
                             )}

@@ -261,7 +261,7 @@ function AddContextMenu({ children, item, setDownloadProgress, setMusicData }) {
 function GridLayout({ musicData, setMusicData }) {
 
     return (
-        <div className='grid gap-2 p-2' style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))' }}>
+        <div className='grid gap-2 p-2' style={{ gridTemplateColumns: `repeat(auto-fill, minmax(${innerWidth > 768 ? '200px' : '150px'}, 1fr))` }}>
             {musicData.map((item) => (
                 <GridContainer key={item.id} item={item} setMusicData={setMusicData} />
             ))}

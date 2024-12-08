@@ -1,8 +1,7 @@
 export function getTime(seconds) {
-
     seconds = Math.round(seconds);
 
-    if (typeof seconds !== 'number' || isNaN(seconds)) {
+    if (typeof seconds !== "number" || isNaN(seconds)) {
         return "Invalid input";
     }
 
@@ -11,8 +10,8 @@ export function getTime(seconds) {
     const remainingSeconds = Math.round(seconds % 60);
 
     // Format the result with leading zeros
-    const formattedMinutes = String(minutes).padStart(2, '0');
-    const formattedSeconds = String(remainingSeconds).padStart(2, '0');
+    const formattedMinutes = String(minutes).padStart(2, "0");
+    const formattedSeconds = String(remainingSeconds).padStart(2, "0");
 
     return `${formattedMinutes}:${formattedSeconds}`;
 }

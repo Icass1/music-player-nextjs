@@ -2,9 +2,7 @@
     "theme_color": "black",
     "background_color": "black",
     "display": "standalone",
-    "categories": [
-        "music"
-    ],
+    "categories": ["music"],
     "start_url": "https://music.rockhosting.org",
     "orientation": "portrait",
     "name": "RockIt",

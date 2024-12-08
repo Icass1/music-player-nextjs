@@ -1,6 +1,5 @@
-
-import GithubProvider from "next-auth/providers/github"
-import GoogleProvider from "next-auth/providers/google"
+import GithubProvider from "next-auth/providers/github";
+import GoogleProvider from "next-auth/providers/google";
 
 export const authOptions = {
     providers: [
@@ -10,8 +9,8 @@ export const authOptions = {
         }),
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET
-        })
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        }),
     ],
 
     // callbacks: {
@@ -23,7 +22,7 @@ export const authOptions = {
     //         // console.log("jwt", token, user)
     //         // if (user) {
     //         //     token.id = user.id;
-    //         // }  
+    //         // }
     //         return token;
     //     }
     // },
@@ -31,11 +30,11 @@ export const authOptions = {
     callbacks: {
         async signIn({ user, account, profile, email, credentials }) {
             // console.log("signIn", user, account, profile, email, credentials)
-            return true
+            return true;
         },
         async redirect({ url, baseUrl }) {
             // console.log("redirect", url, baseUrl)
-            return baseUrl
+            return baseUrl;
         },
         async session({ session, user, token }) {
             // console.log("session", session, user, token)
@@ -43,18 +42,21 @@ export const authOptions = {
                 session.user.id = token.sub;
             }
 
-            const response = await fetch(`https://api.music.rockhosting.org/api/user/get`, {
-                method: "GET",
-                headers: {
-                    'Authorization': `Bearer ${token.sub}` // Pass user id in the headers
+            const response = await fetch(
+                `https://api.music.rockhosting.org/api/user/get`,
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token.sub}`, // Pass user id in the headers
+                    },
                 },
-            })
+            );
 
             if (response.ok) {
-                const data = await response.json()
-                session.user = Object.assign({}, session.user, data)
+                const data = await response.json();
+                session.user = Object.assign({}, session.user, data);
             }
-            return session
+            return session;
         },
         async jwt({ token, user, account, profile, isNewUser }) {
             // console.log("jwt", token, user, account, profile, isNewUser)
@@ -63,19 +65,22 @@ export const authOptions = {
                 fetch(`https://api.music.rockhosting.org/api/user/set`, {
                     method: "POST",
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token.sub}` // Pass user id in the headers
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token.sub}`, // Pass user id in the headers
                     },
-                    body: JSON.stringify({ 
+                    body: JSON.stringify({
                         username: token.name,
                         email: token.email,
                         picture_url: token.picture,
-                        dev_user: process.env.NODE_ENV == "development" ? true : false
-                    })
-                })
+                        dev_user:
+                            process.env.NODE_ENV == "development"
+                                ? true
+                                : false,
+                    }),
+                });
             }
 
-            return token
-        }
-    }
-}
+            return token;
+        },
+    },
+};

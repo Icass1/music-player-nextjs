@@ -1,7 +1,13 @@
-import React, { useState, useEffect, useContext, useRef, useCallback, cloneElement } from 'react';
+import React, {
+    useState,
+    useEffect,
+    useContext,
+    useRef,
+    useCallback,
+    cloneElement,
+} from "react";
 
 export default function SelectionArea({ children }) {
-
     const [initialPos, setInitialPos] = useState(null);
     const [pos, setPos] = useState([0, 0]);
     const [size, setSize] = useState([0, 0]);
@@ -16,32 +22,39 @@ export default function SelectionArea({ children }) {
     }, [initialPos]);
 
     const handleMouseDown = (e) => {
-        console.log(e)
+        console.log(e);
 
-        if (e.button != 0) { return }
-        setInitialPos([e.clientX, e.clientY])
-        for (let index in childRefs.current) {
-            childRefs.current[index].removeAttribute("data-selected")
+        if (e.button != 0) {
+            return;
         }
-    }
+        setInitialPos([e.clientX, e.clientY]);
+        for (let index in childRefs.current) {
+            childRefs.current[index].removeAttribute("data-selected");
+        }
+    };
 
     const handleMouseMove = (e) => {
-        if (e.button != 0) { return }
+        if (e.button != 0) {
+            return;
+        }
 
-        if (initialPosRef.current == null) { return }
+        if (initialPosRef.current == null) {
+            return;
+        }
 
         const boundingRect = mainRef.current.getBoundingClientRect();
 
-        let width = Math.abs(e.clientX - initialPosRef.current[0])
-        let height = Math.abs(e.clientY - initialPosRef.current[1])
-        let xPos = Math.min(e.clientX, initialPosRef.current[0])
-        let yPos = Math.min(e.clientY, initialPosRef.current[1])
+        let width = Math.abs(e.clientX - initialPosRef.current[0]);
+        let height = Math.abs(e.clientY - initialPosRef.current[1]);
+        let xPos = Math.min(e.clientX, initialPosRef.current[0]);
+        let yPos = Math.min(e.clientY, initialPosRef.current[1]);
 
-        setSize([width, height])
-        setPos([xPos, yPos])
+        setSize([width, height]);
+        setPos([xPos, yPos]);
 
         for (let index in childRefs.current) {
-            let childBoundings = childRefs.current[index].getBoundingClientRect()
+            let childBoundings =
+                childRefs.current[index].getBoundingClientRect();
 
             if (
                 childBoundings.x < xPos + width &&
@@ -49,34 +62,37 @@ export default function SelectionArea({ children }) {
                 childBoundings.y < yPos + height &&
                 childBoundings.y + childBoundings.height > yPos
             ) {
-                childRefs.current[index].setAttribute("data-selected", "true")
+                childRefs.current[index].setAttribute("data-selected", "true");
             } else {
-                childRefs.current[index].removeAttribute("data-selected")
+                childRefs.current[index].removeAttribute("data-selected");
             }
         }
-    }
+    };
 
     const handleMouseUp = () => {
-        setInitialPos(null)
-        setPos([0, 0])
-        setSize([0, 0])
-    }
+        setInitialPos(null);
+        setPos([0, 0]);
+        setSize([0, 0]);
+    };
 
     useEffect(() => {
-        if (!mainRef.current) { return }
-
-        mainRef.current.addEventListener("mousedown", handleMouseDown)
-        mainRef.current.addEventListener("mousemove", handleMouseMove)
-        mainRef.current.addEventListener("mouseup", handleMouseUp)
-
-        return () => {
-            if (mainRef.current == null) {return}
-            mainRef.current.removeEventListener("mousedown", handleMouseDown)
-            mainRef.current.removeEventListener("mousemove", handleMouseMove)
-            mainRef.current.removeEventListener("mouseup", handleMouseUp)
+        if (!mainRef.current) {
+            return;
         }
 
-    }, [mainRef])
+        mainRef.current.addEventListener("mousedown", handleMouseDown);
+        mainRef.current.addEventListener("mousemove", handleMouseMove);
+        mainRef.current.addEventListener("mouseup", handleMouseUp);
+
+        return () => {
+            if (mainRef.current == null) {
+                return;
+            }
+            mainRef.current.removeEventListener("mousedown", handleMouseDown);
+            mainRef.current.removeEventListener("mousemove", handleMouseMove);
+            mainRef.current.removeEventListener("mouseup", handleMouseUp);
+        };
+    }, [mainRef]);
 
     let refIndex = -1;
 
@@ -84,7 +100,6 @@ export default function SelectionArea({ children }) {
     const applyStyleToChildren = (children) => {
         return React.Children.map(children, (child) => {
             if (React.isValidElement(child)) {
-
                 // console.log(child.props)
 
                 let newProps = {
@@ -93,12 +108,14 @@ export default function SelectionArea({ children }) {
                     children: applyStyleToChildren(child.props.children),
                 };
 
-                console.log(child.props.ref)
+                console.log(child.props.ref);
 
-                if (child.props.selectable === '') {
+                if (child.props.selectable === "") {
                     refIndex++;
                     const currentRefIndex = refIndex;
-                    newProps.ref = (el) => { childRefs.current[currentRefIndex] = el };
+                    newProps.ref = (el) => {
+                        childRefs.current[currentRefIndex] = el;
+                    };
                 }
 
                 // console.log(newProps)
@@ -109,15 +126,23 @@ export default function SelectionArea({ children }) {
         });
     };
 
-    let a = applyStyleToChildren(children)
+    let a = applyStyleToChildren(children);
     // let a = children
 
-    console.log(a)
+    console.log(a);
 
     return (
         <div ref={mainRef} id="TESTREMOVE">
-            <div className='fixed bg-[#4645456e] border-neutral-400 rounded-sm border-[1px] border-solid' style={{ left: pos[0], top: pos[1], width: size[0], height: size[1] }}></div>
+            <div
+                className="fixed bg-[#4645456e] border-neutral-400 rounded-sm border-[1px] border-solid"
+                style={{
+                    left: pos[0],
+                    top: pos[1],
+                    width: size[0],
+                    height: size[1],
+                }}
+            ></div>
             {a}
         </div>
-    )
+    );
 }

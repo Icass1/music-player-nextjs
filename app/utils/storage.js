@@ -1,10 +1,10 @@
-import { openDB } from 'idb';
-import { apiFetch } from './apiFetch';
+import { openDB } from "idb";
+import { apiFetch } from "./apiFetch";
 
-const DB_NAME = 'musicDB';
+const DB_NAME = "musicDB";
 const DB_VERSION = 1;
-const LIST_TABLE = 'list';
-const SONG_TABLE = 'song';
+const LIST_TABLE = "list";
+const SONG_TABLE = "song";
 
 const initDB = async () => {
     return openDB(DB_NAME, DB_VERSION, {
@@ -28,13 +28,12 @@ const initDB = async () => {
 //     })
 // }
 
-
 export const addList = async (id) => {
     const db = await initDB();
-    const response = await apiFetch(`/api/list/${id}`)
-    const data = await response.json()
+    const response = await apiFetch(`/api/list/${id}`);
+    const data = await response.json();
     await db.put(LIST_TABLE, { name: "ASDF", fileBlob: "a" }, "B");
-    console.log("PUT")
+    console.log("PUT");
 };
 
 export const saveMusicFile = async (fileName, fileBlob) => {
@@ -47,11 +46,18 @@ export const getMusicFile = async (fileName) => {
     return await db.get(STORE_NAME, fileName);
 };
 
-
-export const downloadAndSaveMusic = async (id, url, name, artist, duration, genre, album) => {
+export const downloadAndSaveMusic = async (
+    id,
+    url,
+    name,
+    artist,
+    duration,
+    genre,
+    album,
+) => {
     const response = await fetch(url);
     if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
     }
     const blob = await response.blob();
     await saveMusicFile(fileName, blob);
@@ -60,7 +66,7 @@ export const downloadAndSaveMusic = async (id, url, name, artist, duration, genr
 export const playMusic = async (fileName) => {
     const fileBlob = await getMusicFile(fileName);
     if (!fileBlob) {
-        throw new Error('File not found');
+        throw new Error("File not found");
     }
     const url = URL.createObjectURL(fileBlob);
     const audio = new Audio(url);

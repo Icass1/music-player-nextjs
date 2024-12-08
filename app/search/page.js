@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
 import clsx from "clsx";
 import Image from "next/image";
 // import Link from "next/link";
-import { Link } from 'next-view-transitions'
+import { Link } from "next-view-transitions";
 
 import ContextMenu from "../components/contextMenu";
 import { apiFetch } from "../utils/apiFetch";
@@ -12,30 +12,30 @@ import { useContext, useEffect, useState } from "react";
 import { MediaPlayerContext } from "../components/audioContext";
 
 export default function Search({ searchResults, handleSearch }) {
-
-    const {
-        setCurrentSong,
-        setCurrentList,
-        setQueue,
-        setQueueIndex,
-    } = useContext(MediaPlayerContext);
+    const { setCurrentSong, setCurrentList, setQueue, setQueueIndex } =
+        useContext(MediaPlayerContext);
 
     const [defaultSearchResults, setDefaultSearchResults] = useState({});
-    const [actualSearchResults, setActualSearchResults] = useState({ albums: [], playlists: [], songs: [] });
+    const [actualSearchResults, setActualSearchResults] = useState({
+        albums: [],
+        playlists: [],
+        songs: [],
+    });
 
     function handleSongPlay(id) {
-        if (id == false) { // If song.in_database is undifiend, the actual list is a list from database so all songs are available
+        if (id == false) {
+            // If song.in_database is undifiend, the actual list is a list from database so all songs are available
             return;
         }
 
-        apiFetch(`/api/song/info/${id}`).
-            then(response => response.json()).
-            then(data => {
+        apiFetch(`/api/song/info/${id}`)
+            .then((response) => response.json())
+            .then((data) => {
                 setQueue([data]);
                 setQueueIndex(0);
                 setCurrentSong(data);
                 setCurrentList("search");
-            })
+            });
     }
 
     let debounceTimer;
@@ -54,12 +54,10 @@ export default function Search({ searchResults, handleSearch }) {
     };
 
     useEffect(() => {
-
-        apiFetch(`/api/lists`).
-            then(response => response.json()).
-            then(data => {
-
-                let out = { albums: [], playlists: [] }
+        apiFetch(`/api/lists`)
+            .then((response) => response.json())
+            .then((data) => {
+                let out = { albums: [], playlists: [] };
                 for (let list of data) {
                     if (list.type == "Album") {
                         out.albums.push({
@@ -69,9 +67,12 @@ export default function Search({ searchResults, handleSearch }) {
                             image_url: `https://api.music.rockhosting.org/api/list/image/${list.id}_300x300`,
                             name: list.name,
                             total_tracks: list.total_tracks,
-                            type: list.type
-                        })
-                    } else if (list.type == "Playlist" && list.author == "Spotify") {
+                            type: list.type,
+                        });
+                    } else if (
+                        list.type == "Playlist" &&
+                        list.author == "Spotify"
+                    ) {
                         out.playlists.push({
                             in_database: true,
                             database_id: list.id,
@@ -79,22 +80,25 @@ export default function Search({ searchResults, handleSearch }) {
                             image_url: `https://api.music.rockhosting.org/api/list/image/${list.id}_300x300`,
                             name: list.name,
                             total_tracks: list.total_tracks,
-                            type: list.type
-                        })
+                            type: list.type,
+                        });
                     }
                 }
-                setDefaultSearchResults(out)
-            })
-    }, [])
+                setDefaultSearchResults(out);
+            });
+    }, []);
 
     useEffect(() => {
-        if (searchResults == undefined || searchResults == null || Object.keys(searchResults).length == 0) {
+        if (
+            searchResults == undefined ||
+            searchResults == null ||
+            Object.keys(searchResults).length == 0
+        ) {
             setActualSearchResults(defaultSearchResults);
         } else {
             setActualSearchResults(searchResults);
         }
-
-    }, [searchResults, defaultSearchResults])
+    }, [searchResults, defaultSearchResults]);
 
     return (
         <div className="flex flex-col gap-y-6 m-2">
@@ -107,161 +111,295 @@ export default function Search({ searchResults, handleSearch }) {
                 />
             </div>
 
-            {
-                actualSearchResults.albums == undefined || actualSearchResults.albums.length == 0 ?
-                    <></>
-                    :
-                    <div>
-                        <label className="text-4xl font-bold">Albums</label>
-                        <div className="overflow-x-scroll mt-2">
-                            <div className="inline-flex flex-row gap-4">
-                                {actualSearchResults?.albums?.map((album, index) => (
+            {actualSearchResults.albums == undefined ||
+            actualSearchResults.albums.length == 0 ? (
+                <></>
+            ) : (
+                <div>
+                    <label className="text-4xl font-bold">Albums</label>
+                    <div className="overflow-x-scroll mt-2">
+                        <div className="inline-flex flex-row gap-4">
+                            {actualSearchResults?.albums?.map(
+                                (album, index) => (
                                     <ResultContextMenu key={index} list={album}>
-                                        <Link href={album.in_database ? `/list/${album.database_id}` : `/s/album/${album.id}`}>
+                                        <Link
+                                            href={
+                                                album.in_database
+                                                    ? `/list/${album.database_id}`
+                                                    : `/s/album/${album.id}`
+                                            }
+                                        >
                                             <ResultContent list={album} />
                                         </Link>
                                     </ResultContextMenu>
-                                ))}
-                            </div>
+                                ),
+                            )}
                         </div>
                     </div>
-            }
+                </div>
+            )}
 
-            {
-                actualSearchResults.playlists == undefined || actualSearchResults.playlists.length == 0 ?
-                    <></>
-                    :
-                    <div>
-                        <label className="text-4xl font-bold">Playlists</label>
-                        <div className="overflow-x-scroll mt-2">
-                            <div className="inline-flex flex-row gap-2">
-                                {actualSearchResults?.playlists?.map((playlist, index) => (
-                                    <ResultContextMenu key={index} list={playlist}>
-                                        <Link href={playlist.in_database ? `/list/${playlist.database_id}` : `/s/playlist/${playlist.id}`}>
+            {actualSearchResults.playlists == undefined ||
+            actualSearchResults.playlists.length == 0 ? (
+                <></>
+            ) : (
+                <div>
+                    <label className="text-4xl font-bold">Playlists</label>
+                    <div className="overflow-x-scroll mt-2">
+                        <div className="inline-flex flex-row gap-2">
+                            {actualSearchResults?.playlists?.map(
+                                (playlist, index) => (
+                                    <ResultContextMenu
+                                        key={index}
+                                        list={playlist}
+                                    >
+                                        <Link
+                                            href={
+                                                playlist.in_database
+                                                    ? `/list/${playlist.database_id}`
+                                                    : `/s/playlist/${playlist.id}`
+                                            }
+                                        >
                                             <ResultContent list={playlist} />
                                         </Link>
                                     </ResultContextMenu>
-                                ))}
-                            </div>
+                                ),
+                            )}
                         </div>
                     </div>
-            }
-            {
-                actualSearchResults.songs == undefined || actualSearchResults.songs.length == 0 ?
-                    <></>
-                    :
-                    <div>
-                        <label className="text-4xl font-bold">Songs</label>
-                        <div className="overflow-x-scroll mt-2">
-                            <div className="inline-flex flex-row gap-2">
-                                {actualSearchResults?.songs?.map((song, index) => (
-                                    <div key={index} onClick={song.in_database ? () => handleSongPlay(song.database_id) : () => { }}>
-                                        <ContextMenu
-                                            options={song.in_database == false ? {
-                                                "Download to database": () => { },
-                                                "Copy Spotify URL": () => { navigator.clipboard.writeText(song.spotify_url) },
-                                                "Copy Spotify ID": () => { navigator.clipboard.writeText(song.id) },
-                                            } : {
-                                                "Download": () => { },
-                                                "Add to queue": () => { },
-                                                "Copy ID": () => { navigator.clipboard.writeText(song.database_id) },
-                                            }}
-                                        >
-                                            <ResultContent key={index} list={song} />
-                                        </ContextMenu>
-                                    </div>
-                                ))}
-                            </div>
+                </div>
+            )}
+            {actualSearchResults.songs == undefined ||
+            actualSearchResults.songs.length == 0 ? (
+                <></>
+            ) : (
+                <div>
+                    <label className="text-4xl font-bold">Songs</label>
+                    <div className="overflow-x-scroll mt-2">
+                        <div className="inline-flex flex-row gap-2">
+                            {actualSearchResults?.songs?.map((song, index) => (
+                                <div
+                                    key={index}
+                                    onClick={
+                                        song.in_database
+                                            ? () =>
+                                                  handleSongPlay(
+                                                      song.database_id,
+                                                  )
+                                            : () => {}
+                                    }
+                                >
+                                    <ContextMenu
+                                        options={
+                                            song.in_database == false
+                                                ? {
+                                                      "Download to database":
+                                                          () => {},
+                                                      "Copy Spotify URL":
+                                                          () => {
+                                                              navigator.clipboard.writeText(
+                                                                  song.spotify_url,
+                                                              );
+                                                          },
+                                                      "Copy Spotify ID": () => {
+                                                          navigator.clipboard.writeText(
+                                                              song.id,
+                                                          );
+                                                      },
+                                                  }
+                                                : {
+                                                      Download: () => {},
+                                                      "Add to queue": () => {},
+                                                      "Copy ID": () => {
+                                                          navigator.clipboard.writeText(
+                                                              song.database_id,
+                                                          );
+                                                      },
+                                                  }
+                                        }
+                                    >
+                                        <ResultContent
+                                            key={index}
+                                            list={song}
+                                        />
+                                    </ContextMenu>
+                                </div>
+                            ))}
                         </div>
                     </div>
-            }
+                </div>
+            )}
         </div>
-    )
+    );
 }
 
 function ResultContextMenu({ children, list }) {
     const session = useSession();
     return (
         <ContextMenu
-            options={list.in_database == false ? {
-                "Download to database": () => { },
-                "Copy Spotify URL": () => { navigator.clipboard.writeText(list.spotify_url) },
-                "Copy Spotify ID": () => { navigator.clipboard.writeText(list.id) },
-            } : {
-                "Download": () => { },
-                "Add to library": () => { apiFetch(`/api/user/add-list`, session, { method: "POST", body: JSON.stringify({ list_id: list.database_id }) }) },
-                "Add to queue": () => { },
-                "Copy ID": () => { navigator.clipboard.writeText(list.database_id) },
-            }}
+            options={
+                list.in_database == false
+                    ? {
+                          "Download to database": () => {},
+                          "Copy Spotify URL": () => {
+                              navigator.clipboard.writeText(list.spotify_url);
+                          },
+                          "Copy Spotify ID": () => {
+                              navigator.clipboard.writeText(list.id);
+                          },
+                      }
+                    : {
+                          Download: () => {},
+                          "Add to library": () => {
+                              apiFetch(`/api/user/add-list`, session, {
+                                  method: "POST",
+                                  body: JSON.stringify({
+                                      list_id: list.database_id,
+                                  }),
+                              });
+                          },
+                          "Add to queue": () => {},
+                          "Copy ID": () => {
+                              navigator.clipboard.writeText(list.database_id);
+                          },
+                      }
+            }
         >
             {children}
         </ContextMenu>
-    )
+    );
 }
 
 function ResultContent({ list }) {
     return (
         <div className="relative flex flex-col w-[220px] h-[290px] bg-3 hover:brightness-110 transition-all rounded-lg">
             <Image
-                className='ml-auto mr-auto mt-2 rounded-md'
-                src={list.image_url ? list.image_url : "https://api.music.rockhosting.org/images/defaultAlbum.png"}
+                className="ml-auto mr-auto mt-2 rounded-md"
+                src={
+                    list.image_url
+                        ? list.image_url
+                        : "https://api.music.rockhosting.org/images/defaultAlbum.png"
+                }
                 width={200}
                 height={200}
                 alt=""
-                title={list.name + " - " + list.artists.map((artist) => (artist.name)).join("/")}
+                title={
+                    list.name +
+                    " - " +
+                    list.artists.map((artist) => artist.name).join("/")
+                }
             />
-            <label className="text-2xl font-bold fade-out-neutral-100 min-w-0 max-w-full m-2 mb-0" title={list.name}>{list.name}</label>
-            <label className="text-xl fade-out-neutral-100 min-w-0 max-w-full m-2 mt-0" title={list.artists.map((artist) => (artist.name)).join("/")}>{list.artists.map((artist) => (artist.name)).join(" /")}</label>
+            <label
+                className="text-2xl font-bold fade-out-neutral-100 min-w-0 max-w-full m-2 mb-0"
+                title={list.name}
+            >
+                {list.name}
+            </label>
+            <label
+                className="text-xl fade-out-neutral-100 min-w-0 max-w-full m-2 mt-0"
+                title={list.artists.map((artist) => artist.name).join("/")}
+            >
+                {list.artists.map((artist) => artist.name).join(" /")}
+            </label>
 
             <div
-                className={clsx("absolute right-3 bottom-24 h-12 w-12 fg-1 rounded-full", { "hover:brightness-110": !list.in_database })}
-                onClick={(e) => { e.preventDefault(); console.log(e) }}
+                className={clsx(
+                    "absolute right-3 bottom-24 h-12 w-12 fg-1 rounded-full",
+                    { "hover:brightness-110": !list.in_database },
+                )}
+                onClick={(e) => {
+                    e.preventDefault();
+                    console.log(e);
+                }}
             >
                 <Image
                     className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-                    src={list.in_database ? ("https://api.music.rockhosting.org/images/tick.svg") : ("https://api.music.rockhosting.org/images/download.svg")}
+                    src={
+                        list.in_database
+                            ? "https://api.music.rockhosting.org/images/tick.svg"
+                            : "https://api.music.rockhosting.org/images/download.svg"
+                    }
                     width={list.in_database ? 48 : 30}
                     height={list.in_database ? 48 : 30}
-                    alt={list.in_database ? ("Database logo") : ("Download logo")}
-                    title={list.in_database ? ("Song is in database") : ("Click to download song")}
+                    alt={list.in_database ? "Database logo" : "Download logo"}
+                    title={
+                        list.in_database
+                            ? "Song is in database"
+                            : "Click to download song"
+                    }
                 />
             </div>
         </div>
-    )
+    );
 }
-
 
 function Result1({ list }) {
     return (
-
-        <Link className={clsx("relative flex flex-col w-[220px] h-[290px] bg-3 rounded-lg")} href={`/s/${list.type}/${list.id}`}>
+        <Link
+            className={clsx(
+                "relative flex flex-col w-[220px] h-[290px] bg-3 rounded-lg",
+            )}
+            href={`/s/${list.type}/${list.id}`}
+        >
             <Image
-                className='rounded-lg'
+                className="rounded-lg"
                 src={list.image_url}
                 width={220}
                 height={220}
-                alt={list.name + " - " + list.artists.map((artist) => (artist.name)).join("/")}
-                title={list.name + " - " + list.artists.map((artist) => (artist.name)).join("/")}
+                alt={
+                    list.name +
+                    " - " +
+                    list.artists.map((artist) => artist.name).join("/")
+                }
+                title={
+                    list.name +
+                    " - " +
+                    list.artists.map((artist) => artist.name).join("/")
+                }
             />
 
             <div
-                className={clsx("absolute right-2 bottom-20 h-12 w-12 bg-[#9DE2B0]  rounded-full", { "hover:bg-[#9DE2B0]": !list.in_database })}
-                onClick={(e) => { e.preventDefault(); console.log(e) }}
+                className={clsx(
+                    "absolute right-2 bottom-20 h-12 w-12 bg-[#9DE2B0]  rounded-full",
+                    { "hover:bg-[#9DE2B0]": !list.in_database },
+                )}
+                onClick={(e) => {
+                    e.preventDefault();
+                    console.log(e);
+                }}
             >
                 <Image
                     className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-                    src={list.in_database ? ("https://api.music.rockhosting.org/images/database2.webp") : ("https://api.music.rockhosting.org/images/download.svg")}
+                    src={
+                        list.in_database
+                            ? "https://api.music.rockhosting.org/images/database2.webp"
+                            : "https://api.music.rockhosting.org/images/download.svg"
+                    }
                     width={30}
                     height={30}
-                    alt={list.in_database ? ("Database logo") : ("Download logo")}
-                    title={list.in_database ? ("Song is in database") : ("Click to download song")}
+                    alt={list.in_database ? "Database logo" : "Download logo"}
+                    title={
+                        list.in_database
+                            ? "Song is in database"
+                            : "Click to download song"
+                    }
 
-                // onClick={!album.in_database ? handleDownloadToDatabase : () => { }}
+                    // onClick={!album.in_database ? handleDownloadToDatabase : () => { }}
                 />
             </div>
 
-            <label className="text-2xl font-bold fade-out-neutral-100 min-w-0 max-w-full m-2 mb-0 mt-1" title={list.name}>{list.name}</label>
-            <label className="text-xl fade-out-neutral-100 min-w-0 max-w-full m-2 mt-0" title={list.artists.map((artist) => (artist.name)).join("/")}>{list.artists.map((artist) => (artist.name)).join(" /")}</label>
+            <label
+                className="text-2xl font-bold fade-out-neutral-100 min-w-0 max-w-full m-2 mb-0 mt-1"
+                title={list.name}
+            >
+                {list.name}
+            </label>
+            <label
+                className="text-xl fade-out-neutral-100 min-w-0 max-w-full m-2 mt-0"
+                title={list.artists.map((artist) => artist.name).join("/")}
+            >
+                {list.artists.map((artist) => artist.name).join(" /")}
+            </label>
         </Link>
-    )
+    );
 }

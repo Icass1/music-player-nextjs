@@ -1,19 +1,17 @@
-
-'use client';
+"use client";
 
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
-import { Link } from 'next-view-transitions'
+import { Link } from "next-view-transitions";
 
 import { useContext, useEffect, useRef, useState } from "react";
 
 import Slider from "./slider";
-import { MediaPlayerContext } from './audioContext';
+import { MediaPlayerContext } from "./audioContext";
 import { usePathname } from "next/navigation";
 import useWindowWidth from "../hooks/useWindowWidth";
 
 export default function Header({ handleSearch }) {
-
     const {
         audio,
         audioVolume,
@@ -33,7 +31,8 @@ export default function Header({ handleSearch }) {
     const [muted, setMuted] = useState(false);
     const innerWidth = useWindowWidth();
 
-    const [homeViewIndicatorImagePath, setHomeViewIndicatorImagePath] = useState();
+    const [homeViewIndicatorImagePath, setHomeViewIndicatorImagePath] =
+        useState();
 
     const session = useSession();
 
@@ -55,10 +54,9 @@ export default function Header({ handleSearch }) {
             setLastAudioVolume(Math.sqrt(audio.volume));
             audio.volume = 0;
         } else if (lastAudioVolume) {
-            audio.volume = lastAudioVolume ** 2
+            audio.volume = lastAudioVolume ** 2;
         }
-
-    }, [muted, audio]) // Do not add lastAudioVolume as a dependency.
+    }, [muted, audio]); // Do not add lastAudioVolume as a dependency.
 
     let debounceTimer;
     const handleSearchInputChange = (e) => {
@@ -88,16 +86,14 @@ export default function Header({ handleSearch }) {
     // }
 
     const toggleShowLyrics = () => {
-
         if (showLyrics) {
-            setShowLyrics(false)
+            setShowLyrics(false);
         } else {
-            setShowLyrics(true)
+            setShowLyrics(true);
         }
-    }
+    };
 
     const handleViewChange = () => {
-
         setHomeView((value) => {
             let newValue = { ...value }; // Create a new copy of the state
             newValue.view = newValue.view + 1;
@@ -106,10 +102,9 @@ export default function Header({ handleSearch }) {
             }
             return newValue;
         });
-    }
+    };
 
     useEffect(() => {
-
         // if (homeView.view == 0) {
         //     // setHomeViewIndicatorImagePath('https://api.music.rockhosting.org/images/listWithTitle.svg')
         //     setHomeViewIndicatorImagePath('https://api.music.rockhosting.org/images/list.svg')
@@ -119,19 +114,24 @@ export default function Header({ handleSearch }) {
 
         switch (homeView?.view) {
             case 0:
-                setHomeViewIndicatorImagePath('https://api.music.rockhosting.org/images/list.svg')
-                return
+                setHomeViewIndicatorImagePath(
+                    "https://api.music.rockhosting.org/images/list.svg",
+                );
+                return;
             case 1:
-                setHomeViewIndicatorImagePath('https://api.music.rockhosting.org/images/listWithTitle.svg')
-                return
+                setHomeViewIndicatorImagePath(
+                    "https://api.music.rockhosting.org/images/listWithTitle.svg",
+                );
+                return;
             case 2:
-                setHomeViewIndicatorImagePath('https://api.music.rockhosting.org/images/grid.svg')
-                return
+                setHomeViewIndicatorImagePath(
+                    "https://api.music.rockhosting.org/images/grid.svg",
+                );
+                return;
         }
-    }, [homeView])
+    }, [homeView]);
 
     useEffect(() => {
-
         if (location.pathname != "/search") {
             return;
         }
@@ -139,21 +139,36 @@ export default function Header({ handleSearch }) {
         let params = new URL(document.location).searchParams;
         handleSearch(params.get("q"));
         searchInputRef.current.value = params.get("q");
-    }, [handleSearch])
+    }, [handleSearch]);
 
     return (
         <div
             className="grid h-full items-center ml-auto mr-auto w-min md:w-auto md:ml-5 md:mr-5 gap-14 md:gap-4"
             style={{
-                gridTemplateColumns: innerWidth > 768 ? '30px 30px min-content 1fr max-content 30px 30px 150px min-content' : '30px 30px',
-                gridTemplateRows: '100%'
+                gridTemplateColumns:
+                    innerWidth > 768
+                        ? "30px 30px min-content 1fr max-content 30px 30px 150px min-content"
+                        : "30px 30px",
+                gridTemplateRows: "100%",
             }}
         >
             <Link href="/">
-                <Image className="md:block invert-[0.8] hover:invert-[0.7] select-none" src='https://api.music.rockhosting.org/images/home.svg' width={30} height={30} alt="Search" />
+                <Image
+                    className="md:block invert-[0.8] hover:invert-[0.7] select-none"
+                    src="https://api.music.rockhosting.org/images/home.svg"
+                    width={30}
+                    height={30}
+                    alt="Search"
+                />
             </Link>
             <Link href="/search">
-                <Image className="md:block invert-[0.8] hover:invert-[0.7] select-none" src='https://api.music.rockhosting.org/images/search.svg' width={30} height={30} alt="Search" />
+                <Image
+                    className="md:block invert-[0.8] hover:invert-[0.7] select-none"
+                    src="https://api.music.rockhosting.org/images/search.svg"
+                    width={30}
+                    height={30}
+                    alt="Search"
+                />
             </Link>
             {pathname == "/search" ? (
                 <input
@@ -163,12 +178,12 @@ export default function Header({ handleSearch }) {
                     onInput={handleSearchInputChange}
                 />
             ) : (
-                <label className="hidden md:block">{/* Empty label to fill min-content */}</label>
-            )
-
-            }
-            <label className="hidden md:block"></label> {/* Empty label to fill 1fr */}
-
+                <label className="hidden md:block">
+                    {/* Empty label to fill min-content */}
+                </label>
+            )}
+            <label className="hidden md:block"></label>{" "}
+            {/* Empty label to fill 1fr */}
             {homeViewIndicatorImagePath && pathname === "/" ? (
                 <Image
                     className="hidden md:block invert-[0.6] select-none hover:invert-[0.7]"
@@ -183,52 +198,79 @@ export default function Header({ handleSearch }) {
             )}
             <Image
                 className="hidden md:block invert-[0.8] select-none hover:invert-[0.9] cursor-pointer transition-all"
-                src='https://api.music.rockhosting.org/images/lyrics.png'
-                style={{ filter: showLyrics ? ('brightness(0) saturate(100%) invert(44%) sepia(91%) saturate(474%) hue-rotate(3deg) brightness(105%) contrast(97%)') : ('') }}
+                src="https://api.music.rockhosting.org/images/lyrics.png"
+                style={{
+                    filter: showLyrics
+                        ? "brightness(0) saturate(100%) invert(44%) sepia(91%) saturate(474%) hue-rotate(3deg) brightness(105%) contrast(97%)"
+                        : "",
+                }}
                 width={30}
                 height={30}
                 alt="Toggle lyrics"
                 onClick={toggleShowLyrics}
             />
-
-
             <div className="hidden md:block relative h-[30px] w-[30px]">
                 <Image
                     className="absolute invert-[0.6] select-none cursor-pointer hover:invert-[0.7] transition-all"
-                    src='https://api.music.rockhosting.org/images/volumeMuted.png'
+                    src="https://api.music.rockhosting.org/images/volumeMuted.png"
                     width={30}
                     height={30}
                     priority={true}
                     alt=""
-                    style={{ clipPath: muted ? `inset(0px 0px 0px 0px)` : `inset(0px 30px 0px 0px)` }}
-                    onClick={() => setMuted(value => !value)}
+                    style={{
+                        clipPath: muted
+                            ? `inset(0px 0px 0px 0px)`
+                            : `inset(0px 30px 0px 0px)`,
+                    }}
+                    onClick={() => setMuted((value) => !value)}
                 />
 
                 <Image
                     className="absolute invert-[0.6] select-none cursor-pointer hover:invert-[0.7] transition-all"
-                    src='https://api.music.rockhosting.org/images/volume.svg'
+                    src="https://api.music.rockhosting.org/images/volume.svg"
                     width={30}
                     height={30}
                     alt=""
                     priority={true}
-                    style={{ clipPath: muted ? `inset(0px 0px 0px 30px)` : `inset(0px 0px 0px 0px)` }}
-                    onClick={() => setMuted(value => !value)}
+                    style={{
+                        clipPath: muted
+                            ? `inset(0px 0px 0px 30px)`
+                            : `inset(0px 0px 0px 0px)`,
+                    }}
+                    onClick={() => setMuted((value) => !value)}
                 />
-
             </div>
-
-            <Slider value={audioVolume} onChange={sliderChange} className="hidden md:block"></Slider>
-
+            <Slider
+                value={audioVolume}
+                onChange={sliderChange}
+                className="hidden md:block"
+            ></Slider>
             {session.data ? (
                 <div className="hidden md:flex flex-row gap-2 w-max items-center">
-                    <Link href='/user'>
-                        <Image className="rounded-full" src={session?.data?.user?.image} width={40} height={40} alt="" />
+                    <Link href="/user">
+                        <Image
+                            className="rounded-full"
+                            src={session?.data?.user?.image}
+                            width={40}
+                            height={40}
+                            alt=""
+                        />
                     </Link>
-                    <button className="bg-3 pl-2 pr-2 rounded-lg hover:bg-red-600" onClick={() => signOut()}>Logout</button>
+                    <button
+                        className="bg-3 pl-2 pr-2 rounded-lg hover:bg-red-600"
+                        onClick={() => signOut()}
+                    >
+                        Logout
+                    </button>
                 </div>
             ) : (
-                <Link className="hidden md:block bg-3 pl-2 pr-2 rounded-lg hover:bg-green-600" href='/login'>Login</Link>
+                <Link
+                    className="hidden md:block bg-3 pl-2 pr-2 rounded-lg hover:bg-green-600"
+                    href="/login"
+                >
+                    Login
+                </Link>
             )}
         </div>
-    )
+    );
 }

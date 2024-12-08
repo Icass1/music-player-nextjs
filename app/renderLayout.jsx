@@ -11,34 +11,27 @@ import { apiFetch } from "./utils/apiFetch";
 import { ThemeProvider } from "next-themes";
 
 export default function RenderLayout({ children }) {
-
     const [searchResults, setSearchResults] = useState({});
-    const pathname = usePathname()
+    const pathname = usePathname();
 
-    const {
-        showLyrics
-    } = useContext(MediaPlayerContext)
-
+    const { showLyrics } = useContext(MediaPlayerContext);
 
     const handleSearch = useCallback(async (query) => {
-
         if (query == null) {
-            console.log("a")
+            console.log("a");
             setSearchResults([]);
-            return
+            return;
         }
-        console.log("b")
+        console.log("b");
 
         try {
             const response = await apiFetch(`/api/search?q=${query}`);
             const data = await response.json();
             setSearchResults(data);
         } catch (error) {
-            console.error('Error fetching search results:', error);
+            console.error("Error fetching search results:", error);
         }
-
-    }, [])
-
+    }, []);
 
     // const handleSearch = async (query) => {
 
@@ -65,39 +58,59 @@ export default function RenderLayout({ children }) {
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
                 {children}
             </ThemeProvider>
-        )
+        );
     }
 
     return (
-        <div id='page' className={clsx('pb-0 md:pb-2 grid h-full w-full md:p-2 gap-2 mobile-layout md:desktop-layout', { "md:desktop-layout-lyrics": showLyrics })}>
-            <header className=' bg-2 rounded-md' style={{ gridArea: 'head' }}>
+        <div
+            id="page"
+            className={clsx(
+                "pb-0 md:pb-2 grid h-full w-full md:p-2 gap-2 mobile-layout md:desktop-layout",
+                { "md:desktop-layout-lyrics": showLyrics },
+            )}
+        >
+            <header className=" bg-2 rounded-md" style={{ gridArea: "head" }}>
                 <Header handleSearch={handleSearch}></Header>
             </header>
-            <div id='song-info' className="overflow-hidden relative bg-2 rounded-md" style={{ gridArea: 'song-info' }}>
+            <div
+                id="song-info"
+                className="overflow-hidden relative bg-2 rounded-md"
+                style={{ gridArea: "song-info" }}
+            >
                 <SongInfo></SongInfo>
             </div>
-            <div id='queue' className="overflow-y-auto overflow-x-hidden hidden md:block bg-2 rounded-md" style={{ gridArea: 'queue' }}>
+            <div
+                id="queue"
+                className="overflow-y-auto overflow-x-hidden hidden md:block bg-2 rounded-md"
+                style={{ gridArea: "queue" }}
+            >
                 <Queue></Queue>
             </div>
             <main
-                style={{ gridArea: 'main' }}
+                style={{ gridArea: "main" }}
                 className="bg-2 rounded-md relative h-full overflow-y-auto scroll-smooth"
-            // onScroll={(e) => { window.location.pathname == "/" ? (setScrollValue(e.target.scrollTop)) : (null) }}
+                // onScroll={(e) => { window.location.pathname == "/" ? (setScrollValue(e.target.scrollTop)) : (null) }}
             >
                 {pathname == "/search" ? (
-                    <Search searchResults={searchResults} handleSearch={handleSearch}></Search>
+                    <Search
+                        searchResults={searchResults}
+                        handleSearch={handleSearch}
+                    ></Search>
                 ) : (
                     children
                 )}
             </main>
 
-            <div id='lyrics' className={clsx("overflow-y-auto scroll-smooth overflow-x-hidden hidden md:block bg-2 rounded-md", { "md:hidden": !showLyrics })} style={{ gridArea: 'lyrics' }}>
-                {showLyrics ?
-                    <Lyrics />
-                    :
-                    <></>
-                }
+            <div
+                id="lyrics"
+                className={clsx(
+                    "overflow-y-auto scroll-smooth overflow-x-hidden hidden md:block bg-2 rounded-md",
+                    { "md:hidden": !showLyrics },
+                )}
+                style={{ gridArea: "lyrics" }}
+            >
+                {showLyrics ? <Lyrics /> : <></>}
             </div>
         </div>
-    )
+    );
 }

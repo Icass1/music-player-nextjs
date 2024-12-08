@@ -1,34 +1,50 @@
-import React, { useContext, useEffect, useRef, useState, useCallback } from 'react';
-import { MediaPlayerContext } from '@/app/components/audioContext';
-import useColors from '../hooks/getColors';
+import React, {
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+    useCallback,
+} from "react";
+import { MediaPlayerContext } from "@/app/components/audioContext";
+import useColors from "../hooks/getColors";
 
-export default function Equalizer({ className, bar_count = 20, bar_gap = 1, centered = false, toggleCenter = true }) {
+export default function Equalizer({
+    className,
+    bar_count = 20,
+    bar_gap = 1,
+    centered = false,
+    toggleCenter = true,
+}) {
     const canvasRef = useRef(null);
-    const requestRef = useRef()
+    const requestRef = useRef();
 
     const colors = useColors();
 
-    const [updateFunc, setUpdateFunc] = useState(centered ? (1) : (0));
+    const [updateFunc, setUpdateFunc] = useState(centered ? 1 : 0);
 
-    const {
-        analyser
-    } = useContext(MediaPlayerContext);
+    const { analyser } = useContext(MediaPlayerContext);
 
     useEffect(() => {
-        if (!toggleCenter) { return }
-
-        canvasRef.current.onclick = function () {
-            if (updateFunc == 0) { setUpdateFunc(1) }
-            else if (updateFunc == 1) { setUpdateFunc(0) }
+        if (!toggleCenter) {
+            return;
         }
 
+        canvasRef.current.onclick = function () {
+            if (updateFunc == 0) {
+                setUpdateFunc(1);
+            } else if (updateFunc == 1) {
+                setUpdateFunc(0);
+            }
+        };
     }, [updateFunc, toggleCenter]);
 
     const updateCentered = useCallback(() => {
-        if (canvasRef.current == null) { return }
+        if (canvasRef.current == null) {
+            return;
+        }
 
         const canvas = canvasRef.current;
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext("2d");
         // const bar_count = 20;
         // const bar_gap = 2;
 
@@ -39,48 +55,52 @@ export default function Equalizer({ className, bar_count = 20, bar_gap = 1, cent
 
         let fbc_array = new Uint8Array(analyser.frequencyBinCount);
 
-        const bar_width = (ctx.canvas.width - (bar_count - 1) * bar_gap) / bar_count;
+        const bar_width =
+            (ctx.canvas.width - (bar_count - 1) * bar_gap) / bar_count;
 
         analyser.getByteFrequencyData(fbc_array);
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        const foreground = colors.foreground1.split(" ")
+        const foreground = colors.foreground1.split(" ");
 
         const r = Number(foreground[0]);
         const g = Number(foreground[1]);
         const b = Number(foreground[2]);
         const a = 0.8;
 
-        fbc_array = fbc_array.slice(0, 675)
+        fbc_array = fbc_array.slice(0, 675);
 
         const groupedFrequencies = groupFrequencies(fbc_array, bar_count);
         for (let i = 0; i < bar_count; i++) {
-
-            ctx.fillStyle = `rgba(${r / (i / (bar_count - 1) + 1)}, ${g / (i / (bar_count - 1) + 1)}, ${b / (i / (bar_count - 1) + 1)}, ${a})`
+            ctx.fillStyle = `rgba(${r / (i / (bar_count - 1) + 1)}, ${g / (i / (bar_count - 1) + 1)}, ${b / (i / (bar_count - 1) + 1)}, ${a})`;
             ctx.beginPath();
 
-
             const bar_pos = bar_width * i + bar_gap * i;
-            const bar_height = groupedFrequencies[i] / 255 * canvas.height;
+            const bar_height = (groupedFrequencies[i] / 255) * canvas.height;
 
             // ctx.fillRect(bar_pos, canvas.height / 2 - bar_height / 2, bar_width, bar_height);
-            ctx.roundRect(bar_pos, canvas.height / 2 - bar_height / 2, bar_width, bar_height, [10]);
-
+            ctx.roundRect(
+                bar_pos,
+                canvas.height / 2 - bar_height / 2,
+                bar_width,
+                bar_height,
+                [10],
+            );
 
             ctx.fill();
         }
-    }, [analyser, bar_count, bar_gap, colors])
-
+    }, [analyser, bar_count, bar_gap, colors]);
 
     const updateBottom = useCallback(() => {
-
         // console.log(analyser)
 
-        if (canvasRef.current == null) { return }
+        if (canvasRef.current == null) {
+            return;
+        }
 
         const canvas = canvasRef.current;
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext("2d");
         // const bar_count = 20;
         // const bar_gap = 2;
 
@@ -91,7 +111,8 @@ export default function Equalizer({ className, bar_count = 20, bar_gap = 1, cent
 
         let fbc_array = new Uint8Array(analyser.frequencyBinCount);
 
-        const bar_width = (ctx.canvas.width - (bar_count - 1) * bar_gap) / bar_count;
+        const bar_width =
+            (ctx.canvas.width - (bar_count - 1) * bar_gap) / bar_count;
 
         analyser.getByteFrequencyData(fbc_array);
 
@@ -100,40 +121,37 @@ export default function Equalizer({ className, bar_count = 20, bar_gap = 1, cent
         const g = 129;
         const b = 4;
 
-        fbc_array = fbc_array.slice(0, 700)
+        fbc_array = fbc_array.slice(0, 700);
 
         const groupedFrequencies = groupFrequencies(fbc_array, bar_count);
         for (let i = 0; i < bar_count; i++) {
-
-            ctx.fillStyle = `rgb(${r / (i / (bar_count - 1) + 1)} ${g / (i / (bar_count - 1) + 1)} ${b / (i / (bar_count - 1) + 1)})`
+            ctx.fillStyle = `rgb(${r / (i / (bar_count - 1) + 1)} ${g / (i / (bar_count - 1) + 1)} ${b / (i / (bar_count - 1) + 1)})`;
 
             const bar_pos = bar_width * i + bar_gap * i;
-            const bar_height = -groupedFrequencies[i] / 255 * canvas.height;
+            const bar_height = (-groupedFrequencies[i] / 255) * canvas.height;
 
             ctx.fillRect(bar_pos, canvas.height, bar_width, bar_height);
         }
-    }, [analyser, bar_count, bar_gap])
-
+    }, [analyser, bar_count, bar_gap]);
 
     const update = useCallback(() => {
         requestRef.current = requestAnimationFrame(update);
 
         if (updateBottom == undefined || updateCentered == undefined) {
-            return
+            return;
         }
 
         if (updateFunc == 0) {
             updateBottom();
         } else if (updateFunc == 1) {
-            updateCentered()
+            updateCentered();
         }
-    }, [requestRef, updateCentered, updateBottom, updateFunc])
+    }, [requestRef, updateCentered, updateBottom, updateFunc]);
 
     useEffect(() => {
-        cancelAnimationFrame(requestRef.current)
-        update()
+        cancelAnimationFrame(requestRef.current);
+        update();
     }, [analyser, updateFunc, update]); // Re-render when updateFunction changes
-
 
     // Utility function to group frequencies
     function groupFrequencies(frequencies, numberOfGroups) {
@@ -151,6 +169,7 @@ export default function Equalizer({ className, bar_count = 20, bar_gap = 1, cent
     }
 
     // Render the canvas
-    return <canvas className={className} ref={canvasRef} id="equalizer"></canvas>;
-};
-
+    return (
+        <canvas className={className} ref={canvasRef} id="equalizer"></canvas>
+    );
+}

@@ -1,8 +1,11 @@
-export default function getImageMeanColor(image, opacity = 2, baseColor = [0, 0, 0]) {
-
+export default function getImageMeanColor(
+    image,
+    opacity = 2,
+    baseColor = [0, 0, 0],
+) {
     const canvas = document.createElement("canvas");
-    canvas.width = image.width
-    canvas.height = image.height
+    canvas.width = image.width;
+    canvas.height = image.height;
     const ctx = canvas.getContext("2d");
     ctx.drawImage(image, 0, 0);
     const imageData = ctx.getImageData(0, 0, image.width, image.height);
@@ -29,6 +32,4 @@ export default function getImageMeanColor(image, opacity = 2, baseColor = [0, 0,
     }
 
     return `rgb(${baseColor[0] + rSum / (image.width * image.height) / opacity}, ${baseColor[0] + gSum / (image.width * image.height) / opacity}, ${baseColor[0] + bSum / (image.width * image.height) / opacity})`;
-
-
 }

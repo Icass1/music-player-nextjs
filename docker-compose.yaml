@@ -1,0 +1,14 @@
+version: '3.8' # Specifies the Docker Compose file format version
+
+services:
+  music-player:
+    # Defines the service named 'music-player'
+    build:
+      # Configuration for building the Docker image
+      context: . # Build context set to the current directory
+      dockerfile: Dockerfile # Specifies the Dockerfile to use for building the image
+    container_name: MusicPlayer # Assigns a custom name to the container
+    restart: unless-stopped # Ensures the container restarts automatically unless explicitly stopped
+    ports:
+      - "8080:8080" # Maps port 8080 on the host to port 8080 in the container
+    tty: true # Allocates a TTY for the container, similar to using the -t option in 'docker run'

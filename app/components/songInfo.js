@@ -125,7 +125,7 @@ export default function SongInfo() {
                 >
                     <Image
                         priority="high"
-                        className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-full w-auto md:w-auto max-w-none blur-lg opacity-60 brightness-[.2] select-none"
+                        className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-full w-auto md:w-auto max-w-none blur-lg  brightness-[.2] select-none"
                         alt="Current Song"
                         sizes="100vw"
                         src={`https://api.music.rockhosting.org/api/song/image/${currentSong.id == "" ? "_" : currentSong.id}`}

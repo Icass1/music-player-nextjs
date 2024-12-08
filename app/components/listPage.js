@@ -44,9 +44,7 @@ function CircularProgressBar({
             </svg>
 
             <style jsx>
-                {" "}
                 {`
-
                 .circular-progress {
                     --progress: ${progress};
                     --size: 250px;

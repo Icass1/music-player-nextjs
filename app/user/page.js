@@ -15,6 +15,9 @@ export default function User() {
     const [mostPlayedSong, setMostPlayedSong] = useState(null);
     const [mostPlayedGenre, setMostPlayedGenre] = useState(null);
 
+    const [songsListened, setSongsListened] = useState(null);
+    const [minutesListened, setMinutesListened] = useState(null);
+
     const session = useSession();
     const innerWidth = useWindowWidth();
 
@@ -27,6 +30,17 @@ export default function User() {
             .then((response) => response.json())
             .then((data) => {
                 data.reverse();
+
+                setSongsListened(data.length);
+                setMinutesListened(
+                    data.reduce(
+                        (acc, song) =>
+                            acc +
+                            song.duration.split(":")[0] * 60 +
+                            song.duration.split(":")[1] * 1,
+                        0,
+                    ) / 60,
+                );
 
                 let out = {};
 
@@ -237,6 +251,13 @@ export default function User() {
                     <>
                         <div className="max-w-[400px] ml-auto mr-auto md:max-w-none">
                             <div className="flex flex-col">
+                                <div className="bg-neutral-800 flex flex-col p-2 w-fit rounded mt-6 ml-10">
+                                    <label>
+                                        {Math.round(minutesListened)} Minutes
+                                        listened
+                                    </label>
+                                    <label>{songsListened} Songs listened</label>
+                                </div>
                                 <label className="block font-bold text-2xl mt-6 ml-4 mr-4">
                                     Most played song
                                 </label>
@@ -525,37 +546,39 @@ function MobileView({ lastSongsPlayed }) {
 }
 
 function ComputerView({ lastSongsPlayed }) {
-    return Object.keys(lastSongsPlayed).map((timeAgo, index) => (
-        <div key={index}>
-            {lastSongsPlayed[timeAgo].map((song, index) => (
-                <div
-                    key={index}
-                    className="ml-4 mr-4 mt-2 mb-2 grid gap-2 items-center"
-                    style={{ gridTemplateColumns: "50px 2fr 1fr 150px" }}
-                >
-                    <Image
-                        className="rounded"
-                        src={song.cover_url}
-                        width={50}
-                        height={50}
-                        alt={`${song.title} - ${song.artist}`}
-                    />
-                    <div className=" min-w-0 w-auto">
-                        <div className="text-lg fade-out-neutral-200">
-                            {song.title}
+    return Object.keys(lastSongsPlayed)
+        .slice(0, 10)
+        .map((timeAgo, index) => (
+            <div key={index}>
+                {lastSongsPlayed[timeAgo].map((song, index) => (
+                    <div
+                        key={index}
+                        className="ml-4 mr-4 mt-2 mb-2 grid gap-2 items-center"
+                        style={{ gridTemplateColumns: "50px 2fr 1fr 150px" }}
+                    >
+                        <Image
+                            className="rounded"
+                            src={song.cover_url}
+                            width={50}
+                            height={50}
+                            alt={`${song.title} - ${song.artist}`}
+                        />
+                        <div className=" min-w-0 w-auto">
+                            <div className="text-lg fade-out-neutral-200">
+                                {song.title}
+                            </div>
+                            <div className="text-sm fade-out-neutral-400">
+                                {song.artist}
+                            </div>
                         </div>
-                        <div className="text-sm fade-out-neutral-400">
-                            {song.artist}
+                        <div className="block text-sm min-w-0 fade-out-neutral-100">
+                            {song.album}
+                        </div>
+                        <div className="block text-sm min-w-0 fade-out-neutral-50">
+                            {song.time_played}
                         </div>
                     </div>
-                    <div className="block text-sm min-w-0 fade-out-neutral-100">
-                        {song.album}
-                    </div>
-                    <div className="block text-sm min-w-0 fade-out-neutral-50">
-                        {song.time_played}
-                    </div>
-                </div>
-            ))}
-        </div>
-    ));
+                ))}
+            </div>
+        ));
 }
